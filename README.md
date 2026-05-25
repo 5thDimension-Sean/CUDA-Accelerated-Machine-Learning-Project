@@ -47,18 +47,22 @@ Memory bandwidth (GPU): 142.5 GB/s
 1. Clone the repo
    
   ```git clone https://github.com/5thDimension-Sean/CUDA-Accelerated-Machine-Learning-Project.git```
-3. Verify CUDA installation
+  
+2. Verify CUDA installation
    
    ```nvcc --version```
+   
 4. Configure the build system
 
    Open the project folder in VS Code. When prompted, select the CUDA Release configure preset. This preset targets Ninja as the build system and points directly to the CUDA and MSVC 2022 compilers.
    If the preset prompt does not appear automatically:
    Ctrl+Shift+P -> CMake: Select Configure Preset → CUDA Release
-5. Build
+   
+4. Build
 
    F7  (or Ctrl+Shift+P -> CMake: Build)
-6. Run Verification Kernel
+   
+5. Run Verification Kernel
 
    ```& ".\build\bin\vector_add.exe"```
    
