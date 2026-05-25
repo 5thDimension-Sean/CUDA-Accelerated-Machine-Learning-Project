@@ -69,10 +69,15 @@ Memory bandwidth (GPU): 142.5 GB/s
      Memory bandwidth (GPU): 142.5 GB/s
 **#Acknowledgements**
   https://www.cse.iitd.ac.in/~rijurekha/col730_2022/cudabook.pdf
+
   https://developer.nvidia.com/cuda/toolkit
+  
   https://developer.nvidia.com/nsight-systems/get-started
+  
   https://developer.nvidia.com/tools-overview/nsight-compute/get-started
+  
   Claude Sonnet 4.6 for all setup files and code for vector_add.cu
+
 
 Exact figures may vary depending on GPU. A speedup of more than 1x and Correct: YES signify a successful compilation.
 Workflow
