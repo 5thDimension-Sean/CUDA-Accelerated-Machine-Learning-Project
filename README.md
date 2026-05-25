@@ -3,12 +3,14 @@
 Uses NVIDIA’s parallel computing framework to perform data-intensive tasks using the GPU rather than the CPU. This ensures a huge reduction in training time and makes it possible to deal with huge data sets.
 
 **#Technical Overview**
+
 It is a 3 layer GPU computing stack.
 - Top: Application Layer(Python benchmarking scripts and C++ inference demo to feed data to the GPU)
 - Middle: CUDA Kernel library(cu files implmenting neural network operations(GEMM, convlution, activations, pooling, batch normalization) as parallel GPU kernels.)
 - Bottom: Hardware(GPU's streaming multprocessor units executing warps of 32 threas in parallel against the kernel code)
 
 **#System Prerequisites**
+
 - NVIDIA GPU(Compute Capability 7.5+, i.e RTX 20xx or newer)
 - CUDA Toolkit 12.x+
 - MSVC 2022 as host compiler
@@ -42,17 +44,23 @@ Memory bandwidth (GPU): 142.5 GB/s
 
 **#Getting started**
 1. Clone the repo
+   
   ```git clone https://github.com/5thDimension-Sean/CUDA-Accelerated-Machine-Learning-Project.git```
-2. Verify CUDA installation
+3. Verify CUDA installation
+   
    ```nvcc --version```
-3. Configure the build system
+4. Configure the build system
+
    Open the project folder in VS Code. When prompted, select the CUDA Release configure preset. This preset targets Ninja as the build system and points directly to the CUDA and MSVC 2022 compilers.
    If the preset prompt does not appear automatically:
    Ctrl+Shift+P -> CMake: Select Configure Preset → CUDA Release
-4. Build
+5. Build
+
    F7  (or Ctrl+Shift+P -> CMake: Build)
-5. Run Verification Kernel
+6. Run Verification Kernel
+
    ```& ".\build\bin\vector_add.exe"```
+   
    Sample Output:
    
      Vector Addition: N = 16777216 elements (67.1 MB per vector)
@@ -67,7 +75,10 @@ Memory bandwidth (GPU): 142.5 GB/s
 
 
      Memory bandwidth (GPU): 142.5 GB/s
+
+   
 **#Acknowledgements**
+
   https://www.cse.iitd.ac.in/~rijurekha/col730_2022/cudabook.pdf
 
   https://developer.nvidia.com/cuda/toolkit
