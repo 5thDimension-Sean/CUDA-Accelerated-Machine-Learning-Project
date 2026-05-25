@@ -25,6 +25,7 @@ Inference: single image -> GPU -> detection output -> NMS -> bounding boxes on s
 Host CPU gives and initializes data -> cudaMemcpy transfers to GPU global memory -> kernels load tiles into shared memory -> threads compute in parallel -> results go back to global memory -> cudaMemcpy back to host for display
 
 **#Sample Results**
+
 Vector Addition: N = 16777216 elements (67.1 MB per vector)
 
 Launching kernel: 65536 blocks * 256 threads = 16777216 total threads
@@ -39,13 +40,6 @@ Results (averaged over 10 runs):
 
 Memory bandwidth (GPU): 142.5 GB/s
 
-**#Acknowledgements**
-https://www.cse.iitd.ac.in/~rijurekha/col730_2022/cudabook.pdf
-https://developer.nvidia.com/cuda/toolkit
-https://developer.nvidia.com/nsight-systems/get-started
-https://developer.nvidia.com/tools-overview/nsight-compute/get-started
-Claude Sonnet 4.6 for all setup files and code for vector_add.cu
-
 **#Getting started**
 1. Clone the repo
   ```git clone https://github.com/5thDimension-Sean/CUDA-Accelerated-Machine-Learning-Project.git```
@@ -59,7 +53,8 @@ Claude Sonnet 4.6 for all setup files and code for vector_add.cu
    F7  (or Ctrl+Shift+P -> CMake: Build)
 5. Run Verification Kernel
    ```& ".\build\bin\vector_add.exe"```
-   Sample Output: 
+   Sample Output:
+   
      Vector Addition: N = 16777216 elements (67.1 MB per vector)
 
      Launching kernel: 65536 blocks * 256 threads = 16777216 total threads
@@ -72,6 +67,12 @@ Claude Sonnet 4.6 for all setup files and code for vector_add.cu
 
 
      Memory bandwidth (GPU): 142.5 GB/s
+**#Acknowledgements**
+  https://www.cse.iitd.ac.in/~rijurekha/col730_2022/cudabook.pdf
+  https://developer.nvidia.com/cuda/toolkit
+  https://developer.nvidia.com/nsight-systems/get-started
+  https://developer.nvidia.com/tools-overview/nsight-compute/get-started
+  Claude Sonnet 4.6 for all setup files and code for vector_add.cu
 
 Exact figures may vary depending on GPU. A speedup of more than 1x and Correct: YES signify a successful compilation.
 Workflow
