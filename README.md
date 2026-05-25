@@ -27,7 +27,7 @@ Inference: single image -> GPU -> detection output -> NMS -> bounding boxes on s
 Host CPU gives and initializes data -> cudaMemcpy transfers to GPU global memory -> kernels load tiles into shared memory -> threads compute in parallel -> results go back to global memory -> cudaMemcpy back to host for display
 
 **#Sample Results**
-
+```
 Vector Addition: N = 16777216 elements (67.1 MB per vector)
 
 Launching kernel: 65536 blocks * 256 threads = 16777216 total threads
@@ -41,6 +41,7 @@ Results (averaged over 10 runs):
 
 
 Memory bandwidth (GPU): 142.5 GB/s
+```
 
 **#Getting started**
 1. Clone the repo
