@@ -23,7 +23,8 @@ It is a 3 layer GPU computing stack.
 Training through images -> CPU preprocessing -> cudaMemcpy for GPU memory transfer -> forward pass over CUDA kernels -> loss computation -> backwards pass over CUDA kernels -> weight update -> repeat
 Inference: single image -> GPU -> detection output -> NMS -> bounding boxes on screen
 
-**#Data Flow: **
+**#Data Flow:**
+
 Host CPU gives and initializes data -> cudaMemcpy transfers to GPU global memory -> kernels load tiles into shared memory -> threads compute in parallel -> results go back to global memory -> cudaMemcpy back to host for display
 
 **#Sample Results**
