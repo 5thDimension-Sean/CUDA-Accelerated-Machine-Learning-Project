@@ -67,7 +67,7 @@ Memory bandwidth (GPU): 142.5 GB/s
    ```& ".\build\bin\vector_add.exe"```
    
    Sample Output:
-   
+   ```
      Vector Addition: N = 16777216 elements (67.1 MB per vector)
 
      Launching kernel: 65536 blocks * 256 threads = 16777216 total threads
