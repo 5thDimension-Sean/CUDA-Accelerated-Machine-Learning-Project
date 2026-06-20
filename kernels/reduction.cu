@@ -29,10 +29,10 @@ __global__ void reduce_shared(const float*A, float* result, int n){
     for(int i = blockDim.x/2;i > 0; i/=2){
         if(tid<i){
             sdata[tid]  += sdata[tid+i];
-            __syncthreads(); //wait for all threads to finish adding before next round
-            if(tid == 0){
-                atomicAdd(result, sdata[0]); //add the block's sum to the global result
-            }
         }
+        __syncthreads(); //wait for all threads to finish adding before next round
+    }
+    if(tid == 0){
+        atomicAdd(result, sdata[0]); //add the block's sum to the global result
     }
 }
