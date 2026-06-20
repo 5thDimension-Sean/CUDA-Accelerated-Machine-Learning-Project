@@ -1,4 +1,4 @@
 # ninja log v7
-4	3775	8014355860253998	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
-3919	5596	8014355899322619	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
-5596	5736	8014355916171115	bin/vector_add.exe	e2683f34b4e853fb
+22	5796	8014377690451857	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
+6031	7785	8014377750589458	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
+7785	7942	8014377768127336	bin/vector_add.exe	e2683f34b4e853fb

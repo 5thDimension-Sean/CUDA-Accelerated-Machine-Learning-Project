@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <chrono>
 
 // ── Error checking macro ─────────────────────────────────────────────────────
 // Wrap every CUDA call in this. It prints exactly where and why things break.
@@ -93,58 +94,60 @@ int main() {
     CUDA_CHECK(cudaMemcpy(d_A, h_A, N * sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_B, h_B, N * sizeof(float), cudaMemcpyHostToDevice));
 
-    // ── Set up timing ────────────────────────────────────────────────────────
-    // cudaEvent_t is the GPU-side timer — more accurate than CPU clock for GPU work
+        // ── Timing config ────────────────────────────────────────────────────────
+    const int N_RUNS = 10;  // average over 10 runs for stable numbers
+
+    // ── GPU timing (averaged) ────────────────────────────────────────────────
     cudaEvent_t start, stop;
     CUDA_CHECK(cudaEventCreate(&start));
     CUDA_CHECK(cudaEventCreate(&stop));
 
-    // ── Launch the kernel ────────────────────────────────────────────────────
-    // How many blocks do we need?
-    // If N=16M and THREADS=256: we need ceil(16M / 256) = 65536 blocks
     int blocks = (N + THREADS - 1) / THREADS;
-
-    printf("Launching kernel: %d blocks × %d threads = %d total threads\n\n",
+    printf("Launching kernel: %d blocks * %d threads = %d total threads\n\n",
            blocks, THREADS, blocks * THREADS);
 
-    CUDA_CHECK(cudaEventRecord(start));
-
-    // <<< blocks, threads_per_block >>> — this is the CUDA launch syntax
+    // Warmup run (GPU clocks need to ramp up — don't count this one)
     vector_add_kernel<<<blocks, THREADS>>>(d_A, d_B, d_C, N);
+    CUDA_CHECK(cudaDeviceSynchronize());
 
-    CUDA_CHECK(cudaEventRecord(stop));
-    CUDA_CHECK(cudaEventSynchronize(stop));   // wait for GPU to finish
-
-    // Check for kernel launch errors
+    float gpu_total_ms = 0.0f;
+    for (int r = 0; r < N_RUNS; r++) {
+        float ms = 0.0f;
+        CUDA_CHECK(cudaEventRecord(start));
+        vector_add_kernel<<<blocks, THREADS>>>(d_A, d_B, d_C, N);
+        CUDA_CHECK(cudaEventRecord(stop));
+        CUDA_CHECK(cudaEventSynchronize(stop));
+        CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+        gpu_total_ms += ms;
+    }
+    float gpu_ms = gpu_total_ms / N_RUNS;
     CUDA_CHECK(cudaGetLastError());
 
-    // ── Measure GPU time ─────────────────────────────────────────────────────
-    float gpu_ms = 0.0f;
-    CUDA_CHECK(cudaEventElapsedTime(&gpu_ms, start, stop));
-
-    // ── Copy result from GPU → CPU ───────────────────────────────────────────
+    // Copy result back once after timing
     CUDA_CHECK(cudaMemcpy(h_C, d_C, N * sizeof(float), cudaMemcpyDeviceToHost));
 
-    // ── Run CPU version and time it ──────────────────────────────────────────
-    clock_t cpu_start = clock();
-    vector_add_cpu(h_A, h_B, h_ref, N);
-    clock_t cpu_end = clock();
-    float cpu_ms = 1000.0f * (cpu_end - cpu_start) / CLOCKS_PER_SEC;
+    // ── CPU timing (averaged) ────────────────────────────────────────────────
+    double cpu_total_ms = 0.0;
+    for (int r = 0; r < N_RUNS; r++) {
+        auto cpu_start = std::chrono::high_resolution_clock::now();
+        vector_add_cpu(h_A, h_B, h_ref, N);
+        auto cpu_end = std::chrono::high_resolution_clock::now();
+        cpu_total_ms += std::chrono::duration<double, std::milli>(cpu_end - cpu_start).count();
+    }
+    double cpu_ms = cpu_total_ms / N_RUNS;
 
     // ── Verify GPU result matches CPU ────────────────────────────────────────
     bool correct = verify(h_ref, h_C, N);
 
     // ── Print results ────────────────────────────────────────────────────────
-    printf("Results:\n");
+    printf("Results (averaged over %d runs):\n", N_RUNS);
     printf("  GPU time : %.3f ms\n", gpu_ms);
     printf("  CPU time : %.3f ms\n", cpu_ms);
-    printf("  Speedup  : %.1fx\n", cpu_ms / gpu_ms);
-    printf("  Correct  : %s\n\n", correct ? "YES ✓" : "NO ✗");
+    printf("  Speedup  : %.2fx\n", cpu_ms / gpu_ms);
+    printf("  Correct  : %s\n\n", correct ? "YES" : "NO");
 
     printf("Memory bandwidth (GPU): %.1f GB/s\n",
            (3.0f * N * sizeof(float)) / (gpu_ms * 1e6f));
-    // 3× because we read A, read B, write C
-
     // ── Cleanup ──────────────────────────────────────────────────────────────
     CUDA_CHECK(cudaFree(d_A));
     CUDA_CHECK(cudaFree(d_B));
