@@ -1,0 +1,12 @@
+Notes: 
+GPU vs. CPU: 
+
+Unskilled vs Skilled
+Thread Values in Vector_add.cu vs timing 
+32: GPU time is slower so lower speedup
+128 - 256: fastest and highest speed up
+1024 similar or slightly worse speed up
+
+GPU needs enough concurrent warps to hide latency. 
+
+A warp is a total of 32 threads due to the SIMT model

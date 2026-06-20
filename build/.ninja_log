@@ -2,3 +2,20 @@
 22	5796	8014377690451857	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
 6031	7785	8014377750589458	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
 7785	7942	8014377768127336	bin/vector_add.exe	e2683f34b4e853fb
+3	260	8036827473288239	build.ninja	396675f7d6042578
+3	260	8036827473288239	D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake	396675f7d6042578
+14	6493	8036827473926886	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
+6578	8975	8036827539570506	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
+8975	9263	8036827563536626	bin/vector_add.exe	e2683f34b4e853fb
+3	5519	8036828303794879	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
+5593	7786	8036828359695750	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
+7786	7974	8036828381632220	bin/vector_add.exe	e2683f34b4e853fb
+17	5526	8036828678857752	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
+5584	7698	8036828734519803	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
+7698	7857	8036828755661290	bin/vector_add.exe	e2683f34b4e853fb
+4	5803	8036922345773273	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
+5864	7889	8036922404384221	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
+7889	8067	8036922424639954	bin/vector_add.exe	e2683f34b4e853fb
+3	5642	8036923674797579	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
+5726	7768	8036923732034574	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
+7768	7935	8036923752446173	bin/vector_add.exe	e2683f34b4e853fb

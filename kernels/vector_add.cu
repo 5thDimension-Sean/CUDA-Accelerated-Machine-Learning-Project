@@ -22,7 +22,7 @@
     do {                                                                        \
         cudaError_t err = (call);                                               \
         if (err != cudaSuccess) {                                               \
-            fprintf(stderr, "CUDA error at %s:%d — %s\n",                      \
+            fprintf(stderr, "CUDA error at %s:%d - %s\n",                      \
                     __FILE__, __LINE__, cudaGetErrorString(err));               \
             exit(EXIT_FAILURE);                                                 \
         }                                                                       \
@@ -30,7 +30,7 @@
 
 // ── Constants ────────────────────────────────────────────────────────────────
 #define N         (1 << 24)    // 16 million elements — big enough to see speedup
-#define THREADS   256          // threads per block (must be multiple of 32 — why? warps)
+#define THREADS   1024        // threads per block (must be multiple of 32 — why? warps)
 
 // ── GPU Kernel ───────────────────────────────────────────────────────────────
 // __global__ means: runs on GPU, called from CPU
@@ -171,4 +171,4 @@ int main() {
 //   GPU time : ~1.5 ms
 //   CPU time : ~30 ms
 //   Speedup  : ~20x
-//   Correct  : YES ✓
+//   Correct  : YES 
