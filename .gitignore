@@ -1,0 +1,41 @@
+# Build output
+build/
+
+# Compiled binaries
+*.exe
+*.o
+*.a
+*.so
+
+# CUDA
+*.cubin
+*.fatbin
+*.ptx
+
+# Ninja
+*.ninja_deps
+*.ninja_log
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Data (too large for git)
+data/*.zip
+data/*.tar
+data/*.tar.gz
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
