@@ -10,3 +10,7 @@ Thread Values in Vector_add.cu vs timing
 GPU needs enough concurrent warps to hide latency. 
 
 A warp is a total of 32 threads due to the SIMT model
+
+blockIdx.x = block index
+blockIdx.x = position within block
+blockDim.x = Threads per block

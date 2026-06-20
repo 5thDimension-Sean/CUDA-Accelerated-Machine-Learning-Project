@@ -29,7 +29,8 @@
     } while (0)
 
 // ── Constants ────────────────────────────────────────────────────────────────
-#define N         (1 << 24)    // 16 million elements — big enough to see speedup
+const int N = 1 << 24; //global constant = 16 million elements
+
 #define THREADS   1024        // threads per block (must be multiple of 32 — why? warps)
 
 // ── GPU Kernel ───────────────────────────────────────────────────────────────
