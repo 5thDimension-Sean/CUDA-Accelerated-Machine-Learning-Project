@@ -31,7 +31,7 @@
 // ── Constants ────────────────────────────────────────────────────────────────
 const int N = 1 << 24; //global constant = 16 million elements
 
-#define THREADS   1024        // threads per block (must be multiple of 32 — why? warps)
+#define THREADS   256        // threads per block (must be multiple of 32 — why? warps)
 
 // ── GPU Kernel ───────────────────────────────────────────────────────────────
 // __global__ means: runs on GPU, called from CPU
