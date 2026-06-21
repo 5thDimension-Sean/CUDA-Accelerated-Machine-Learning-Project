@@ -82,7 +82,9 @@ Memory bandwidth (GPU): 142.5 GB/s
 
      Memory bandwidth (GPU): 142.5 GB/s
 
-Note: More things to run ```.\build\bin\Release\benchmark.exe```
+Note: More things to run ```& ".\build\bin\benchmark.exe```
+
+
 **#Acknowledgements**
 
   https://www.cse.iitd.ac.in/~rijurekha/col730_2022/cudabook.pdf
