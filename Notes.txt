@@ -36,3 +36,34 @@ blockDim.x = Threads per block
     This makes sense to me as finding the magnitude allows tolerance but checks if they are close enough. 
 
     Need to fix the call for shared memory size for reduce_shared
+    First run: 
+    Correct: YES
+    --- Naive Reduction ---
+    GPU time: 34.968 ms:
+    --- Shared Reduction ---
+    GPU time: 1.426 ms:
+    --- CPU baseline ---
+    CPU time : 0.000 ms:
+    --- Comparison ---
+    Naive speedup vs CPU: 0.00x
+    Shared speedup vs CPU: 0.00x
+    Shared speedup vs Naive: 24.52x
+    It looks like CPU baseline time is completely wrong so I will fix. 
+
+    Correct: YES
+--- Naive Reduction ---
+GPU time: 34.814 ms:
+ --- Shared Reduction ---
+GPU time: 1.399 ms:
+ --- CPU baseline ---
+  CPU time : 19.561 ms:
+--- Comparison ---
+Naive speedup vs CPU: 0.56x
+Shared speedup vs CPU: 13.98x
+Shared speedup vs Naive: 24.89x
+
+It's fixed. 
+
+Some trends to note: the Naive GPU is actually slower than the CPU by almost 2x
+Shared vs CPU is of course faster as it is computing same things a lot of times
+Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!

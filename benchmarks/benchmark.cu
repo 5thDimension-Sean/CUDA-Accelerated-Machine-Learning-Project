@@ -41,10 +41,11 @@ int main() {
         //Timings
     const int N_RUNS = 10;  // average over 10 runs for stable numbers
     //CPU Baseline
+    float cpu_sum = 0.0f;
     double cpu_total_ms = 0.0;
     for (int r = 0; r < N_RUNS; r++) {
         auto cpu_start = std::chrono::high_resolution_clock::now();
-        float cpu_result = cpu_reduce(h_A, N);
+        cpu_sum = cpu_reduce(h_A, N);
         auto cpu_end = std::chrono::high_resolution_clock::now();
         cpu_total_ms += std::chrono::duration<double, std::milli>(cpu_end - cpu_start).count();
     }
@@ -63,7 +64,6 @@ int main() {
     cudaEventSynchronize(stop);   // wait for GPU to actually finish
     float h_result;
     cudaMemcpy(&h_result, d_result, sizeof(float), cudaMemcpyDeviceToHost);
-    float cpu_sum = cpu_reduce(h_A, N);
     bool correct = fabsf(cpu_sum - h_result) < 1.0f;
     printf("Correct: %s\n", correct ? "YES" : "NO");
     float naiveMs = 0.0f;

@@ -95,6 +95,61 @@ build bin\vector_add.exe: CUDA_EXECUTABLE_LINKER__vector_add_Release CMakeFiles\
   TARGET_IMPLIB = vector_add.lib
   TARGET_PDB = bin\vector_add.pdb
 
+# =============================================================================
+# Object build statements for EXECUTABLE target benchmark
+
+
+#############################################
+# Order-only phony target for benchmark
+
+build cmake_object_order_depends_target_benchmark: phony || .
+
+build CMakeFiles\benchmark.dir\benchmarks\benchmark.cu.obj: CUDA_COMPILER__benchmark_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\benchmarks\benchmark.cu || cmake_object_order_depends_target_benchmark
+  CONFIG = Release
+  DEP_FILE = CMakeFiles\benchmark.dir\benchmarks\benchmark.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  OBJECT_DIR = CMakeFiles\benchmark.dir
+  OBJECT_FILE_DIR = CMakeFiles\benchmark.dir\benchmarks
+  TARGET_COMPILE_PDB = CMakeFiles\benchmark.dir\
+  TARGET_PDB = bin\benchmark.pdb
+
+
+# =============================================================================
+# Device Link build statements for EXECUTABLE target benchmark
+
+
+#############################################
+# Link the executable CMakeFiles\benchmark.dir\cmake_device_link.obj
+
+build CMakeFiles\benchmark.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__benchmark_Release CMakeFiles\benchmark.dir\benchmarks\benchmark.cu.obj
+  LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\benchmark.dir
+  TARGET_COMPILE_PDB = CMakeFiles\benchmark.dir\
+  TARGET_FILE = CMakeFiles\benchmark.dir\cmake_device_link.obj
+  TARGET_IMPLIB = benchmark.lib
+  TARGET_PDB = bin\benchmark.pdb
+
+# =============================================================================
+# Link build statements for EXECUTABLE target benchmark
+
+
+#############################################
+# Link the executable bin\benchmark.exe
+
+build bin\benchmark.exe: CUDA_EXECUTABLE_LINKER__benchmark_Release CMakeFiles\benchmark.dir\benchmarks\benchmark.cu.obj CMakeFiles\benchmark.dir\cmake_device_link.obj
+  CONFIG = Release
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
+  LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\benchmark.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\benchmark.dir\
+  TARGET_FILE = bin\benchmark.exe
+  TARGET_IMPLIB = benchmark.lib
+  TARGET_PDB = bin\benchmark.pdb
+
 
 #############################################
 # Utility command for edit_cache
@@ -121,6 +176,10 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
+build benchmark: phony bin\benchmark.exe
+
+build benchmark.exe: phony bin\benchmark.exe
+
 build vector_add: phony bin\vector_add.exe
 
 build vector_add.exe: phony bin\vector_add.exe
@@ -133,7 +192,7 @@ build vector_add.exe: phony bin\vector_add.exe
 #############################################
 # Folder: D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build
 
-build all: phony bin\vector_add.exe
+build all: phony bin\vector_add.exe bin\benchmark.exe
 
 # =============================================================================
 # Built-in targets

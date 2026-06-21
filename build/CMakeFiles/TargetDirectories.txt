@@ -1,3 +1,4 @@
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/vector_add.dir
+D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/benchmark.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/edit_cache.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/rebuild_cache.dir

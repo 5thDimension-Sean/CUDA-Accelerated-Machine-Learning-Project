@@ -18,6 +18,10 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -Xcompiler -Wall")
 # ── Week 1: Vector Addition ──────────────────────────────────────────────────
 add_executable(vector_add kernels/vector_add.cu)
 set_target_properties(vector_add PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+# Week 2: Reduction Benchmark
+add_executable(benchmark benchmarks/benchmark.cu)
+set_target_properties(benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
 
 # ── Week 3: Matrix Multiplication ────────────────────────────────────────────
 # add_executable(matmul kernels/matmul.cu)
