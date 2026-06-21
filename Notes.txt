@@ -14,3 +14,25 @@ A warp is a total of 32 threads due to the SIMT model
 blockIdx.x = block index
 blockIdx.x = position within block
 blockDim.x = Threads per block
+
+6/21/26 @ 6:18 PM
+
+    There is some trouble. 1. reduce_shared from the benchmark.cu is missing shared memory which is causing it to crash
+    However, fixing them still causes the crash. I think it is beause of some extra declarations on freeing memory and maybe some wrong values for d_A d_B, etc.
+
+
+    Update: I understand the issue as the array should be only using A and it should remove the freeing memory for d_B and d_C
+    I also removed h_b c and ref. I will test to see the issues
+
+    I now know that I need to rewrite the function: 
+    void vector_add_cpu(const float* A, const float* B, float* C, int n) {
+        for (int i = 0; i < n; i++) {
+            C[i] = A[i] + B[i];
+        }
+    }
+    as it takes too many parameters. So, I will just making it into a sum by doing sum+=A[i]
+
+    I also have to rewrite the correct boolean. Suggestion via Claude Code: bool correct = fabsf(cpu_sum - gpu_sum) < 1.0f;
+    This makes sense to me as finding the magnitude allows tolerance but checks if they are close enough. 
+
+    Need to fix the call for shared memory size for reduce_shared

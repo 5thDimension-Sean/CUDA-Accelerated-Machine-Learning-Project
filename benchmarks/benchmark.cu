@@ -3,8 +3,6 @@
 #include <chrono>
 #include <cuda_runtime.h>
 
-__global__ void reduceNaive(const float* input, float* output, int n);
-
 #define CUDA_CHECK(call)                                                        \
     do {                                                                        \
         cudaError_t err = (call);                                               \
@@ -15,21 +13,12 @@ __global__ void reduceNaive(const float* input, float* output, int n);
         }                                                                       \
     } while (0)
 
-bool verify(const float* cpu, const float* gpu, int n) {
-    for (int i = 0; i < n; i++) {
-        if (fabsf(cpu[i] - gpu[i]) > 1e-5f) {
-            printf("MISMATCH at index %d: CPU=%.6f GPU=%.6f\n", i, cpu[i], gpu[i]);
-            return false;
-        }
-    }
-    return true;
+float cpu_reduce(const float* A, int n) {
+      float sum = 0.0f;
+      for (int i = 0; i < n; i++) sum += A[i];
+      return sum;
 }
 
-void vector_add_cpu(const float* A, const float* B, float* C, int n) {
-    for (int i = 0; i < n; i++) {
-        C[i] = A[i] + B[i];
-    }
-}
 //This will print both the Naive and Shared reduction's CPU & GPU and then compare the speed up of both
 int main() {
     const int N = 1<<24;
@@ -39,35 +28,28 @@ int main() {
     cudaMemset(d_result, 0, sizeof(float));
     //cpu memory allocation
     float* h_A   = (float*)malloc(N * sizeof(float));
-    float* h_B   = (float*)malloc(N * sizeof(float));
-    float* h_C   = (float*)malloc(N * sizeof(float));   // GPU result lands here
-    float* h_ref = (float*)malloc(N * sizeof(float));   // CPU reference
+    for (int i = 0; i < N; i++) {
+        h_A[i] = (float)i * 0.001f;
+    }
     //gpu memory allocation
-    float *d_A, *d_B, *d_C;
+    float *d_A;
     CUDA_CHECK(cudaMalloc(&d_A, N * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_B, N * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_C, N * sizeof(float)));
 
-    // ── Copy input data from CPU → GPU ───────────────────────────────────────
+    // input data
     CUDA_CHECK(cudaMemcpy(d_A, h_A, N * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_B, h_B, N * sizeof(float), cudaMemcpyHostToDevice));
 
-        // ── Timing config ────────────────────────────────────────────────────────
+        //Timings
     const int N_RUNS = 10;  // average over 10 runs for stable numbers
     //CPU Baseline
     double cpu_total_ms = 0.0;
     for (int r = 0; r < N_RUNS; r++) {
         auto cpu_start = std::chrono::high_resolution_clock::now();
-        vector_add_cpu(h_A, h_B, h_ref, N);
+        float cpu_result = cpu_reduce(h_A, N);
         auto cpu_end = std::chrono::high_resolution_clock::now();
         cpu_total_ms += std::chrono::duration<double, std::milli>(cpu_end - cpu_start).count();
     }
     double cpu_ms = cpu_total_ms / N_RUNS;
-    float* d_result;
-    cudaMalloc(&d_result, sizeof(float));
     cudaMemset(d_result, 0, sizeof(float));
-    // Verifying
-    bool correct = verify(h_ref, h_C, N);
     //Naive Reduction
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
@@ -79,36 +61,37 @@ int main() {
     cudaEventRecord(stop);
 
     cudaEventSynchronize(stop);   // wait for GPU to actually finish
-
+    float h_result;
+    cudaMemcpy(&h_result, d_result, sizeof(float), cudaMemcpyDeviceToHost);
+    float cpu_sum = cpu_reduce(h_A, N);
+    bool correct = fabsf(cpu_sum - h_result) < 1.0f;
+    printf("Correct: %s\n", correct ? "YES" : "NO");
     float naiveMs = 0.0f;
     cudaEventElapsedTime(&naiveMs, start, stop);
-    float* d_result;
-    cudaMalloc(&d_result, sizeof(float));
     cudaMemset(d_result, 0, sizeof(float));
 
     //Shared Reduction
     cudaEventRecord(start);
-    reduce_shared<<<blocks, Threads>>>(d_A, d_result, N);
+    reduce_shared<<<blocks, Threads, Threads * sizeof(float)>>>(d_A, d_result, N);
     cudaEventRecord(stop);
 
     cudaEventSynchronize(stop);   // wait for GPU to actually finish
 
     float sharedMs = 0.0f;
     cudaEventElapsedTime(&sharedMs, start, stop);
-    cudaEventElapsedTime(&naiveMs, start, stop);
     //Comparison to CPU with Naive, Shared, and Shared vs Naive
     float naiveSpeedup = cpu_ms / naiveMs;
     float sharedSpeedup = cpu_ms / sharedMs;
     float sharedVsNaiveSpeedup = naiveMs / sharedMs;
     //Final prints
     printf("--- Naive Reduction ---\n");
-    printf("GPU time: %.3f ms\n: ", naiveMs);
+    printf("GPU time: %.3f ms:\n ", naiveMs);
 
     printf("--- Shared Reduction ---\n");
-    printf("GPU time: %.3f ms\n: ", sharedMs);
+    printf("GPU time: %.3f ms:\n ", sharedMs);
 
     printf("--- CPU baseline ---\n");
-    printf("  CPU time : %.3f ms\n", cpu_ms);
+    printf("  CPU time : %.3f ms:\n", cpu_ms);
 
 
     printf("--- Comparison ---\n");
@@ -118,10 +101,9 @@ int main() {
 
     //free
     CUDA_CHECK(cudaFree(d_A));
-    CUDA_CHECK(cudaFree(d_B));
-    CUDA_CHECK(cudaFree(d_C));
+    CUDA_CHECK(cudaFree(d_result));
     CUDA_CHECK(cudaEventDestroy(start));
     CUDA_CHECK(cudaEventDestroy(stop));
-    free(h_A); free(h_B); free(h_C); free(h_ref);
+    free(h_A);
     return 0;
 }
