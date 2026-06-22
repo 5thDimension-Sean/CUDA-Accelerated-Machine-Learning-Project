@@ -82,7 +82,7 @@ Memory bandwidth (GPU): 142.5 GB/s
 
      Memory bandwidth (GPU): 142.5 GB/s
 
-Note: More things to run ```& ".\build\bin\benchmark.exe" ``` 
+Note: More things to run ```& ".\build\bin\benchmark.exe" ``` or ```& ".\build\bin\Release\memory_benchmark.exe" ```
 
 
 
