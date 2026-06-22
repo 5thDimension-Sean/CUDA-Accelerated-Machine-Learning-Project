@@ -83,4 +83,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     - Identify memory vs compute bottle necks
 
     This will allow me to create a better and more optimized time in the future
-    
+    When writing the memory_coalescing file, I realized for the uncoalesced version i forgt 32*idx, which caused my program to crash
+    Furthermore, the coalesced should be an if loop as it is only handling one element at a time. 
