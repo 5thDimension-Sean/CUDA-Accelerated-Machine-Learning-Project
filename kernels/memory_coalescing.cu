@@ -1,0 +1,1 @@
+//This file will be using memory coalescing It will have 2 versions coalesced vs uncoalesced. 
