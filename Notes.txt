@@ -85,3 +85,9 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     This will allow me to create a better and more optimized time in the future
     When writing the memory_coalescing file, I realized for the uncoalesced version i forgt 32*idx, which caused my program to crash
     Furthermore, the coalesced should be an if loop as it is only handling one element at a time. 
+
+    At 3: I have finished the memory coalescing so all I need to do is test and debug just in case with consulation from AI suggestions. 
+    Im working on the next step of my plan, which is to implement CUDA streams
+
+    CUDA streams: Overlapping GPU operations to optimize efficency. 
+    In CUDA documentation, I found 2 more new functions, cudaStream_t & cudaMemcpyAsync, which will help!
