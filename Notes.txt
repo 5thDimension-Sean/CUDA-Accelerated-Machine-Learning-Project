@@ -67,3 +67,20 @@ It's fixed.
 Some trends to note: the Naive GPU is actually slower than the CPU by almost 2x
 Shared vs CPU is of course faster as it is computing same things a lot of times
 Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
+
+6/22/26 @ 10:35 AM
+    So far we've documented 3 different types of algorithms. 
+    Vector add: adding 2 arrays to produce a resulting array
+    Naive Reduction: Adds each element to a global result 
+    Shared Reduction: Take multiple rounds by halving and adding the 2 together at the same time.
+    Bank conflicts: These affected the shared reduction, which makes snese as they are fighting over priority, which slows our overall algorithm 
+    What is a bank conflict? Different threads trying to access the same bank. 
+    Already addressed though as blockdim.x/2 avoids while multiplying it doesn't, which saves a little time. 
+
+    NVIDIA Nsight Profiling
+    - See the GPU timeline visually
+    - Find where time is being spent
+    - Identify memory vs compute bottle necks
+
+    This will allow me to create a better and more optimized time in the future
+    
