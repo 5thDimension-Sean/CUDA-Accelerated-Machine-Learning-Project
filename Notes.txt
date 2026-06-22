@@ -91,3 +91,11 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     CUDA streams: Overlapping GPU operations to optimize efficency. 
     In CUDA documentation, I found 2 more new functions, cudaStream_t & cudaMemcpyAsync, which will help!
+    For run with streams: there were some issues with the math. After some debugging, I found the root cause being the formula: 
+    int stream_size = (n + num_streams - 1) / num_streams;
+    for(int i = 0; i < num_streams; i++){
+        int offset = i * stream_size;
+        int current_size = min(stream_size, n - offset);
+        stream_kernel<<<(current_size + Threads - 1) / Threads, Threads, 0, streams[i]>>>(d_A + offset, d_B + offset, current_size);
+    Originally, I wrote it as first n+num_streams, but after some research I found out it should be -1 due to the fencepost error ie arrays being length-1 and not just length
+    
