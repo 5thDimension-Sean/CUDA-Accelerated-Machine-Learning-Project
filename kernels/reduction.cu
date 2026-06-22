@@ -36,3 +36,17 @@ __global__ void reduce_shared(const float*A, float* result, int n){
         atomicAdd(result, sdata[0]); //add the block's sum to the global result
     }
 }
+unsigned int m = 0xffffffff;
+
+__global__ void reduce_warp(const float* A, float* result, int n){
+    int tid = threadIdx.x;
+    int idx = blockIdx.x * blockDim.x + tid;
+    float val = (idx < n) ? A[idx] : 0.0f; //handle out of bounds
+    //fix loop it's wrong right now, need to use shuffle down to do the reduction within the warp
+    for(int i = blockDim.x/2;i > 0; i/=2){
+        val  += __shfl_down_sync(m, val, i);
+    }
+    if(tid%32 == 0){
+        atomicAdd(result, val); //add the block's sum to the global result
+    }
+}

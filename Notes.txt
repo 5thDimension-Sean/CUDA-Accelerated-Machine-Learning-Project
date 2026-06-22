@@ -99,5 +99,7 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
         stream_kernel<<<(current_size + Threads - 1) / Threads, Threads, 0, streams[i]>>>(d_A + offset, d_B + offset, current_size);
     Originally, I wrote it as first n+num_streams, but after some research I found out it should be -1 due to the fencepost error ie arrays being length-1 and not just length
 
-    Next: Warp-level, which are similar to shared with the same algorithms just faster due to prescedence in memory hierarchy. They use registers. 
+    Next: Warp-level(Primitives according to a blog), which are similar to shared with the same algorithms just faster due to prescedence in memory hierarchy. They use registers. 
+    The warp level uses __shfl_down_sync(m, v, 4) and then the int is halved every iteration, which looks to be controlled by a for loop similar to the shared memory
+    Also, I see it needs 0xffffffff for hte memory so that all threads are in the warp. 
     
