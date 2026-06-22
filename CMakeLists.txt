@@ -21,6 +21,9 @@ set_target_properties(vector_add PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 # Week 2: Reduction Benchmark
 add_executable(benchmark benchmarks/benchmark.cu)
 set_target_properties(benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+# Week 2: Memory Coalescing Benchmark
+add_executable(memory_benchmark benchmarks/memory_benchmark.cu)
+set_target_properties(memory_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 
 # ── Week 3: Matrix Multiplication ────────────────────────────────────────────
