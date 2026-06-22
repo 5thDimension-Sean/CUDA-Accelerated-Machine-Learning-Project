@@ -24,6 +24,9 @@ set_target_properties(benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 # Week 2: Memory Coalescing Benchmark
 add_executable(memory_benchmark benchmarks/memory_benchmark.cu)
 set_target_properties(memory_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+# Week 2: Streams Benchmark
+add_executable(streams_benchmark benchmarks/streams_benchmark.cu)
+set_target_properties(streams_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 
 # ── Week 3: Matrix Multiplication ────────────────────────────────────────────
