@@ -172,4 +172,4 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     7. CPU Reduction: 19.561 missing
     8. Naive Reduction: 36.154 ms
 
-    Next: Stream/warp reductions
+    Next: warp reductions
