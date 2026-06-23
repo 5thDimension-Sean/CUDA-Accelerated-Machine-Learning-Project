@@ -172,4 +172,33 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     7. CPU Reduction: 19.561 missing
     8. Naive Reduction: 36.154 ms
 
-    Next: warp reductions
+    Next: warp reductions: 
+    Correct: YES
+    --- Naive Reduction ---
+    GPU time: 35.035 ms:
+    --- Shared Reduction ---
+    GPU time: 1.437 ms:
+    --- Warp Reduction ---
+    GPU time: 1.131 ms:
+    --- CPU baseline ---
+    CPU time : 14.908 ms:
+    --- Comparison ---
+    Naive speedup vs CPU: 0.43x
+    Shared speedup vs CPU: 10.37x
+    Shared speedup vs Naive: 24.38x
+    Warp vs CPU speedup: 13.18x
+    warp vs Naive speedup: 30.97x
+    warp vs Shared speedup: 1.27x
+
+    As you see, warp is faster than shared at about 1.131 ms. Putting it into Nsight, we can see it takes around 1.089 ms while reduce shared takes 1.392 proving warps are faster
+
+    1. Async Streams (Per-Stream Chunk): 0.204 ms 
+    2. Sync: 0.808 / 808.284 micro seconds
+    2. Coalesced Read: 0.809 ms/808.635 micro seconds
+    3. Warp Reduction: 1.089 ms
+    4. Uncoalesced Read: 1.187 ms
+    5. Vector add: 1.193 ms(however the max memory bandwith is 192 so it should be 0.934 ms at max for a 1650 super)
+    6. Shared Reduction: 1.374 ms
+    7. CPU Vector Add: 12.63 ms
+    8. CPU Reduction: 19.561 missing
+    9. Naive Reduction: 36.154 ms
