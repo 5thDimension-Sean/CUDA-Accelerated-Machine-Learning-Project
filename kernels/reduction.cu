@@ -42,8 +42,7 @@ __global__ void reduce_warp(const float* A, float* result, int n){
     int tid = threadIdx.x;
     int idx = blockIdx.x * blockDim.x + tid;
     float val = (idx < n) ? A[idx] : 0.0f; //handle out of bounds
-    //fix loop it's wrong right now, need to use shuffle down to do the reduction within the warp
-    for(int i = 16;i > 0; i/=2){
+    for(int i = 16; i > 0; i/=2){
         val  += __shfl_down_sync(0xffffffff, val, i);
     }
     if(tid%32 == 0){
