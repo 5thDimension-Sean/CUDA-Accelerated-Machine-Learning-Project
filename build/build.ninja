@@ -150,6 +150,116 @@ build bin\benchmark.exe: CUDA_EXECUTABLE_LINKER__benchmark_Release CMakeFiles\be
   TARGET_IMPLIB = benchmark.lib
   TARGET_PDB = bin\benchmark.pdb
 
+# =============================================================================
+# Object build statements for EXECUTABLE target memory_benchmark
+
+
+#############################################
+# Order-only phony target for memory_benchmark
+
+build cmake_object_order_depends_target_memory_benchmark: phony || .
+
+build CMakeFiles\memory_benchmark.dir\benchmarks\memory_benchmark.cu.obj: CUDA_COMPILER__memory_benchmark_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\benchmarks\memory_benchmark.cu || cmake_object_order_depends_target_memory_benchmark
+  CONFIG = Release
+  DEP_FILE = CMakeFiles\memory_benchmark.dir\benchmarks\memory_benchmark.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  OBJECT_DIR = CMakeFiles\memory_benchmark.dir
+  OBJECT_FILE_DIR = CMakeFiles\memory_benchmark.dir\benchmarks
+  TARGET_COMPILE_PDB = CMakeFiles\memory_benchmark.dir\
+  TARGET_PDB = bin\memory_benchmark.pdb
+
+
+# =============================================================================
+# Device Link build statements for EXECUTABLE target memory_benchmark
+
+
+#############################################
+# Link the executable CMakeFiles\memory_benchmark.dir\cmake_device_link.obj
+
+build CMakeFiles\memory_benchmark.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__memory_benchmark_Release CMakeFiles\memory_benchmark.dir\benchmarks\memory_benchmark.cu.obj
+  LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\memory_benchmark.dir
+  TARGET_COMPILE_PDB = CMakeFiles\memory_benchmark.dir\
+  TARGET_FILE = CMakeFiles\memory_benchmark.dir\cmake_device_link.obj
+  TARGET_IMPLIB = memory_benchmark.lib
+  TARGET_PDB = bin\memory_benchmark.pdb
+
+# =============================================================================
+# Link build statements for EXECUTABLE target memory_benchmark
+
+
+#############################################
+# Link the executable bin\memory_benchmark.exe
+
+build bin\memory_benchmark.exe: CUDA_EXECUTABLE_LINKER__memory_benchmark_Release CMakeFiles\memory_benchmark.dir\benchmarks\memory_benchmark.cu.obj CMakeFiles\memory_benchmark.dir\cmake_device_link.obj
+  CONFIG = Release
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
+  LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\memory_benchmark.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\memory_benchmark.dir\
+  TARGET_FILE = bin\memory_benchmark.exe
+  TARGET_IMPLIB = memory_benchmark.lib
+  TARGET_PDB = bin\memory_benchmark.pdb
+
+# =============================================================================
+# Object build statements for EXECUTABLE target streams_benchmark
+
+
+#############################################
+# Order-only phony target for streams_benchmark
+
+build cmake_object_order_depends_target_streams_benchmark: phony || .
+
+build CMakeFiles\streams_benchmark.dir\benchmarks\streams_benchmark.cu.obj: CUDA_COMPILER__streams_benchmark_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\benchmarks\streams_benchmark.cu || cmake_object_order_depends_target_streams_benchmark
+  CONFIG = Release
+  DEP_FILE = CMakeFiles\streams_benchmark.dir\benchmarks\streams_benchmark.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  OBJECT_DIR = CMakeFiles\streams_benchmark.dir
+  OBJECT_FILE_DIR = CMakeFiles\streams_benchmark.dir\benchmarks
+  TARGET_COMPILE_PDB = CMakeFiles\streams_benchmark.dir\
+  TARGET_PDB = bin\streams_benchmark.pdb
+
+
+# =============================================================================
+# Device Link build statements for EXECUTABLE target streams_benchmark
+
+
+#############################################
+# Link the executable CMakeFiles\streams_benchmark.dir\cmake_device_link.obj
+
+build CMakeFiles\streams_benchmark.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__streams_benchmark_Release CMakeFiles\streams_benchmark.dir\benchmarks\streams_benchmark.cu.obj
+  LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\streams_benchmark.dir
+  TARGET_COMPILE_PDB = CMakeFiles\streams_benchmark.dir\
+  TARGET_FILE = CMakeFiles\streams_benchmark.dir\cmake_device_link.obj
+  TARGET_IMPLIB = streams_benchmark.lib
+  TARGET_PDB = bin\streams_benchmark.pdb
+
+# =============================================================================
+# Link build statements for EXECUTABLE target streams_benchmark
+
+
+#############################################
+# Link the executable bin\streams_benchmark.exe
+
+build bin\streams_benchmark.exe: CUDA_EXECUTABLE_LINKER__streams_benchmark_Release CMakeFiles\streams_benchmark.dir\benchmarks\streams_benchmark.cu.obj CMakeFiles\streams_benchmark.dir\cmake_device_link.obj
+  CONFIG = Release
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
+  LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\streams_benchmark.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\streams_benchmark.dir\
+  TARGET_FILE = bin\streams_benchmark.exe
+  TARGET_IMPLIB = streams_benchmark.lib
+  TARGET_PDB = bin\streams_benchmark.pdb
+
 
 #############################################
 # Utility command for edit_cache
@@ -180,6 +290,14 @@ build benchmark: phony bin\benchmark.exe
 
 build benchmark.exe: phony bin\benchmark.exe
 
+build memory_benchmark: phony bin\memory_benchmark.exe
+
+build memory_benchmark.exe: phony bin\memory_benchmark.exe
+
+build streams_benchmark: phony bin\streams_benchmark.exe
+
+build streams_benchmark.exe: phony bin\streams_benchmark.exe
+
 build vector_add: phony bin\vector_add.exe
 
 build vector_add.exe: phony bin\vector_add.exe
@@ -192,7 +310,7 @@ build vector_add.exe: phony bin\vector_add.exe
 #############################################
 # Folder: D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build
 
-build all: phony bin\vector_add.exe bin\benchmark.exe
+build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe
 
 # =============================================================================
 # Built-in targets

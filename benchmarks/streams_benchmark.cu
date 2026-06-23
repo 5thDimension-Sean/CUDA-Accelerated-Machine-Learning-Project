@@ -64,7 +64,7 @@ int main(){
 
     cudaEventSynchronize(stop);   // wait for GPU to actually finish
     float syncMs = 0.0f;
-    cudaEventElapsedTime(&sync, start, stop);
+    cudaEventElapsedTime(&syncMs, start, stop);
     cudaEventRecord(start);
     run_with_streams(d_A, d_B, N, num_streams);
     cudaEventRecord(stop);
@@ -74,7 +74,7 @@ int main(){
     cudaEventElapsedTime(&asyncMs, start, stop);
 
     float compared = syncMs/asyncMs;
-    printf("Synchronous version: %.3f ms\n", sync);
+    printf("Synchronous version: %.3f ms\n", syncMs);
     printf("Asynchronous version with streams: %.3f ms\n", asyncMs);
     printf("Streams speedup vs Sync: %.2fx\n", compared);
 
