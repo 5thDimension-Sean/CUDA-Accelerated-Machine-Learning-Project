@@ -79,16 +79,34 @@ int main() {
 
     float sharedMs = 0.0f;
     cudaEventElapsedTime(&sharedMs, start, stop);
+    
+    cudaMemset(d_result, 0, sizeof(float));
+    //warp reduction
+    cudaEventRecord(start);
+    reduce_warp<<<blocks, Threads>>>(d_A, d_result, N);
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);   // wait for GPU to actually finish
+
+    float warpMs = 0.0f;
+    cudaEventElapsedTime(&warpMs, start, stop);
     //Comparison to CPU with Naive, Shared, and Shared vs Naive
     float naiveSpeedup = cpu_ms / naiveMs;
     float sharedSpeedup = cpu_ms / sharedMs;
     float sharedVsNaiveSpeedup = naiveMs / sharedMs;
+    float warpSpeedup = cpu_ms / warpMs;
+    float warpVsNaiveSpeedup = naiveMs / warpMs;
+    float warpVsSharedSpeedup = sharedMs / warpMs;
+
     //Final prints
     printf("--- Naive Reduction ---\n");
     printf("GPU time: %.3f ms:\n ", naiveMs);
 
     printf("--- Shared Reduction ---\n");
     printf("GPU time: %.3f ms:\n ", sharedMs);
+
+    printf("--- Warp Reduction ---\n");
+    printf("GPU time: %.3f ms:\n ", warpMs);
 
     printf("--- CPU baseline ---\n");
     printf("  CPU time : %.3f ms:\n", cpu_ms);
@@ -98,6 +116,9 @@ int main() {
     printf("Naive speedup vs CPU: %.2fx\n", naiveSpeedup);
     printf("Shared speedup vs CPU: %.2fx\n", sharedSpeedup);
     printf("Shared speedup vs Naive: %.2fx\n", sharedVsNaiveSpeedup);
+    printf("Warp vs CPU speedup: %.2fx\n", warpSpeedup);
+    printf("warp vs Naive speedup: %.2fx\n", warpVsNaiveSpeedup);
+    printf("warp vs Shared speedup: %.2fx\n", warpVsSharedSpeedup);
 
     //free
     CUDA_CHECK(cudaFree(d_A));
