@@ -67,3 +67,37 @@ It's fixed.
 Some trends to note: the Naive GPU is actually slower than the CPU by almost 2x
 Shared vs CPU is of course faster as it is computing same things a lot of times
 Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
+
+6/22/26 @ 10:35 AM
+    So far we've documented 3 different types of algorithms. 
+    Vector add: adding 2 arrays to produce a resulting array
+    Naive Reduction: Adds each element to a global result 
+    Shared Reduction: Take multiple rounds by halving and adding the 2 together at the same time.
+    Bank conflicts: These affected the shared reduction, which makes snese as they are fighting over priority, which slows our overall algorithm 
+    What is a bank conflict? Different threads trying to access the same bank. 
+    Already addressed though as blockdim.x/2 avoids while multiplying it doesn't, which saves a little time. 
+
+    NVIDIA Nsight Profiling
+    - See the GPU timeline visually
+    - Find where time is being spent
+    - Identify memory vs compute bottle necks
+
+    This will allow me to create a better and more optimized time in the future
+    When writing the memory_coalescing file, I realized for the uncoalesced version i forgt 32*idx, which caused my program to crash
+    Furthermore, the coalesced should be an if loop as it is only handling one element at a time. 
+
+    At 3: I have finished the memory coalescing so all I need to do is test and debug just in case with consulation from AI suggestions. 
+    Im working on the next step of my plan, which is to implement CUDA streams
+
+    CUDA streams: Overlapping GPU operations to optimize efficency. 
+    In CUDA documentation, I found 2 more new functions, cudaStream_t & cudaMemcpyAsync, which will help!
+    For run with streams: there were some issues with the math. After some debugging, I found the root cause being the formula: 
+    int stream_size = (n + num_streams - 1) / num_streams;
+    for(int i = 0; i < num_streams; i++){
+        int offset = i * stream_size;
+        int current_size = min(stream_size, n - offset);
+        stream_kernel<<<(current_size + Threads - 1) / Threads, Threads, 0, streams[i]>>>(d_A + offset, d_B + offset, current_size);
+    Originally, I wrote it as first n+num_streams, but after some research I found out it should be -1 due to the fencepost error ie arrays being length-1 and not just length
+
+    Next: Warp-level, which are similar to shared with the same algorithms just faster due to prescedence in memory hierarchy. They use registers. 
+    
