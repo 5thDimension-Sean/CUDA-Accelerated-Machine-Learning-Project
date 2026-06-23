@@ -66,27 +66,38 @@ int main() {
     }
     double cpu_ms = cpu_total_ms / N_RUNS;
 
+    const int N_RUNS_GPU = 10;
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
 
     // naive matmul
-    CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
-    cudaEventRecord(start);
-    matmul_naive<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    float naiveMs = 0.0f;
-    CUDA_CHECK(cudaEventElapsedTime(&naiveMs, start, stop));
+    float naiveTotal = 0.0f;
+    for (int r = 0; r < N_RUNS_GPU; r++) {
+        CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
+        cudaEventRecord(start);
+        matmul_naive<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        float ms = 0.0f;
+        CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+        naiveTotal += ms;
+    }
+    float naiveMs = naiveTotal / N_RUNS_GPU;
 
     // tiled matmul
-    CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
-    cudaEventRecord(start);
-    matmul_tiled<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    float tiledMs = 0.0f;
-    CUDA_CHECK(cudaEventElapsedTime(&tiledMs, start, stop));
+    float tiledTotal = 0.0f;
+    for (int r = 0; r < N_RUNS_GPU; r++) {
+        CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
+        cudaEventRecord(start);
+        matmul_tiled<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        float ms = 0.0f;
+        CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+        tiledTotal += ms;
+    }
+    float tiledMs = tiledTotal / N_RUNS_GPU;
 
     // print results
     printf("--- Naive Matmul ---\n");
