@@ -141,16 +141,19 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Streams speedup vs Sync: 0.43x
 
     This is wrong as async should be faster. 
+    Synchronous version: 0.952 ms
+    Asynchronous version with streams: 0.838 ms
+    Streams speedup vs Sync: 1.14x
 
-    
+    Now let's try to visalize it more accurately in Nsight for all the algorithms we have used so far. I will include results in the Nsight folder. 
     Let's compare speed: 
 
     1. Coalesced Read: 0.809 ms/808.635 micro seconds
     2. Uncoalesced Read: 1.187 ms
-    3. Vector add: 1.262 ms(however the max memory bandwith is 192 so it should be 0.934 ms at max for a 1650 super)
-    4. Shared Reduction: 1.399 ms
+    3. Vector add: 1.193 ms(however the max memory bandwith is 192 so it should be 0.934 ms at max for a 1650 super)
+    4. Shared Reduction: 1.374 ms
     5. CPU Vector Add: 12.63 ms
     6. CPU Reduction: 19.561 missing
-    7. Naive Reduction: 34.814 ms
+    7. Naive Reduction: 36.154 ms
 
     Next: Stream/warp reductions

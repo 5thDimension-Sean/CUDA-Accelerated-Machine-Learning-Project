@@ -24,3 +24,6 @@
 3	5223	8039326528516557	CMakeFiles/memory_benchmark.dir/benchmarks/memory_benchmark.cu.obj	77283dd62706332a
 5299	7055	8039326581477292	CMakeFiles/memory_benchmark.dir/cmake_device_link.obj	6ab45e77ab4285e
 7055	7205	8039326599046274	bin/memory_benchmark.exe	a8a12cafe70a9657
+35	5226	8039420221219402	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
+5303	7159	8039420273901780	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
+7159	7300	8039420292460233	bin/streams_benchmark.exe	a29b6967cc79bb4d

@@ -23,11 +23,7 @@ void run_sync(const float* d_A, float* d_B, int n){
     stream_kernel<<<blocks, Threads>>>(d_A, d_B, n);
     CUDA_CHECK(cudaDeviceSynchronize());
 }
-void run_with_streams(const float* d_A, float* d_B, int n, int num_streams){
-    cudaStream_t* streams = (cudaStream_t*)malloc(num_streams * sizeof(cudaStream_t));
-    for(int i = 0; i < num_streams; i++){
-        CUDA_CHECK(cudaStreamCreate(&streams[i]));
-    }
+void run_with_streams(const float* d_A, float* d_B, int n, int num_streams, cudaStream_t* streams){
     int stream_size = (n + num_streams - 1) / num_streams;
     for(int i = 0; i < num_streams; i++){
         int offset = i * stream_size;
@@ -35,10 +31,8 @@ void run_with_streams(const float* d_A, float* d_B, int n, int num_streams){
         stream_kernel<<<(current_size + Threads - 1) / Threads, Threads, 0, streams[i]>>>(d_A + offset, d_B + offset, current_size);
     }
     for(int i = 0; i < num_streams; i++){
-        CUDA_CHECK(cudaStreamSynchronize(streams[i]));
-        CUDA_CHECK(cudaStreamDestroy(streams[i]));
-    }
-    free(streams);
+          cudaStreamSynchronize(streams[i]);
+      }
 }
 
 int main(){
@@ -65,13 +59,20 @@ int main(){
     cudaEventSynchronize(stop);   // wait for GPU to actually finish
     float syncMs = 0.0f;
     cudaEventElapsedTime(&syncMs, start, stop);
+
+    cudaStream_t* streams = (cudaStream_t*)malloc(num_streams * sizeof(cudaStream_t));
+    for(int i = 0; i < num_streams; i++){
+        CUDA_CHECK(cudaStreamCreate(&streams[i]));
+    }
     cudaEventRecord(start);
-    run_with_streams(d_A, d_B, N, num_streams);
+    run_with_streams(d_A, d_B, N, num_streams, streams);
     cudaEventRecord(stop);
  
     cudaEventSynchronize(stop);   // wait for GPU to actually finish
     float asyncMs = 0.0f;
     cudaEventElapsedTime(&asyncMs, start, stop);
+    for(int i = 0; i < num_streams; i++)
+      cudaStreamDestroy(streams[i]);
 
     float compared = syncMs/asyncMs;
     printf("Synchronous version: %.3f ms\n", syncMs);
@@ -79,6 +80,7 @@ int main(){
     printf("Streams speedup vs Sync: %.2fx\n", compared);
 
     free(h_A);
+    free(streams);
     CUDA_CHECK(cudaFree(d_A));
     CUDA_CHECK(cudaFree(d_B));
     CUDA_CHECK(cudaEventDestroy(start));
