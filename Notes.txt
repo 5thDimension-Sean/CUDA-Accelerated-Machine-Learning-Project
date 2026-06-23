@@ -209,3 +209,15 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Optimal = O(n^2.807) = Matmul!!!
     We use matrix multiplcation: https://andreasholt.com/posts/shared-tiled-matmul/
     The first version has some errors with tile size and local accumulator. 
+
+    First test: 
+    --- Naive Matmul ---
+    GPU time: 5.613 ms
+    --- Tiled Matmul ---
+    GPU time: 5.562 ms
+    --- CPU Baseline ---
+    CPU time: 1566.586 ms
+    --- Comparison ---
+    Tiled vs CPU:   281.68x
+    Tiled vs Naive: 1.01x
+    Naive vs CPU:   279.08x

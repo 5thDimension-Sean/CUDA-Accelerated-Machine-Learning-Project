@@ -30,9 +30,6 @@ set_target_properties(streams_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON
 # Week 3: Matrix Multiplication Benchmark
 add_executable(matmul_benchmark benchmarks/matmul_benchmark.cu)
 set_target_properties(matmul_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-# ── Week 3: Matrix Multiplication ────────────────────────────────────────────
-add_executable(matmul_benchmark benchmarks/matmul_benchmark.cu)
-set_target_properties(matmul_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 
 # ── Week 4: 2D Convolution ───────────────────────────────────────────────────
