@@ -13,3 +13,8 @@
 48	6194	8039450783917053	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
 6263	8570	8039450846068186	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
 8570	8775	8039450869132876	bin/streams_benchmark.exe	a29b6967cc79bb4d
+33	5423	8039523953557656	CMakeFiles/matmul_benchmark.dir/benchmarks/matmul_benchmark.cu.obj	463706b92960d2ed
+26	5517	8039523953492528	CMakeFiles/benchmark.dir/benchmarks/benchmark.cu.obj	2cab31a0cba5639a
+5495	7461	8039524008183804	CMakeFiles/matmul_benchmark.dir/cmake_device_link.obj	bc9792855de5990b
+5680	7657	8039524010032959	CMakeFiles/benchmark.dir/cmake_device_link.obj	7575ea3a4a188392
+22	209	8039524046747917	bin/benchmark.exe	5a7c9a2d1dd64c33

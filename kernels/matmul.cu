@@ -3,10 +3,12 @@ __global__ void matmul_naive(const float* A, const float* B, float* C, int N){
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     float sum = 0.0f;
-    for(int i =0; i < N && row < N && col < N; i++){
-        sum += A[row * N + i] * B[i * N + col];
+    if(row < N && col < N){
+        for(int i =0; i < N; i++){
+            sum += A[row * N + i] * B[i * N + col];
+        }
+        C[row * N + col] = sum;
     }
-    C[row * N + col] = sum;
 }
 
 __global__ void matmul_tiled(const float* A, const float* B, float* C, int N){
@@ -16,15 +18,16 @@ __global__ void matmul_tiled(const float* A, const float* B, float* C, int N){
     float sum = 0.0f;
     __shared__ float A_tile[32][32];
     __shared__ float B_tile[32][32];
-    for(int i = 0; i<N && row < N && col < N; i+=tile_size){
-        A_tile[threadIdx.y][threadIdx.x] = A[row * N + (i + threadIdx.x)];
-        B_tile[threadIdx.y][threadIdx.x] = B[(i + threadIdx.y) * N + col];
-        __syncthreads();
-        for(int j = 0; j<tile_size; j++){
-            sum += A_tile[threadIdx.y][j] * B_tile[j][threadIdx.x];
-        }
-        __syncthreads();
-    } 
-    C[row * N + col] = sum;
+    for(int i = 0; i < N; i += tile_size){
+      A_tile[threadIdx.y][threadIdx.x] = (row < N && (i + threadIdx.x) < N) ? A[row * N + (i + threadIdx.x)] : 0.0f;
+      B_tile[threadIdx.y][threadIdx.x] = ((i + threadIdx.y) < N && col < N) ? B[(i + threadIdx.y) * N + col] : 0.0f;
+      __syncthreads();
+      for(int j = 0; j < tile_size; j++)
+          sum += A_tile[threadIdx.y][j] * B_tile[j][threadIdx.x];
+      __syncthreads();
+    }
+    if(row < N && col < N)
+        C[row * N + col] = sum;
+
 }
 
