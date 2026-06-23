@@ -1,44 +1,15 @@
 # ninja log v7
-17	5839	8037845594009933	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
-5925	8005	8037845653082775	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
-8005	8196	8037845673889335	bin/vector_add.exe	e2683f34b4e853fb
-3	260	8039322762419934	build.ninja	396675f7d6042578
-3	260	8039322762389932	D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake	396675f7d6042578
-3	6110	8037859656124476	CMakeFiles/benchmark.dir/benchmarks/benchmark.cu.obj	2cab31a0cba5639a
-6189	8523	8037859717985651	CMakeFiles/benchmark.dir/cmake_device_link.obj	7575ea3a4a188392
-8524	8700	8037859741333587	bin/benchmark.exe	5a7c9a2d1dd64c33
-17	163	8039322762419934	build.ninja	396675f7d6042578
-17	163	8039322762419934	D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake	396675f7d6042578
-33	5942	8039322763383354	CMakeFiles/memory_benchmark.dir/benchmarks/memory_benchmark.cu.obj	77283dd62706332a
-25	6022	8039322763308094	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
-29	6204	8039322763338206	CMakeFiles/benchmark.dir/benchmarks/benchmark.cu.obj	2cab31a0cba5639a
-18	2319	8039322845577582	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
-26	2328	8039322845647684	CMakeFiles/memory_benchmark.dir/cmake_device_link.obj	6ab45e77ab4285e
-22	2336	8039322845607641	CMakeFiles/benchmark.dir/cmake_device_link.obj	7575ea3a4a188392
-2336	2545	8039322868753156	bin/benchmark.exe	5a7c9a2d1dd64c33
-2319	2548	8039322868588017	bin/vector_add.exe	e2683f34b4e853fb
-2328	2554	8039322868667982	bin/memory_benchmark.exe	a8a12cafe70a9657
-9	4886	8039323123945905	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
-4952	6679	8039323173376849	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
-6679	6816	8039323190645383	bin/streams_benchmark.exe	a29b6967cc79bb4d
-3	5223	8039326528516557	CMakeFiles/memory_benchmark.dir/benchmarks/memory_benchmark.cu.obj	77283dd62706332a
-5299	7055	8039326581477292	CMakeFiles/memory_benchmark.dir/cmake_device_link.obj	6ab45e77ab4285e
-7055	7205	8039326599046274	bin/memory_benchmark.exe	a8a12cafe70a9657
-35	5226	8039420221219402	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
-5303	7159	8039420273901780	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
-7159	7300	8039420292460233	bin/streams_benchmark.exe	a29b6967cc79bb4d
-48	6194	8039450783917053	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
 36	6287	8039450783781521	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
-40	6450	8039450783831976	CMakeFiles/benchmark.dir/benchmarks/benchmark.cu.obj	2cab31a0cba5639a
-44	6767	8039450783871977	CMakeFiles/memory_benchmark.dir/benchmarks/memory_benchmark.cu.obj	77283dd62706332a
-6263	8570	8039450846068186	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
-8570	8775	8039450869132876	bin/streams_benchmark.exe	a29b6967cc79bb4d
 6445	8781	8039450847877630	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
 8781	8984	8039450871238648	bin/vector_add.exe	e2683f34b4e853fb
-6762	9144	8039450851051783	CMakeFiles/benchmark.dir/cmake_device_link.obj	7575ea3a4a188392
-9144	9300	8039450874870346	bin/benchmark.exe	5a7c9a2d1dd64c33
-7356	9678	8039450856997474	CMakeFiles/memory_benchmark.dir/cmake_device_link.obj	6ab45e77ab4285e
-9678	9843	8039450880206660	bin/memory_benchmark.exe	a8a12cafe70a9657
+17	163	8039523799119934	build.ninja	396675f7d6042578
+17	163	8039523799084538	D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake	396675f7d6042578
 3	5059	8039452930537349	CMakeFiles/benchmark.dir/benchmarks/benchmark.cu.obj	2cab31a0cba5639a
 5126	6847	8039452981760549	CMakeFiles/benchmark.dir/cmake_device_link.obj	7575ea3a4a188392
 6847	6986	8039452998975784	bin/benchmark.exe	5a7c9a2d1dd64c33
+44	6767	8039450783871977	CMakeFiles/memory_benchmark.dir/benchmarks/memory_benchmark.cu.obj	77283dd62706332a
+7356	9678	8039450856997474	CMakeFiles/memory_benchmark.dir/cmake_device_link.obj	6ab45e77ab4285e
+9678	9843	8039450880206660	bin/memory_benchmark.exe	a8a12cafe70a9657
+48	6194	8039450783917053	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
+6263	8570	8039450846068186	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
+8570	8775	8039450869132876	bin/streams_benchmark.exe	a29b6967cc79bb4d

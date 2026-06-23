@@ -208,3 +208,4 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     N^2 x n = O(n^3) which changes memory access patterns and affects cache efficency
     Optimal = O(n^2.807) = Matmul!!!
     We use matrix multiplcation: https://andreasholt.com/posts/shared-tiled-matmul/
+    The first version has some errors with tile size and local accumulator. 
