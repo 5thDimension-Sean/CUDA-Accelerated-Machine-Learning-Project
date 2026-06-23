@@ -7,10 +7,12 @@ __global__ void coalesced_read(float* A, float* B, int n) {
     }
 }
 
-__global__ void uncoalesced_read(float* A, float* B, int n) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if(idx*32 < n){
-        B[idx] = A[32*idx];
-    }
-
-}
+  __global__ void uncoalesced_read(float* A, float* B, int n) {
+      int idx = blockIdx.x * blockDim.x + threadIdx.x;
+      int lane = idx % 32;
+      int warp = idx / 32;
+      int strided_idx = lane * (n / 32) + warp;
+      if(idx < n && strided_idx < n){
+          B[idx] = A[strided_idx];
+      }
+  }

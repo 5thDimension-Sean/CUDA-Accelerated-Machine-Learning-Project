@@ -50,19 +50,19 @@ blockDim.x = Threads per block
     Shared speedup vs Naive: 24.52x
     It looks like CPU baseline time is completely wrong so I will fix. 
 
-    Correct: YES
---- Naive Reduction ---
-GPU time: 34.814 ms:
- --- Shared Reduction ---
-GPU time: 1.399 ms:
- --- CPU baseline ---
-  CPU time : 19.561 ms:
---- Comparison ---
-Naive speedup vs CPU: 0.56x
-Shared speedup vs CPU: 13.98x
-Shared speedup vs Naive: 24.89x
+        Correct: YES
+    --- Naive Reduction ---
+    GPU time: 34.814 ms:
+    --- Shared Reduction ---
+    GPU time: 1.399 ms:
+    --- CPU baseline ---
+    CPU time : 19.561 ms:
+    --- Comparison ---
+    Naive speedup vs CPU: 0.56x
+    Shared speedup vs CPU: 13.98x
+    Shared speedup vs Naive: 24.89x
 
-It's fixed. 
+    It's fixed. 
 
 Some trends to note: the Naive GPU is actually slower than the CPU by almost 2x
 Shared vs CPU is of course faster as it is computing same things a lot of times
@@ -101,3 +101,56 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     Next: Warp-level, which are similar to shared with the same algorithms just faster due to prescedence in memory hierarchy. They use registers. 
     
+6/23 @ 11:40
+    Finally ran the memory_benchmark.exe
+    --- Coalesced Read---
+    GPU time: 1.048 ms:
+    --- Uncoalesced Read ---
+    GPU time: 0.385 ms:
+    --- CPU baseline ---
+    CPU time : 5.869 ms:
+    --- Comparison ---
+    Coalesced speedup vs CPU: 5.60x
+    Uncoalesced speedup vs CPU: 15.24x
+    Uncoalesced speedup vs Coalesced: 0.37x
+
+    some issues: Uncoalesced should be slower so I have to fix. 
+
+    fixed version: 
+    --- Coalesced Read---
+    GPU time: 1.132 ms:
+    --- Uncoalesced Read ---
+    GPU time: 1.219 ms:
+    --- CPU baseline ---
+    CPU time : 5.750 ms:
+    --- Comparison ---
+    Coalesced speedup vs CPU: 5.08x
+    Uncoalesced speedup vs CPU: 4.72x
+    Uncoalesced speedup vs Coalesced: 1.08x
+
+
+    Next, I ran the Nsight system profiling and got: Number of CUDA events collected: 29. However, some issues as it is outdated.
+    In results.jpg you will see the coalesced vs. uncoalesced runs. As you can see, the caolesced read is a lot more efficent as it is sequential 
+    while in uncoalesced, it is slower due to strided access. By dividing, you get about 1.47x faster, and because we used Nsight, it is more accurate
+    when compared to the 1.08 from just running in my timed version. 
+
+
+    Also: streams_benchmark.cu: 
+    Synchronous version: 1.707 ms
+    Asynchronous version with streams: 3.959 ms
+    Streams speedup vs Sync: 0.43x
+
+    This is wrong as async should be faster. 
+
+    
+    Let's compare speed: 
+
+    1. Coalesced Read: 0.809 ms/808.635 micro seconds
+    2. Uncoalesced Read: 1.187 ms
+    3. Vector add: 1.262 ms(however the max memory bandwith is 192 so it should be 0.934 ms at max for a 1650 super)
+    4. Shared Reduction: 1.399 ms
+    5. CPU Vector Add: 12.63 ms
+    6. CPU Reduction: 19.561 missing
+    7. Naive Reduction: 34.814 ms
+
+    Next: Stream/warp reductions
