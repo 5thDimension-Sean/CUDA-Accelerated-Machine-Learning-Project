@@ -82,7 +82,7 @@ Memory bandwidth (GPU): 142.5 GB/s
 
      Memory bandwidth (GPU): 142.5 GB/s
 
-Note: More things to run ```& ".\build\bin\benchmark.exe" ``` or ```& ".\build\bin\memory_benchmark.exe" ``` or```& ".\build\bin\streams_benchmark.exe"``` or ```& ".\build\bin\matmul_benchmark"```
+Note: More things to run ```& ".\build\bin\benchmark.exe" ``` or ```& ".\build\bin\memory_benchmark.exe" ``` or```& ".\build\bin\streams_benchmark.exe"``` or ```& ".\build\bin\matmul_benchmark.exe"```
 
 
 
