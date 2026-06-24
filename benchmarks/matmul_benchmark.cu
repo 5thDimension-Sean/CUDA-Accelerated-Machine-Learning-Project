@@ -119,6 +119,19 @@ int main() {
             cublasMs += ms;
         }
         cublasMs /= N_RUNS_GPU;
+
+        float vectorizedMs = 0.0f;
+        for (int r = 0; r < N_RUNS_GPU; r++) {
+            CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
+            cudaEventRecord(start);
+            float4_vectorized<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
+            cudaEventRecord(stop);
+            cudaEventSynchronize(stop);
+            float ms = 0.0f;
+            CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+            vectorizedMs += ms;
+        }
+        vectorizedMs /= N_RUNS_GPU;
         // print results
         printf("===N=%d===\n", N);
         printf("--- Naive Matmul ---\n");
@@ -129,6 +142,8 @@ int main() {
         printf("CPU time: %.3f ms\n", cpu_ms);
         printf("--- cuBlas Matmul ---\n");
         printf("GPU time: %.3f ms\n", cublasMs);
+        printf("--- Vectorized Matmul ---\n");
+        printf("GPU time: %.3f ms\n", vectorizedMs);
         printf("--- Comparison ---\n");
         printf("Tiled vs CPU:   %.2fx\n", cpu_ms / tiledMs);
         printf("Tiled vs Naive: %.2fx\n", naiveMs / tiledMs);
@@ -136,6 +151,10 @@ int main() {
         printf("cuBlas vs CPU:  %.2fx\n", cpu_ms / cublasMs);
         printf("cuBlas vs Tiled: %.2fx\n", tiledMs / cublasMs);
         printf("cuBlas vs Naive: %.2fx\n", naiveMs / cublasMs);
+        printf("Vectorized vs CPU:  %.2fx\n", cpu_ms / vectorizedMs);
+        printf("Vectorized vs Tiled: %.2fx\n", tiledMs / vectorizedMs);
+        printf("Vectorized vs Naive: %.2fx\n", naiveMs / vectorizedMs);
+        printf("Vectorized vs cuBlas: %.2fx\n", cublasMs / vectorizedMs);
         cudaFreeHost(h_A);
         cudaFreeHost(h_B);
         cudaFreeHost(h_C);
