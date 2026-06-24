@@ -338,4 +338,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     cuBlas vs Naive: 5.35x
 
     No values for CPU for 4096 because it would take ~ 10 - 20 minutes. 
-    
+    As N get's bigger, the quicker cuBlas is over tiled and naive matmul. 
+    This will be graphed later in benchmarks/gemm_benchmark.py with an image documented. 
