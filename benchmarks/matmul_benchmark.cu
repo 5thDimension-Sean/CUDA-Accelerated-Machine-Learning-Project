@@ -3,8 +3,9 @@
 #include "../kernels/matmul.cu"
 #include <chrono>
 #include <cuda_runtime.h>
+#include <cublas_v2.h>
 
-#define N 1024
+#define N 2048
 
 #define CUDA_CHECK(call)                                                        \
     do {                                                                        \
@@ -99,6 +100,24 @@ int main() {
     }
     float tiledMs = tiledTotal / N_RUNS_GPU;
 
+    //cuBlas
+    float cublasMs = 0.0f;
+    cublasHandle_t handle;
+    cublasCreate(&handle);
+    float alpha = 1.0f;
+    float beta = 0.0f;
+    for (int r = 0; r < N_RUNS_GPU; r++) {
+        CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
+        cudaEventRecord(start);
+        cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N, &alpha, d_B, N, d_A, N, &beta, d_C, N);
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        float ms = 0.0f;
+        CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+        cublasMs += ms;
+    }
+    cublasMs /= N_RUNS_GPU;
+    cublasDestroy(handle);
     // print results
     printf("--- Naive Matmul ---\n");
     printf("GPU time: %.3f ms\n", naiveMs);
@@ -106,10 +125,15 @@ int main() {
     printf("GPU time: %.3f ms\n", tiledMs);
     printf("--- CPU Baseline ---\n");
     printf("CPU time: %.3f ms\n", cpu_ms);
+    printf("--- cuBlas Matmul ---\n");
+    printf("GPU time: %.3f ms\n", cublasMs);
     printf("--- Comparison ---\n");
     printf("Tiled vs CPU:   %.2fx\n", cpu_ms / tiledMs);
     printf("Tiled vs Naive: %.2fx\n", naiveMs / tiledMs);
     printf("Naive vs CPU:   %.2fx\n", cpu_ms / naiveMs);
+    printf("cuBlas vs CPU:  %.2fx\n", cpu_ms / cublasMs);
+    printf("cuBlas vs Tiled: %.2fx\n", tiledMs / cublasMs);
+    printf("cuBlas vs Naive: %.2fx\n", naiveMs / cublasMs);
 
     // free
     cudaFreeHost(h_A);

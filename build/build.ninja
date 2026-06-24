@@ -288,7 +288,7 @@ build CMakeFiles\matmul_benchmark.dir\benchmarks\matmul_benchmark.cu.obj: CUDA_C
 
 build CMakeFiles\matmul_benchmark.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__matmul_benchmark_Release CMakeFiles\matmul_benchmark.dir\benchmarks\matmul_benchmark.cu.obj
   LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
-  LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = cublas.lib cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = CMakeFiles\matmul_benchmark.dir
   TARGET_COMPILE_PDB = CMakeFiles\matmul_benchmark.dir\
   TARGET_FILE = CMakeFiles\matmul_benchmark.dir\cmake_device_link.obj
@@ -306,7 +306,7 @@ build bin\matmul_benchmark.exe: CUDA_EXECUTABLE_LINKER__matmul_benchmark_Release
   CONFIG = Release
   FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
-  LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = cublas.lib  cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = CMakeFiles\matmul_benchmark.dir
   POST_BUILD = cd .
   PRE_LINK = cd .

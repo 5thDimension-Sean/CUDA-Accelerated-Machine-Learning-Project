@@ -238,4 +238,21 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
         Tiled vs Naive: 1.73x     
         Naive vs CPU:   602.89x
     In the test, tiled as 1.73x faster and clearly, tiled matmul is vastly faster than the CPU with teh cpu taking over 36 seconds!
-    
+    Updated matmul_benchmark to include cuBlas which is a lot more efficent: 
+    --- Naive Matmul ---
+    GPU time: 59.086 ms
+    --- Tiled Matmul ---
+    GPU time: 35.360 ms
+    --- CPU Baseline ---
+    CPU time: 36606.553 ms
+    --- cuBlas Matmul ---
+    GPU time: 8.192 ms
+    --- Comparison ---
+    Tiled vs CPU:   1035.26x
+    Tiled vs Naive: 1.67x
+    Naive vs CPU:   619.54x
+    cuBlas vs CPU:  4468.60x
+    cuBlas vs Tiled: 4.32x
+    cuBlas vs Naive: 7.21x
+
+    cuBlas is over 4000x more efficent! 
