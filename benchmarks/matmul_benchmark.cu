@@ -121,10 +121,11 @@ int main() {
         cublasMs /= N_RUNS_GPU;
 
         float vectorizedMs = 0.0f;
+        dim3 float4Grid((N + 127) / 128, (N + 31) / 32);
         for (int r = 0; r < N_RUNS_GPU; r++) {
             CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
             cudaEventRecord(start);
-            float4_vectorized<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
+            float4_vectorized<<<float4Grid, blockDim>>>(d_A, d_B, d_C, N);
             cudaEventRecord(stop);
             cudaEventSynchronize(stop);
             float ms = 0.0f;
