@@ -223,3 +223,19 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Naive vs CPU:   279.08x
 
     Wrong as tiled should be up to 10x faster???? Will fix later
+
+6/24/26 
+    I think the issue is boot up so i'm running nsight. Issue was not resolved. Changed N to 2048
+    2048 = N: 
+        --- Naive Matmul --- 
+        GPU time: 61.045 ms    
+        --- Tiled Matmul --- 
+        GPU time: 35.309 ms    
+        --- CPU Baseline ---    
+        CPU time: 36803.391 ms
+        --- Comparison ---        
+        Tiled vs CPU:   1042.32x
+        Tiled vs Naive: 1.73x     
+        Naive vs CPU:   602.89x
+    In the test, tiled as 1.73x faster and clearly, tiled matmul is vastly faster than the CPU with teh cpu taking over 36 seconds!
+    

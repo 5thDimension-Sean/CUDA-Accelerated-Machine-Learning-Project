@@ -2,8 +2,8 @@
 36	6287	8039450783781521	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
 6445	8781	8039450847877630	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
 8781	8984	8039450871238648	bin/vector_add.exe	e2683f34b4e853fb
-17	163	8039548138041672	build.ninja	396675f7d6042578
-17	163	8039548138016634	D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake	396675f7d6042578
+17	163	8040151775810334	build.ninja	396675f7d6042578
+17	163	8040151775760355	D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake	396675f7d6042578
 26	5517	8039523953492528	CMakeFiles/benchmark.dir/benchmarks/benchmark.cu.obj	2cab31a0cba5639a
 5680	7657	8039524010032959	CMakeFiles/benchmark.dir/cmake_device_link.obj	7575ea3a4a188392
 22	209	8039524046747917	bin/benchmark.exe	5a7c9a2d1dd64c33
@@ -13,9 +13,15 @@
 48	6194	8039450783917053	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
 6263	8570	8039450846068186	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
 8570	8775	8039450869132876	bin/streams_benchmark.exe	a29b6967cc79bb4d
-6	6092	8039545305231469	CMakeFiles/matmul_benchmark.dir/benchmarks/matmul_benchmark.cu.obj	463706b92960d2ed
-6171	8125	8039545366884171	CMakeFiles/matmul_benchmark.dir/cmake_device_link.obj	bc9792855de5990b
-8125	8308	8039545386422573	bin/matmul_benchmark.exe	8090957ea8b91434
 18	5510	8039548165450327	CMakeFiles/matmul_benchmark.dir/benchmarks/matmul_benchmark.cu.obj	463706b92960d2ed
 5586	7397	8039548221136604	CMakeFiles/matmul_benchmark.dir/cmake_device_link.obj	bc9792855de5990b
 7397	7539	8039548239237601	bin/matmul_benchmark.exe	8090957ea8b91434
+7	6078	8040152087824522	CMakeFiles/matmul_benchmark.dir/benchmarks/matmul_benchmark.cu.obj	463706b92960d2ed
+6165	8095	8040152149402686	CMakeFiles/matmul_benchmark.dir/cmake_device_link.obj	bc9792855de5990b
+8095	8285	8040152168702613	bin/matmul_benchmark.exe	8090957ea8b91434
+4	5292	8040156158962191	CMakeFiles/matmul_benchmark.dir/benchmarks/matmul_benchmark.cu.obj	463706b92960d2ed
+5367	7132	8040156212589362	CMakeFiles/matmul_benchmark.dir/cmake_device_link.obj	bc9792855de5990b
+7132	7288	8040156230243327	bin/matmul_benchmark.exe	8090957ea8b91434
+31	5315	8040157871945418	CMakeFiles/matmul_benchmark.dir/benchmarks/matmul_benchmark.cu.obj	463706b92960d2ed
+5384	7141	8040157925471253	CMakeFiles/matmul_benchmark.dir/cmake_device_link.obj	bc9792855de5990b
+7142	7282	8040157943049649	bin/matmul_benchmark.exe	8090957ea8b91434
