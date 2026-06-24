@@ -340,3 +340,120 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     No values for CPU for 4096 because it would take ~ 10 - 20 minutes. 
     As N get's bigger, the quicker cuBlas is over tiled and naive matmul. 
     This will be graphed later in benchmarks/gemm_benchmark.py with an image documented. 
+
+    I had some compilation errors so I reverted changes and redid it
+    No idea on what the root cause was: 
+    Vectorized via 128 bit: 
+    ===N=256===
+--- Naive Matmul ---
+GPU time: 0.106 ms
+--- Tiled Matmul ---
+GPU time: 0.104 ms
+--- CPU Baseline ---
+CPU time: 13.897 ms
+--- cuBlas Matmul ---
+GPU time: 1.465 ms
+--- Vectorized Matmul ---
+GPU time: 0.034 ms
+--- Comparison ---
+Tiled vs CPU:   133.87x
+Tiled vs Naive: 1.02x
+Naive vs CPU:   131.21x
+cuBlas vs CPU:  9.49x
+cuBlas vs Tiled: 0.07x
+cuBlas vs Naive: 0.07x
+Vectorized vs CPU:  408.35x
+Vectorized vs Tiled: 3.05x
+Vectorized vs Naive: 3.11x
+Vectorized vs cuBlas: 43.04x
+===N=512===
+--- Naive Matmul ---
+GPU time: 0.561 ms
+--- Tiled Matmul ---
+GPU time: 1.302 ms
+--- CPU Baseline ---
+CPU time: 173.424 ms
+--- cuBlas Matmul ---
+GPU time: 0.146 ms
+--- Vectorized Matmul ---
+GPU time: 0.173 ms
+--- Comparison ---
+Tiled vs CPU:   133.24x
+Tiled vs Naive: 0.43x
+Naive vs CPU:   309.18x
+cuBlas vs CPU:  1191.25x
+cuBlas vs Tiled: 8.94x
+cuBlas vs Naive: 3.85x
+Vectorized vs CPU:  1004.78x
+Vectorized vs Tiled: 7.54x
+Vectorized vs Naive: 3.25x
+Vectorized vs cuBlas: 0.84x
+===N=1024===
+--- Naive Matmul ---
+GPU time: 9.483 ms
+--- Tiled Matmul ---
+GPU time: 9.913 ms
+--- CPU Baseline ---
+CPU time: 1413.980 ms
+--- cuBlas Matmul ---
+GPU time: 1.098 ms
+--- Vectorized Matmul ---
+GPU time: 2.061 ms
+--- Comparison ---
+Tiled vs CPU:   142.64x
+Tiled vs Naive: 0.96x
+Naive vs CPU:   149.11x
+cuBlas vs CPU:  1287.92x
+cuBlas vs Tiled: 9.03x
+cuBlas vs Naive: 8.64x
+Vectorized vs CPU:  686.13x
+Vectorized vs Tiled: 4.81x
+Vectorized vs Naive: 4.60x
+Vectorized vs cuBlas: 0.53x
+===N=2048===
+--- Naive Matmul ---
+GPU time: 80.942 ms
+--- Tiled Matmul ---
+GPU time: 78.885 ms
+--- CPU Baseline ---
+CPU time: 46888.213 ms
+--- cuBlas Matmul ---
+GPU time: 14.081 ms
+--- Vectorized Matmul ---
+GPU time: 19.787 ms
+--- Comparison ---
+Tiled vs CPU:   594.39x
+Tiled vs Naive: 1.03x
+Naive vs CPU:   579.28x
+cuBlas vs CPU:  3329.94x
+cuBlas vs Tiled: 5.60x
+cuBlas vs Naive: 5.75x
+Vectorized vs CPU:  2369.69x
+Vectorized vs Tiled: 3.99x
+Vectorized vs Naive: 4.09x
+Vectorized vs cuBlas: 0.71x
+===N=4096===
+--- Naive Matmul ---
+GPU time: 636.052 ms
+--- Tiled Matmul ---
+GPU time: 632.828 ms
+--- CPU Baseline ---
+CPU time: 0.000 ms
+--- cuBlas Matmul ---
+GPU time: 117.864 ms
+--- Vectorized Matmul ---
+GPU time: 153.685 ms
+--- Comparison ---
+Tiled vs CPU:   0.00x
+Tiled vs Naive: 1.01x
+Naive vs CPU:   0.00x
+cuBlas vs CPU:  0.00x
+cuBlas vs Tiled: 5.37x
+cuBlas vs Naive: 5.40x
+Vectorized vs CPU:  0.00x
+Vectorized vs Tiled: 4.12x
+Vectorized vs Naive: 4.14x
+Vectorized vs cuBlas: 0.77x
+
+yay!
+Next: we will graph this via mat plot lib using python
