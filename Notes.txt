@@ -256,3 +256,86 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     cuBlas vs Naive: 7.21x
 
     cuBlas is over 4000x more efficent! 
+    ===N=256===
+    --- Naive Matmul ---
+    GPU time: 0.121 ms
+    --- Tiled Matmul ---
+    GPU time: 0.110 ms
+    --- CPU Baseline ---
+    CPU time: 12.239 ms
+    --- cuBlas Matmul ---
+    GPU time: 1.830 ms
+    --- Comparison ---
+    Tiled vs CPU:   111.28x
+    Tiled vs Naive: 1.10x
+    Naive vs CPU:   101.38x
+    cuBlas vs CPU:  6.69x
+    cuBlas vs Tiled: 0.06x
+    cuBlas vs Naive: 0.07x
+    ===N=512===
+    --- Naive Matmul ---
+    GPU time: 0.696 ms
+    --- Tiled Matmul ---
+    GPU time: 0.703 ms
+    --- CPU Baseline ---
+    CPU time: 158.950 ms
+    --- cuBlas Matmul ---
+    GPU time: 0.176 ms
+    --- Comparison ---
+    Tiled vs CPU:   226.17x
+    Tiled vs Naive: 0.99x
+    Naive vs CPU:   228.28x
+    cuBlas vs CPU:  903.81x
+    cuBlas vs Tiled: 4.00x
+    cuBlas vs Naive: 3.96x
+    ===N=1024===
+    --- Naive Matmul ---
+    GPU time: 5.259 ms
+    --- Tiled Matmul ---
+    GPU time: 5.494 ms
+    --- CPU Baseline ---
+    CPU time: 1304.992 ms
+    --- cuBlas Matmul ---
+    GPU time: 0.679 ms
+    --- Comparison ---
+    Tiled vs CPU:   237.53x
+    Tiled vs Naive: 0.96x
+    Naive vs CPU:   248.15x
+    cuBlas vs CPU:  1923.10x
+    cuBlas vs Tiled: 8.10x
+    cuBlas vs Naive: 7.75x
+    ===N=2048===
+    --- Naive Matmul ---
+    GPU time: 63.719 ms
+    --- Tiled Matmul ---
+    GPU time: 35.037 ms
+    --- CPU Baseline ---
+    CPU time: 36875.530 ms
+    --- cuBlas Matmul ---
+    GPU time: 6.306 ms
+    --- Comparison ---
+    Tiled vs CPU:   1052.46x
+    Tiled vs Naive: 1.82x
+    Naive vs CPU:   578.72x
+    cuBlas vs CPU:  5847.84x
+    cuBlas vs Tiled: 5.56x
+    cuBlas vs Naive: 10.10x
+    ===N=4096===
+    --- Naive Matmul ---
+    GPU time: 282.771 ms
+    --- Tiled Matmul ---
+    GPU time: 292.294 ms
+    --- CPU Baseline ---
+    CPU time: 0.000 ms
+    --- cuBlas Matmul ---
+    GPU time: 52.885 ms
+    --- Comparison ---
+    Tiled vs CPU:   0.00x
+    Tiled vs Naive: 0.97x
+    Naive vs CPU:   0.00x
+    cuBlas vs CPU:  0.00x
+    cuBlas vs Tiled: 5.53x
+    cuBlas vs Naive: 5.35x
+
+    No values for CPU for 4096 because it would take ~ 10 - 20 minutes. 
+    
