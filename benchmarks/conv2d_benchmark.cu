@@ -115,15 +115,44 @@ int main(){
                 break;
             }
         }
-
         float naiveMs = naiveTotal / N_RUNS_GPU;
+
+
+        float constantTotal = 0.0f;
+        for (int r = 0; r < N_RUNS_GPU; r++) {
+            CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
+            CUDA_CHECK(cudaEventRecord(start));
+            conv2d_constant<<<gridDim, blockDim>>>(d_input, d_output, H, W, FH, FW);
+            CUDA_CHECK(cudaGetLastError());
+            CUDA_CHECK(cudaEventRecord(stop));
+            CUDA_CHECK(cudaEventSynchronize(stop));
+            float ms = 0.0f;
+            CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+            constantTotal += ms;
+        }
+        CUDA_CHECK(cudaMemcpy(h_output, d_output, outH * outW * sizeof(float), cudaMemcpyDeviceToHost));
+
+        correct = true;
+        for (int i = 0; i < outH * outW; i++) {
+            if (fabsf(h_output[i] - 1.0f) > 1e-5f) {
+                printf("MISMATCH at %d: got %.4f\n", i, h_output[i]);
+                correct = false;
+                break;
+            }
+        }
+        float constantMs = constantTotal / N_RUNS_GPU;
         printf("Correct: %s\n", correct ? "YES" : "NO");
         printf("--- Naive Conv2D ---\n");
         printf("GPU time: %.3f ms\n", naiveMs);
         printf("--- CPU Baseline ---\n");
         printf("CPU time: %.3f ms\n", cpu_ms);
+        printf("--- Constant Conv2D ---\n");
+        printf("GPU time: %.3f ms\n", constantMs);
         printf("--- Comparison ---\n");
-        printf("Naive / CPU = %.2fx\n", cpu_ms / naiveMs);
+        printf("Naive speedup over cpu = %.2fx\n", cpu_ms / naiveMs);
+        printf("Constant / CPU = %.2fx\n", cpu_ms / constantMs);
+        printf("Constant speed up over naive = %.2fx\n", naiveMs/constantMs);
+
 
         CUDA_CHECK(cudaFreeHost(h_input));
         CUDA_CHECK(cudaFreeHost(h_filter));

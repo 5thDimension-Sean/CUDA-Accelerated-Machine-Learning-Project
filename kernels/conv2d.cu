@@ -19,7 +19,8 @@
 
 // TODO — Week 4: implement here
 //4 parameters k f s p 1 
- #define MAX_FILTER_SIZE 49
+#define MAX_FILTER_SIZE 49
+__constant__ float d_filter[MAX_FILTER_SIZE];
   __global__ void conv2d_naive(
       const float* input,
       const float* filter,
@@ -45,12 +46,11 @@
       output[out_y * outW + out_x] = sum;
   }
   //The main difference between naive and this is that this uses a different filter, but with the 
-  __global__ void conv2d_constant(const float* input,
-      const float* filter,
+  __global__ void conv2d_constant(
+    const float* input,
       float* output,
       int H, int W,
       int FH, int FW){
-        __constant__ float d_filter[MAX_FILTER_SIZE];
         int outH = H - FH + 1;
         int outW = W - FW + 1;
         //output height/width
