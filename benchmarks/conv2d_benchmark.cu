@@ -3,7 +3,6 @@
 #include "../kernels/conv2d.cu"
 #include <chrono>
 #include <cuda_runtime.h>
-#include <cublas_v2.h>
 
 #define CUDA_CHECK(call)                                                        \
     do {                                                                        \
@@ -39,86 +38,93 @@ void cpu_baseline(
           }
       }
   }
+const int H = 256;
+const int W = 256; 
+const int FH = 3;
+const int FW = 3;
 
-const int N = 1<<24;
 int main(){
-    for(int s=0; s<5; s++) {
-        int N = sizes[s];
+        const int outH = H - FH + 1;
+        const int outW = W - FW + 1;
         dim3 blockDim(32, 32);
-        dim3 gridDim((N + 31) / 32, (N + 31) / 32);
+        dim3 gridDim((outW + 31) / 32, (outH + 31) / 32);
 
-        // allocate host memory
-        float* h_A, *h_B, *h_C;
-        CUDA_CHECK(cudaMallocHost((void**)&h_A, N * N * sizeof(float)));
-        CUDA_CHECK(cudaMallocHost((void**)&h_B, N * N * sizeof(float)));
-        CUDA_CHECK(cudaMallocHost((void**)&h_C, N * N * sizeof(float)));
+        float* h_input;
+        float* h_filter;
+        float* h_output;
+        float* d_input;
+        float* d_filter;
+        float* d_output;
 
-        // fill with data
-        for (int i = 0; i < N * N; i++) {
-            h_A[i] = 1.0f;
-            h_B[i] = 1.0f;
-            h_C[i] = 0.0f;
+        CUDA_CHECK(cudaMallocHost(&h_input,  H    * W    * sizeof(float)));
+        CUDA_CHECK(cudaMallocHost(&h_filter, FH   * FW   * sizeof(float)));
+        CUDA_CHECK(cudaMallocHost(&h_output, outH * outW * sizeof(float)));
+
+        CUDA_CHECK(cudaMalloc(&d_input,  H    * W    * sizeof(float)));
+        CUDA_CHECK(cudaMalloc(&d_filter, FH   * FW   * sizeof(float)));
+        CUDA_CHECK(cudaMalloc(&d_output, outH * outW * sizeof(float)));
+
+        for (int i = 0; i < H * W; i++) {
+            h_input[i] = 1.0f;
+        }
+        for (int i = 0; i < FH * FW; i++) {
+            h_filter[i] = 1.0f;
+        }
+        for (int i = 0; i < outH * outW; i++) {
+            h_output[i] = 0.0f;
         }
 
-        // allocate device memory
-        float* d_A, *d_B, *d_C;
-        CUDA_CHECK(cudaMalloc(&d_A, N * N * sizeof(float)));
-        CUDA_CHECK(cudaMalloc(&d_B, N * N * sizeof(float)));
-        CUDA_CHECK(cudaMalloc(&d_C, N * N * sizeof(float)));
+        CUDA_CHECK(cudaMemcpy(d_input, h_input, H * W * sizeof(float), cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemcpy(d_filter, h_filter, FH * FW * sizeof(float), cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
 
-        // copy input to GPU
-        CUDA_CHECK(cudaMemcpy(d_A, h_A, N * N * sizeof(float), cudaMemcpyHostToDevice));
-        CUDA_CHECK(cudaMemcpy(d_B, h_B, N * N * sizeof(float), cudaMemcpyHostToDevice));
-
-        // CPU baseline
         double cpu_ms = 0.0;
-        if(N <=2048){
-            const int N_RUNS = 2;
-            double cpu_total_ms = 0.0;
-            for (int r = 0; r < N_RUNS; r++) {
-                auto cpu_start = std::chrono::high_resolution_clock::now();
-                cpu_baseline(h_A, h_B, h_C, N);
-                auto cpu_end = std::chrono::high_resolution_clock::now();
-                cpu_total_ms += std::chrono::duration<double, std::milli>(cpu_end - cpu_start).count();
-            }
-            cpu_ms = cpu_total_ms / N_RUNS;
+        const int N_RUNS = 2;
+        double cpu_total_ms = 0.0;
+        for (int r = 0; r < N_RUNS; r++) {
+            auto cpu_start = std::chrono::high_resolution_clock::now();
+            cpu_baseline(h_input, h_filter, h_output, H, W, FH, FW);
+            auto cpu_end = std::chrono::high_resolution_clock::now();
+            cpu_total_ms += std::chrono::duration<double, std::milli>(cpu_end - cpu_start).count();
         }
+        cpu_ms = cpu_total_ms / N_RUNS;
+
         const int N_RUNS_GPU = 10;
         cudaEvent_t start, stop;
-        cudaEventCreate(&start);
-        cudaEventCreate(&stop);
+        CUDA_CHECK(cudaEventCreate(&start));
+        CUDA_CHECK(cudaEventCreate(&stop));
 
-        // naive matmul
         float naiveTotal = 0.0f;
         for (int r = 0; r < N_RUNS_GPU; r++) {
-            CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
-            cudaEventRecord(start);
-            conv2d_naive<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
-            cudaEventRecord(stop);
-            cudaEventSynchronize(stop);
+            CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
+            CUDA_CHECK(cudaEventRecord(start));
+            conv2d_naive<<<gridDim, blockDim>>>(d_input, d_filter, d_output, H, W, FH, FW);
+            CUDA_CHECK(cudaGetLastError());
+            CUDA_CHECK(cudaEventRecord(stop));
+            CUDA_CHECK(cudaEventSynchronize(stop));
             float ms = 0.0f;
             CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
             naiveTotal += ms;
         }
         float naiveMs = naiveTotal / N_RUNS_GPU;
-        printf("--- Naive Conv2D---\n");
-        printf("GPU time: %.3f ms:\n ", naiveTotal);
-        printf("--- CPU Baseline --- \n");
-        printf("CPU time: %.3f ms:\n", cpu_ms);
-        printf("---Comparison---\n");
-        printf("Naive vs CPU Baseline: \n", cpu_ms/naiveTotal);
-        cudaFreeHost(h_A);
-        cudaFreeHost(h_B);
-        cudaFreeHost(h_C);
-        CUDA_CHECK(cudaFree(d_A));
-        CUDA_CHECK(cudaFree(d_B));
-        CUDA_CHECK(cudaFree(d_C));
+
+        printf("--- Naive Conv2D ---\n");
+        printf("GPU time: %.3f ms\n", naiveMs);
+        printf("--- CPU Baseline ---\n");
+        printf("CPU time: %.3f ms\n", cpu_ms);
+        printf("--- Comparison ---\n");
+        printf("Naive / CPU = %.2fx\n", cpu_ms / naiveMs);
+
+        CUDA_CHECK(cudaFreeHost(h_input));
+        CUDA_CHECK(cudaFreeHost(h_filter));
+        CUDA_CHECK(cudaFreeHost(h_output));
+        CUDA_CHECK(cudaFree(d_input));
+        CUDA_CHECK(cudaFree(d_filter));
+        CUDA_CHECK(cudaFree(d_output));
         CUDA_CHECK(cudaEventDestroy(start));
         CUDA_CHECK(cudaEventDestroy(stop));
-    }
-    cublasDestroy(handle);
 
-    return 0;
+        return 0;
+}
 
     
-}
