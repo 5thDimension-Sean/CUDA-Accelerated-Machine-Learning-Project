@@ -461,3 +461,9 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 6/25/26 @ 11:14 AM 
     Ran mat plot lib trials and saw that CuBlas starts slow ends fast. Images are in Nsight folder
     Conv2d: https://www.youtube.com/watch?v=j19Wdlu7Rtg
+    https://cs231n.github.io/convolutional-networks/
+
+    For conv 2d: 
+
+    The program is looping through a small grid of numbers called a filter and sliding it across the input. Then, at each position it multiplies the overlapping numbers together and adds them up
+    Basically, it is a basis on how modern AI systems process images and rcognize patterns. 

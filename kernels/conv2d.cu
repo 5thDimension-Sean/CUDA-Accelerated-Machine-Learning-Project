@@ -18,3 +18,31 @@
 // ============================================================================
 
 // TODO — Week 4: implement here
+//4 parameters k f s p 1 
+
+  __global__ void conv2d_naive(
+      const float* input,
+      const float* filter,
+      float* output,
+      int H, int W,
+      int FH, int FW
+  ){
+      int outH = H - FH + 1;
+      int outW = W - FW + 1;
+    //output height/width
+      int out_x = blockIdx.x * blockDim.x + threadIdx.x;
+      int out_y = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if (out_x >= outW || out_y >= outH) return;
+
+      float sum = 0.0f;
+      for (int fy = 0; fy < FH; ++fy) {
+          for (int fx = 0; fx < FW; ++fx) {
+              sum += input[(out_y + fy) * W + (out_x + fx)] * filter[fy * FW + fx];
+          }
+      }
+
+      output[out_y * outW + out_x] = sum;
+  }
+
+
