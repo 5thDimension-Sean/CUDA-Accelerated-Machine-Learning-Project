@@ -19,7 +19,7 @@
 
 // TODO — Week 4: implement here
 //4 parameters k f s p 1 
-
+ #define MAX_FILTER_SIZE 49
   __global__ void conv2d_naive(
       const float* input,
       const float* filter,
@@ -44,5 +44,42 @@
 
       output[out_y * outW + out_x] = sum;
   }
+  //The main difference between naive and this is that this uses a different filter, but with the 
+  __global__ void conv2d_constant(const float* input,
+      const float* filter,
+      float* output,
+      int H, int W,
+      int FH, int FW){
+        __constant__ float d_filter[MAX_FILTER_SIZE];
+        int outH = H - FH + 1;
+        int outW = W - FW + 1;
+        //output height/width
+        int out_x = blockIdx.x * blockDim.x + threadIdx.x;
+        int out_y = blockIdx.y * blockDim.y + threadIdx.y;
+        if (out_x >= outW || out_y >= outH) return;
+        float sum = 0.0f;
+        for (int fy = 0; fy < FH; ++fy) {
+          for (int fx = 0; fx < FW; ++fx) {
+              sum += input[(out_y + fy) * W + (out_x + fx)] * d_filter[fy * FW + fx];
+          }
+      }
+
+      output[out_y * outW + out_x] = sum;
+
+    }
+
+    __global__ void conv2d_shared(const float* input,
+      const float* filter,
+      float* output,
+      int H, int W,
+      int FH, int FW){
+        int outH = H - FH + 1;
+        int outW = W - FW + 1;
+        //output height/width
+        int out_x = blockIdx.x * blockDim.x + threadIdx.x;
+        int out_y = blockIdx.y * blockDim.y + threadIdx.y;
+
+        if (out_x >= outW || out_y >= outH) return;
+      }
 
 
