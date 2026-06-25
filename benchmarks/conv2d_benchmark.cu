@@ -115,6 +115,7 @@ int main(){
                 break;
             }
         }
+        printf("Correct: %s\n", correct ? "YES" : "NO");
         float naiveMs = naiveTotal / N_RUNS_GPU;
 
 

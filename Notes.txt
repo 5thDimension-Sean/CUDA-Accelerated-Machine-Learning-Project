@@ -484,3 +484,19 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     CPU time: 0.503 ms
     --- Comparison ---
     Naive / CPU = 13.12x
+
+    Correct: YES
+    MISMATCH at 0: got 0.0000
+    Correct: NO
+    --- Naive Conv2D ---
+    GPU time: 0.096 ms
+    --- CPU Baseline ---
+    CPU time: 0.422 ms
+    --- Constant Conv2D ---
+    GPU time: 0.021 ms
+    --- Comparison ---
+    Naive speedup over cpu = 4.39x
+    Constant / CPU = 20.02x
+    Constant speed up over naive = 4.56x
+
+    Error on the constant convolution. 
