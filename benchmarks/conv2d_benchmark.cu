@@ -118,7 +118,7 @@ int main(){
         printf("Correct: %s\n", correct ? "YES" : "NO");
         float naiveMs = naiveTotal / N_RUNS_GPU;
 
-
+        cudaMemcpyToSymbol(c_filter, h_filter, FH * FW * sizeof(float));
         float constantTotal = 0.0f;
         for (int r = 0; r < N_RUNS_GPU; r++) {
             CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));

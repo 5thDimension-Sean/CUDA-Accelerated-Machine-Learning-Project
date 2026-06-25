@@ -20,7 +20,7 @@
 // TODO — Week 4: implement here
 //4 parameters k f s p 1 
 #define MAX_FILTER_SIZE 49
-__constant__ float d_filter[MAX_FILTER_SIZE];
+__constant__ float c_filter[MAX_FILTER_SIZE];
   __global__ void conv2d_naive(
       const float* input,
       const float* filter,
@@ -60,7 +60,7 @@ __constant__ float d_filter[MAX_FILTER_SIZE];
         float sum = 0.0f;
         for (int fy = 0; fy < FH; ++fy) {
           for (int fx = 0; fx < FW; ++fx) {
-              sum += input[(out_y + fy) * W + (out_x + fx)] * d_filter[fy * FW + fx];
+              sum += input[(out_y + fy) * W + (out_x + fx)] * c_filter[fy * FW + fx];
           }
       }
 
