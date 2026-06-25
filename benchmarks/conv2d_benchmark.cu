@@ -1,0 +1,124 @@
+#include <cstdio>
+#include <cstdlib>
+#include "../kernels/conv2d.cu"
+#include <chrono>
+#include <cuda_runtime.h>
+#include <cublas_v2.h>
+
+#define CUDA_CHECK(call)                                                        \
+    do {                                                                        \
+        cudaError_t err = (call);                                               \
+        if (err != cudaSuccess) {                                               \
+            fprintf(stderr, "CUDA error at %s:%d - %s\n",                      \
+                    __FILE__, __LINE__, cudaGetErrorString(err));               \
+            exit(EXIT_FAILURE);                                                 \
+        }                                                                       \
+    } while (0)
+
+
+
+void cpu_baseline(
+      const float* input,
+      const float* filter,
+      float* output,
+      int H, int W,
+      int FH, int FW
+  ){
+      int outH = H - FH + 1;
+      int outW = W - FW + 1;
+
+      for (int out_y = 0; out_y < outH; ++out_y) {
+          for (int out_x = 0; out_x < outW; ++out_x) {
+              float sum = 0.0f;
+              for (int fy = 0; fy < FH; ++fy) {
+                  for (int fx = 0; fx < FW; ++fx) {
+                      sum += input[(out_y + fy) * W + (out_x + fx)] * filter[fy * FW + fx];
+                  }
+              }
+              output[out_y * outW + out_x] = sum;
+          }
+      }
+  }
+
+const int N = 1<<24;
+int main(){
+    for(int s=0; s<5; s++) {
+        int N = sizes[s];
+        dim3 blockDim(32, 32);
+        dim3 gridDim((N + 31) / 32, (N + 31) / 32);
+
+        // allocate host memory
+        float* h_A, *h_B, *h_C;
+        CUDA_CHECK(cudaMallocHost((void**)&h_A, N * N * sizeof(float)));
+        CUDA_CHECK(cudaMallocHost((void**)&h_B, N * N * sizeof(float)));
+        CUDA_CHECK(cudaMallocHost((void**)&h_C, N * N * sizeof(float)));
+
+        // fill with data
+        for (int i = 0; i < N * N; i++) {
+            h_A[i] = 1.0f;
+            h_B[i] = 1.0f;
+            h_C[i] = 0.0f;
+        }
+
+        // allocate device memory
+        float* d_A, *d_B, *d_C;
+        CUDA_CHECK(cudaMalloc(&d_A, N * N * sizeof(float)));
+        CUDA_CHECK(cudaMalloc(&d_B, N * N * sizeof(float)));
+        CUDA_CHECK(cudaMalloc(&d_C, N * N * sizeof(float)));
+
+        // copy input to GPU
+        CUDA_CHECK(cudaMemcpy(d_A, h_A, N * N * sizeof(float), cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemcpy(d_B, h_B, N * N * sizeof(float), cudaMemcpyHostToDevice));
+
+        // CPU baseline
+        double cpu_ms = 0.0;
+        if(N <=2048){
+            const int N_RUNS = 2;
+            double cpu_total_ms = 0.0;
+            for (int r = 0; r < N_RUNS; r++) {
+                auto cpu_start = std::chrono::high_resolution_clock::now();
+                cpu_baseline(h_A, h_B, h_C, N);
+                auto cpu_end = std::chrono::high_resolution_clock::now();
+                cpu_total_ms += std::chrono::duration<double, std::milli>(cpu_end - cpu_start).count();
+            }
+            cpu_ms = cpu_total_ms / N_RUNS;
+        }
+        const int N_RUNS_GPU = 10;
+        cudaEvent_t start, stop;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+
+        // naive matmul
+        float naiveTotal = 0.0f;
+        for (int r = 0; r < N_RUNS_GPU; r++) {
+            CUDA_CHECK(cudaMemset(d_C, 0, N * N * sizeof(float)));
+            cudaEventRecord(start);
+            conv2d_naive<<<gridDim, blockDim>>>(d_A, d_B, d_C, N);
+            cudaEventRecord(stop);
+            cudaEventSynchronize(stop);
+            float ms = 0.0f;
+            CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+            naiveTotal += ms;
+        }
+        float naiveMs = naiveTotal / N_RUNS_GPU;
+        printf("--- Naive Conv2D---\n");
+        printf("GPU time: %.3f ms:\n ", naiveTotal);
+        printf("--- CPU Baseline --- \n");
+        printf("CPU time: %.3f ms:\n", cpu_ms);
+        printf("---Comparison---\n");
+        printf("Naive vs CPU Baseline: \n", cpu_ms/naiveTotal);
+        cudaFreeHost(h_A);
+        cudaFreeHost(h_B);
+        cudaFreeHost(h_C);
+        CUDA_CHECK(cudaFree(d_A));
+        CUDA_CHECK(cudaFree(d_B));
+        CUDA_CHECK(cudaFree(d_C));
+        CUDA_CHECK(cudaEventDestroy(start));
+        CUDA_CHECK(cudaEventDestroy(stop));
+    }
+    cublasDestroy(handle);
+
+    return 0;
+
+    
+}
