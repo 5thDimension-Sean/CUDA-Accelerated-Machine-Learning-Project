@@ -63,21 +63,20 @@ int main(){
         CUDA_CHECK(cudaMalloc(&d_input,  H    * W    * sizeof(float)));
         CUDA_CHECK(cudaMalloc(&d_filter, FH   * FW   * sizeof(float)));
         CUDA_CHECK(cudaMalloc(&d_output, outH * outW * sizeof(float)));
-
+        
         for (int i = 0; i < H * W; i++) {
             h_input[i] = 1.0f;
-        }
-        for (int i = 0; i < FH * FW; i++) {
-            h_filter[i] = 1.0f;
         }
         for (int i = 0; i < outH * outW; i++) {
             h_output[i] = 0.0f;
         }
-
+        h_filter[0] = 0.0f; h_filter[1] = 0.0f; h_filter[2] = 0.0f;
+        h_filter[3] = 0.0f; h_filter[4] = 1.0f; h_filter[5] = 0.0f;
+        h_filter[6] = 0.0f; h_filter[7] = 0.0f; h_filter[8] = 0.0f;
         CUDA_CHECK(cudaMemcpy(d_input, h_input, H * W * sizeof(float), cudaMemcpyHostToDevice));
         CUDA_CHECK(cudaMemcpy(d_filter, h_filter, FH * FW * sizeof(float), cudaMemcpyHostToDevice));
         CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
-
+        
         double cpu_ms = 0.0;
         const int N_RUNS = 2;
         double cpu_total_ms = 0.0;
@@ -106,8 +105,19 @@ int main(){
             CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
             naiveTotal += ms;
         }
-        float naiveMs = naiveTotal / N_RUNS_GPU;
+        CUDA_CHECK(cudaMemcpy(h_output, d_output, outH * outW * sizeof(float), cudaMemcpyDeviceToHost));
 
+        bool correct = true;
+        for (int i = 0; i < outH * outW; i++) {
+            if (fabsf(h_output[i] - 1.0f) > 1e-5f) {
+                printf("MISMATCH at %d: got %.4f\n", i, h_output[i]);
+                correct = false;
+                break;
+            }
+        }
+
+        float naiveMs = naiveTotal / N_RUNS_GPU;
+        printf("Correct: %s\n", correct ? "YES" : "NO");
         printf("--- Naive Conv2D ---\n");
         printf("GPU time: %.3f ms\n", naiveMs);
         printf("--- CPU Baseline ---\n");

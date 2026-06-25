@@ -467,3 +467,20 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     The program is looping through a small grid of numbers called a filter and sliding it across the input. Then, at each position it multiplies the overlapping numbers together and adds them up
     Basically, it is a basis on how modern AI systems process images and rcognize patterns. 
+    --- Naive Conv2D ---
+    GPU time: 0.037 ms
+    --- CPU Baseline ---
+    CPU time: 0.340 ms
+    --- Comparison ---
+    Naive / CPU = 9.10x
+
+    0.037 is extremely good!
+
+    New code: 
+    Correct: YES
+    --- Naive Conv2D ---
+    GPU time: 0.038 ms
+    --- CPU Baseline ---
+    CPU time: 0.503 ms
+    --- Comparison ---
+    Naive / CPU = 13.12x
