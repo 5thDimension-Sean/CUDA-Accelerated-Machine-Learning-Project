@@ -17,3 +17,5 @@
 18246	18775	8050645686499242	bin/conv2d_benchmark.exe	f6aa2326ef89c419
 33759	47304	8050617566125293	CMakeFiles/matmul_benchmark.dir/cmake_device_link.obj	139ca6eacc5eaf3c
 47304	47973	8050617701584822	bin/matmul_benchmark.exe	32138fd8fccc1d89
+8	11194	8050733025763455	CMakeFiles/imageTest.dir/kernels/imageTest.cu.obj	3b58531f6e97ab11
+11278	17457	8050733138466489	CMakeFiles/imageTest.dir/cmake_device_link.obj	ab17734a5a52581f
