@@ -166,8 +166,36 @@ int main(){
                 break;
             }
         }
+
+        cudaMemcpyToSymbol(c_filter, h_filter, FH * FW * sizeof(float));
+        float depthTotal = 0.0f;
+        float* d_filters;
+        cudaMalloc(&d_filters, FH * FW * sizeof(float));
+        cudaMemcpy(d_filters, h_filter, FH * FW * sizeof(float), cudaMemcpyHostToDevice);
+        for (int r = 0; r < N_RUNS_GPU; r++) {
+            CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
+            CUDA_CHECK(cudaEventRecord(start));
+            conv2d_filter<<<gridDim, blockDim>>>(d_input, d_filters, d_output, H, W, 3, FH, FW);
+            CUDA_CHECK(cudaGetLastError());
+            CUDA_CHECK(cudaEventRecord(stop));
+            CUDA_CHECK(cudaEventSynchronize(stop));
+            float ms = 0.0f;
+            CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+            depthTotal += ms;
+        }
+        CUDA_CHECK(cudaMemcpy(h_output, d_output, outH * outW * sizeof(float), cudaMemcpyDeviceToHost));
+
+        correct = true;
+        for (int i = 0; i < outH * outW; i++) {
+            if (fabsf(h_output[i] - 1.0f) > 1e-5f) {
+                printf("MISMATCH at %d: got %.4f\n", i, h_output[i]);
+                correct = false;
+                break;
+            }
+        }
         float constantMs = constantTotal / N_RUNS_GPU;
         float sharedMs = sharedTotal / N_RUNS_GPU;
+        float depthMs = depthTotal / N_RUNS_GPU;
         printf("Correct: %s\n", correct ? "YES" : "NO");
         printf("--- Naive Conv2D ---\n");
         printf("GPU time: %.3f ms\n", naiveMs);
@@ -177,6 +205,8 @@ int main(){
         printf("GPU time: %.3f ms\n", constantMs);
         printf("--- Shared Conv2D ---\n");
         printf("GPU time: %.3f ms\n", sharedTotal / N_RUNS_GPU);
+        printf("--- Depthwise Conv2D ---\n");
+        printf("GPU time: %.3f ms\n", depthMs);
         printf("--- Comparison ---\n");
         printf("Naive speedup over cpu = %.2fx\n", cpu_ms / naiveMs);
         printf("Constant / CPU = %.2fx\n", cpu_ms / constantMs); 
@@ -184,6 +214,10 @@ int main(){
         printf("Shared speed up over naive = %.2fx\n", naiveMs/(sharedMs));
         printf("Shared speed up over constant = %.2fx\n", constantMs/(sharedMs));
         printf("Shared speed up over cpu = %.2fx\n", cpu_ms/(sharedMs));
+        printf("Depthwise speed up over naive = %.2fx\n", naiveMs/(depthMs));
+        printf("Depthwise speed up over constant = %.2fx\n", constantMs/(depthMs));
+        printf("Depthwise speed up over shared = %.2fx\n", sharedMs/(depthMs));
+        printf("Depthwise speed up over cpu = %.2fx\n", cpu_ms/(depthMs));
 
 
         CUDA_CHECK(cudaFreeHost(h_input));
