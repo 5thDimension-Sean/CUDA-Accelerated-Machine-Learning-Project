@@ -148,7 +148,7 @@ int main(){
             CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
             CUDA_CHECK(cudaEventRecord(start));
             CUDA_CHECK(cudaMemcpyToSymbolAsync(c_filter, h_filter, filter_bytes, 0, cudaMemcpyHostToDevice));
-            conv2d_constant<<<gridDim, blockDim>>>(d_input, d_output, H, W, FH, FW);
+            conv2d_shared<<<gridDim, blockDim>>>(d_input, d_output, H, W, FH, FW);
             CUDA_CHECK(cudaGetLastError());
             CUDA_CHECK(cudaEventRecord(stop));
             CUDA_CHECK(cudaEventSynchronize(stop));
@@ -179,7 +179,7 @@ int main(){
         printf("GPU time: %.3f ms\n", sharedTotal / N_RUNS_GPU);
         printf("--- Comparison ---\n");
         printf("Naive speedup over cpu = %.2fx\n", cpu_ms / naiveMs);
-        printf("Constant / CPU = %.2fx\n", cpu_ms / constantMs);
+        printf("Constant / CPU = %.2fx\n", cpu_ms / constantMs); 
         printf("Constant speed up over naive = %.2fx\n", naiveMs/constantMs);
         printf("Shared speed up over naive = %.2fx\n", naiveMs/(sharedMs));
         printf("Shared speed up over constant = %.2fx\n", constantMs/(sharedMs));

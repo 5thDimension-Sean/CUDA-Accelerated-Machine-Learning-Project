@@ -68,3 +68,49 @@ __constant__ float c_filter[MAX_FILTER_SIZE];
 
     }
 
+
+__global__ void conv2d_shared(
+    const float* input,
+    float* output,
+    int H, int W,
+    int FH, int FW
+) {
+    extern __shared__ float shared_input[];
+
+    int outH = H - FH + 1;
+    int outW = W - FW + 1;
+
+    int out_x = blockIdx.x * blockDim.x + threadIdx.x;
+    int out_y = blockIdx.y * blockDim.y + threadIdx.y;
+    int tile_width = blockDim.x + FW - 1;
+    int tile_height = blockDim.y + FH - 1;
+
+    int shared_x = threadIdx.x;
+    int shared_y = threadIdx.y;
+
+    for (int fy = 0; fy < FH; ++fy) {
+        for (int fx = 0; fx < FW; ++fx) {
+            int global_x = out_x + fx;
+            int global_y = out_y + fy;
+            if (global_x < W && global_y < H) {
+                shared_input[(shared_y + fy) * tile_width + (shared_x + fx)] =
+                    input[global_y * W + global_x];
+            } else {
+                shared_input[(shared_y + fy) * tile_width + (shared_x + fx)] = 0.0f; // Zero padding
+            }
+        }
+    }
+
+    __syncthreads();
+
+    if (out_x >= outW || out_y >= outH) return;
+
+    float sum = 0.0f;
+    for (int fy = 0; fy < FH; ++fy) {
+        for (int fx = 0; fx < FW; ++fx) {
+            sum += shared_input[(shared_y + fy) * tile_width + (shared_x + fx)] * c_filter[fy * FW + fx];
+        }
+    }
+
+    output[out_y * outW + out_x] = sum;
+}
