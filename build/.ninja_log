@@ -22,3 +22,9 @@
 8	12698	8050737132874257	CMakeFiles/imageTest.dir/kernels/imageTest.cu.obj	3b58531f6e97ab11
 13666	20147	8050737269452897	CMakeFiles/imageTest.dir/cmake_device_link.obj	ab17734a5a52581f
 20147	20790	8050737334267504	bin/imageTest.exe	26c46246ded76f12
+8	11961	8050737873718370	CMakeFiles/imageTest.dir/kernels/imageTest.cu.obj	3b58531f6e97ab11
+12950	19454	8050738003129116	CMakeFiles/imageTest.dir/cmake_device_link.obj	ab17734a5a52581f
+19454	19879	8050738068165564	bin/imageTest.exe	26c46246ded76f12
+8	12678	8050738174235475	CMakeFiles/imageTest.dir/kernels/imageTest.cu.obj	3b58531f6e97ab11
+13565	19303	8050738309818567	CMakeFiles/imageTest.dir/cmake_device_link.obj	ab17734a5a52581f
+19303	19783	8050738367194428	bin/imageTest.exe	26c46246ded76f12

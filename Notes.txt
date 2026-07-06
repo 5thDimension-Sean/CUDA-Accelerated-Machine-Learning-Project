@@ -574,3 +574,6 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     0 0 0
     CUDA error at D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\kernels\imageTest.cu:69 - invalid argument
     There is some invalid argument. The path does not match so it will be changed. 
+
+    204 204 3 woo hoo! it fixed
+    What do they mean? 204*204, 3 channels!
