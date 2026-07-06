@@ -68,18 +68,3 @@ __constant__ float c_filter[MAX_FILTER_SIZE];
 
     }
 
-    __global__ void conv2d_shared(const float* input,
-      const float* filter,
-      float* output,
-      int H, int W,
-      int FH, int FW){
-        int outH = H - FH + 1;
-        int outW = W - FW + 1;
-        //output height/width
-        int out_x = blockIdx.x * blockDim.x + threadIdx.x;
-        int out_y = blockIdx.y * blockDim.y + threadIdx.y;
-
-        if (out_x >= outW || out_y >= outH) return;
-      }
-
-
