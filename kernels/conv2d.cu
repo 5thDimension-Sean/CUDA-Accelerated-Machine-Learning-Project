@@ -114,3 +114,29 @@ __global__ void conv2d_shared(
 
     output[out_y * outW + out_x] = sum;
 }
+
+
+__global__ void conv2d_filter(const float* input,
+    const float* filters,
+    float* output,
+    int H, int W,
+    int C,
+    int FH, int FW){
+      int outH = H - FH + 1;
+      int outW = W - FW + 1;
+      int outD = blockIdx.z;
+    //output height/width
+      int out_x = blockIdx.x * blockDim.x + threadIdx.x;
+      int out_y = blockIdx.y * blockDim.y + threadIdx.y;
+      int out_z = blockIdx.z * blockDim.z + threadIdx.z;
+      if (out_x >= outW || out_y >= outH || out_z >= outD) return;
+
+      float sum = 0.0f;
+      for (int fy = 0; fy < FH; ++fy) {
+          for (int fx = 0; fx < FW; ++fx) {
+              sum += input[out_z * H * W + (out_y + fy) * W + (out_x + fx)] * filters[out_z * FH * FW + fy * FW + fx];
+          }
+      }
+
+      output[out_z * outH * outW + out_y * outW + out_x] = sum;
+  }
