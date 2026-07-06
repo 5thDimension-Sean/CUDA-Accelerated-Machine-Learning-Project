@@ -500,3 +500,17 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Constant speed up over naive = 4.56x
 
     Error on the constant convolution. 
+    Correct: YES
+    Correct: YES
+    --- Naive Conv2D ---
+    GPU time: 0.101 ms
+    --- CPU Baseline ---
+    CPU time: 0.441 ms
+    --- Constant Conv2D ---
+    GPU time: 0.033 ms
+    --- Comparison ---
+    Naive speedup over cpu = 4.36x
+    Constant / CPU = 13.19x
+    Constant speed up over naive = 3.03x
+
+    fixed due to overloaded d filter variable and cudaMemcpyToSymbol
