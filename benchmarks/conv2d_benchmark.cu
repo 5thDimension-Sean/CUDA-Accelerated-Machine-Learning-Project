@@ -167,15 +167,35 @@ int main(){
             }
         }
 
-        cudaMemcpyToSymbol(c_filter, h_filter, FH * FW * sizeof(float));
-        float depthTotal = 0.0f;
+        const int C = 3;
+        float* h_filters;
+        float* h_depth_input;
+        float* h_depth_output;
         float* d_filters;
-        cudaMalloc(&d_filters, FH * FW * sizeof(float));
-        cudaMemcpy(d_filters, h_filter, FH * FW * sizeof(float), cudaMemcpyHostToDevice);
+        float* d_depth_input;
+        float* d_depth_output;
+
+        CUDA_CHECK(cudaMallocHost(&h_filters,      C * FH * FW    * sizeof(float)));
+        CUDA_CHECK(cudaMallocHost(&h_depth_input,  C * H  * W     * sizeof(float)));
+        CUDA_CHECK(cudaMallocHost(&h_depth_output, C * outH * outW * sizeof(float)));
+        CUDA_CHECK(cudaMalloc(&d_filters,      C * FH * FW    * sizeof(float)));
+        CUDA_CHECK(cudaMalloc(&d_depth_input,  C * H  * W     * sizeof(float)));
+        CUDA_CHECK(cudaMalloc(&d_depth_output, C * outH * outW * sizeof(float)));
+
+        for (int i = 0; i < C * H * W; i++) h_depth_input[i] = 1.0f;
+        for (int i = 0; i < C * FH * FW; i++) h_filters[i] = 0.0f;
+        for (int c = 0; c < C; c++) h_filters[c * FH * FW + (FH / 2) * FW + FW / 2] = 1.0f;
+
+        CUDA_CHECK(cudaMemcpy(d_depth_input, h_depth_input, C * H * W * sizeof(float), cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemcpy(d_filters, h_filters, C * FH * FW * sizeof(float), cudaMemcpyHostToDevice));
+
+        float depthTotal = 0.0f;
+        dim3 depthGridDim((outW + 31) / 32, (outH + 31) / 32, C);
+        dim3 depthBlockDim(32, 32, 1);
         for (int r = 0; r < N_RUNS_GPU; r++) {
-            CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
+            CUDA_CHECK(cudaMemset(d_depth_output, 0, C * outH * outW * sizeof(float)));
             CUDA_CHECK(cudaEventRecord(start));
-            conv2d_filter<<<gridDim, blockDim>>>(d_input, d_filters, d_output, H, W, 3, FH, FW);
+            conv2d_filter<<<depthGridDim, depthBlockDim>>>(d_depth_input, d_filters, d_depth_output, H, W, C, FH, FW);
             CUDA_CHECK(cudaGetLastError());
             CUDA_CHECK(cudaEventRecord(stop));
             CUDA_CHECK(cudaEventSynchronize(stop));
@@ -183,12 +203,12 @@ int main(){
             CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
             depthTotal += ms;
         }
-        CUDA_CHECK(cudaMemcpy(h_output, d_output, outH * outW * sizeof(float), cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(h_depth_output, d_depth_output, C * outH * outW * sizeof(float), cudaMemcpyDeviceToHost));
 
         correct = true;
-        for (int i = 0; i < outH * outW; i++) {
-            if (fabsf(h_output[i] - 1.0f) > 1e-5f) {
-                printf("MISMATCH at %d: got %.4f\n", i, h_output[i]);
+        for (int i = 0; i < C * outH * outW; i++) {
+            if (fabsf(h_depth_output[i] - 1.0f) > 1e-5f) {
+                printf("MISMATCH at %d: got %.4f\n", i, h_depth_output[i]);
                 correct = false;
                 break;
             }
@@ -223,9 +243,15 @@ int main(){
         CUDA_CHECK(cudaFreeHost(h_input));
         CUDA_CHECK(cudaFreeHost(h_filter));
         CUDA_CHECK(cudaFreeHost(h_output));
+        CUDA_CHECK(cudaFreeHost(h_filters));
+        CUDA_CHECK(cudaFreeHost(h_depth_input));
+        CUDA_CHECK(cudaFreeHost(h_depth_output));
         CUDA_CHECK(cudaFree(d_input));
         CUDA_CHECK(cudaFree(d_filter));
         CUDA_CHECK(cudaFree(d_output));
+        CUDA_CHECK(cudaFree(d_filters));
+        CUDA_CHECK(cudaFree(d_depth_input));
+        CUDA_CHECK(cudaFree(d_depth_output));
         CUDA_CHECK(cudaEventDestroy(start));
         CUDA_CHECK(cudaEventDestroy(stop));
 
