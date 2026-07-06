@@ -20,7 +20,7 @@
 
 int main(){
     const char* file_name = "D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\demo\\images.png";
-    const char* saveout_file_name = "D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\demo\\images_edit.png";
+    const char* saveout_file_name = "D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\demo\\images_edit2.png";
     int w, h, c = 0;
 
     unsigned char* image_buffer = stbi_load(file_name, &w, &h, &c, 0);
@@ -54,10 +54,17 @@ int main(){
     float* h_output = (float*)malloc(outH * outW * sizeof(float));
     float* h_input = (float*)malloc(size);
     float* h_filter = (float*)malloc(filter_size);
+    /*
+    //gaussian blur filter
     h_filter[0] = 1/16.f; h_filter[1] = 2/16.f; h_filter[2] = 1/16.f;
     h_filter[3] = 2/16.f; h_filter[4] = 4/16.f; h_filter[5] = 2/16.f;
     h_filter[6] = 1/16.f; h_filter[7] = 2/16.f; h_filter[8] = 1/16.f;
-    //fillin with gaussian blur filter values
+    */
+    //Sobel filter
+    h_filter[0] = -1.f; h_filter[1] = 0.f; h_filter[2] = 1.f;
+    h_filter[3] = -2.f; h_filter[4] = 0.f; h_filter[5] = 2.f;
+    h_filter[6] = -1.f; h_filter[7] = 0.f; h_filter[8] = 1.f;
+
     // Configure execution configuration block and grid sizes
     for(int i = 0; i < w * h; ++i) {
         h_input[i] = image_buffer[i * c]/255.0f; // Assuming grayscale image, take the first channel
@@ -71,8 +78,12 @@ int main(){
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaMemcpy(h_output, d_output, outW * outH * sizeof(float), cudaMemcpyDeviceToHost));
     unsigned char* out_img = (unsigned char*)malloc(outH * outW);
-    for (int i = 0; i < outH * outW; i++)
-        out_img[i] = (unsigned char)(h_output[i] * 255.0f);
+    for (int i = 0; i < outH * outW; i++){
+        float val = h_output[i] * 255.0f;
+            if (val < 0.f) val = 0.f;
+            if (val > 255.f) val = 255.f;
+            out_img[i] = (unsigned char)val;
+    }
     stbi_write_png(saveout_file_name, outW, outH, 1, out_img, outW);
     free(out_img);
     stbi_image_free(image_buffer);
