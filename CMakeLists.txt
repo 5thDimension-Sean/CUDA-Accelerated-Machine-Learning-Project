@@ -34,6 +34,8 @@ target_link_libraries(matmul_benchmark cublas)
 # ── Week 4: 2D Convolution ───────────────────────────────────────────────────
 add_executable(conv2d_benchmark benchmarks/conv2d_benchmark.cu) 
 set_target_properties(conv2d_benchmark PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+add_executable(imageTest kernels/imageTest.cu) 
+set_target_properties(imageTest PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 # ── Week 5: Activations ──────────────────────────────────────────────────────
 # add_executable(activations kernels/activations.cu)
 

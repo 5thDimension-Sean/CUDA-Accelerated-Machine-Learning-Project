@@ -535,3 +535,39 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Shared speed up over constant = 0.89x
     Shared speed up over cpu = 19.55x
     bug fixes by fixing cudaMemcpyToSymbolAsync and also added shmem_bytes for the shared mem size at launch. 
+
+    Correct: YES
+    MISMATCH at 0: got 0.0000
+    Correct: NO
+    Depthwise convolution error
+
+    Still having same issues, most likely from some C errors or some other dimension resolution in filter kernel. 
+    Fixed, and it was a dimension resolve issue in the kernel. 
+    Correct: YES
+    Correct: YES
+    --- Naive Conv2D ---
+    GPU time: 0.087 ms
+    --- CPU Baseline ---
+    CPU time: 0.495 ms
+    --- Constant Conv2D ---
+    GPU time: 0.025 ms
+    --- Shared Conv2D ---
+    GPU time: 0.021 ms
+    --- Depthwise Conv2D ---
+    GPU time: 0.028 ms
+    --- Comparison ---
+    Naive speedup over cpu = 5.71x
+    Constant / CPU = 19.84x
+    Constant speed up over naive = 3.48x
+    Shared speed up over naive = 4.08x
+    Shared speed up over constant = 1.17x
+    Shared speed up over cpu = 23.32x
+    Depthwise speed up over naive = 3.09x
+    Depthwise speed up over constant = 0.89x
+    Depthwise speed up over shared = 0.76x
+    Depthwise speed up over cpu = 17.65x
+
+
+    Next step is to apply to an image and use 2 filers, Gaussian blur and sobel edge detection. 
+    https://www.youtube.com/watch?v=g3B1TOPw4WY
+    https://www.youtube.com/watch?v=X510Gv0WYtc

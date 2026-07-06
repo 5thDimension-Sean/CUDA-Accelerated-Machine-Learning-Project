@@ -124,12 +124,11 @@ __global__ void conv2d_filter(const float* input,
     int FH, int FW){
       int outH = H - FH + 1;
       int outW = W - FW + 1;
-      int outD = blockIdx.z;
     //output height/width
       int out_x = blockIdx.x * blockDim.x + threadIdx.x;
       int out_y = blockIdx.y * blockDim.y + threadIdx.y;
       int out_z = blockIdx.z * blockDim.z + threadIdx.z;
-      if (out_x >= outW || out_y >= outH || out_z >= outD) return;
+      if (out_x >= outW || out_y >= outH || out_z >= C) return;
 
       float sum = 0.0f;
       for (int fy = 0; fy < FH; ++fy) {
