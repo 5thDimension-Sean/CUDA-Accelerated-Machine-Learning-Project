@@ -144,11 +144,11 @@ int main(){
         size_t filter_bytes = FH * FW * sizeof(float);
         cudaMemcpyToSymbol(c_filter, h_filter, FH * FW * sizeof(float));
         float sharedTotal = 0.0f;
+        size_t shmem_bytes = (blockDim.x + FW - 1) * (blockDim.y + FH - 1) * sizeof(float);
         for (int r = 0; r < N_RUNS_GPU; r++) {
             CUDA_CHECK(cudaMemset(d_output, 0, outH * outW * sizeof(float)));
             CUDA_CHECK(cudaEventRecord(start));
-            CUDA_CHECK(cudaMemcpyToSymbolAsync(c_filter, h_filter, filter_bytes, 0, cudaMemcpyHostToDevice));
-            conv2d_shared<<<gridDim, blockDim>>>(d_input, d_output, H, W, FH, FW);
+            conv2d_shared<<<gridDim, blockDim, shmem_bytes>>>(d_input, d_output, H, W, FH, FW);
             CUDA_CHECK(cudaGetLastError());
             CUDA_CHECK(cudaEventRecord(stop));
             CUDA_CHECK(cudaEventSynchronize(stop));

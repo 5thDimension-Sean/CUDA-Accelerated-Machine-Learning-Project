@@ -20,3 +20,9 @@
 11	11102	8050620313178156	CMakeFiles/conv2d_benchmark.dir/benchmarks/conv2d_benchmark.cu.obj	7df2544e525e8c6a
 11171	17470	8050620424780098	CMakeFiles/conv2d_benchmark.dir/cmake_device_link.obj	996723d7555a0909
 17470	17930	8050620487762892	bin/conv2d_benchmark.exe	f6aa2326ef89c419
+50	12087	8050623321581926	CMakeFiles/conv2d_benchmark.dir/benchmarks/conv2d_benchmark.cu.obj	7df2544e525e8c6a
+12159	18463	8050623442669833	CMakeFiles/conv2d_benchmark.dir/cmake_device_link.obj	996723d7555a0909
+18463	18939	8050623505709773	bin/conv2d_benchmark.exe	f6aa2326ef89c419
+11	12138	8050627098845534	CMakeFiles/conv2d_benchmark.dir/benchmarks/conv2d_benchmark.cu.obj	7df2544e525e8c6a
+12218	17594	8050627220924798	CMakeFiles/conv2d_benchmark.dir/cmake_device_link.obj	996723d7555a0909
+17594	18032	8050627274683278	bin/conv2d_benchmark.exe	f6aa2326ef89c419
