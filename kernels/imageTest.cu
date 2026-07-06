@@ -19,8 +19,8 @@
     } while (0)
 
 int main(){
-    const char* file_name = "images.jpg";
-    const char* saveout_file_name = "images_edit.png";
+    const char* file_name = "D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\images.jpg";
+    const char* saveout_file_name = "D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\images_edit.png";
     int w, h, c = 0;
 
     unsigned char* image_buffer = stbi_load(file_name, &w, &h, &c, 0);

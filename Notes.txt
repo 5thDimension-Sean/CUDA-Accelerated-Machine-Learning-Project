@@ -571,3 +571,6 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Next step is to apply to an image and use 2 filers, Gaussian blur and sobel edge detection. 
     https://www.youtube.com/watch?v=g3B1TOPw4WY
     https://www.youtube.com/watch?v=X510Gv0WYtc
+    0 0 0
+    CUDA error at D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\kernels\imageTest.cu:69 - invalid argument
+    There is some invalid argument. The path does not match so it will be changed. 
