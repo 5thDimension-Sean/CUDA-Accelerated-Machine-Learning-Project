@@ -578,3 +578,7 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     204 204 3 woo hoo! it fixed
     What do they mean? 204*204, 3 channels!
     The sobel filter is wrong. looks bad so will fix
+
+    7/7/26 @ 11:26
+    https://www.youtube.com/watch?v=6StFanGtmvo
+    https://www.youtube.com/watch?v=W5jFOYnU6fc
