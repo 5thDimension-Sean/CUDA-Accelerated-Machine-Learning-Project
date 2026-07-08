@@ -20,3 +20,6 @@
 13	14287	8050744832659767	CMakeFiles/imageTest.dir/kernels/imageTest.cu.obj	3b58531f6e97ab11
 15267	21987	8050744985199913	CMakeFiles/imageTest.dir/cmake_device_link.obj	ab17734a5a52581f
 21987	22845	8050745052407356	bin/imageTest.exe	26c46246ded76f12
+11	13151	8052321129270580	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
+13244	19366	8052321261600240	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
+19367	20136	8052321322826467	bin/streams_benchmark.exe	4a625f3b93110923

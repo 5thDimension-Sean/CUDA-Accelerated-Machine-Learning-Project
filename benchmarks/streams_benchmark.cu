@@ -78,7 +78,7 @@ int main(){
     printf("Synchronous version: %.3f ms\n", syncMs);
     printf("Asynchronous version with streams: %.3f ms\n", asyncMs);
     printf("Streams speedup vs Sync: %.2fx\n", compared);
-
+    printf("Number of streams used: %d\n", num_streams);
     free(h_A);
     free(streams);
     CUDA_CHECK(cudaFree(d_A));

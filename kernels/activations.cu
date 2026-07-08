@@ -20,6 +20,8 @@
 #include "device_launch_parameters.h"
 #include <stdio.h>
 #include <cmath>
+#include <torch/torch.h>
+#include <iostream>
 
 #define CUDA_CHECK(call)                                                        \
     do {                                                                        \
@@ -132,19 +134,23 @@ void leakyRelu(float *z_matrix, float *activation_matrix, int width, int height)
 }
 
 __global__ void softMaxActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
-    int col = blockIdx.x * blockDim.x + threadIdx.x; 
-    int row = blockIdx.y * blockDim.y + threadIdx.y; 
-    
+      int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    __shared__ float row_sum;
+
     if (row < height && col < width) {
         int index = row * width + col;
-        
+        //missing max subtraction
         if (isForward) {
-            float sum = 0.0f;
-            int total_elements = width * height;
-            for (int i = 0; i < total_elements; i++) {
-                sum += expf(z_matrix[i]);
+            float val = z_matrix[index];
+            float exp_val = expf(val);
+            if (threadIdx.x == 0 && threadIdx.y == 0) {
+                row_sum = 0.0f;
             }
-            activation_matrix[index] = expf(z_matrix[index]) / sum;
+            __syncthreads();
+            atomicAdd(&row_sum, exp_val);
+            __syncthreads();
+            activation_matrix[index] = exp_val / row_sum;
         } else {
             // Backward pass placeholder
         }
@@ -152,6 +158,22 @@ __global__ void softMaxActivation(float *z_matrix, float *activation_matrix, int
 }
 
 void softMax(float *z_matrix, float *activation_matrix, int width, int height) {
+    const int arrSize = 5;
+    float host_z_values[arrSize] = {1., 2., 3., 4., 5.};
+    float host_activations[arrSize] = {0.};
+
+    const size_t bytes_z_values = arrSize * sizeof(float);
+    const size_t bytes_activations = arrSize * sizeof(float);
+
+    float *device_z_values, *device_activations;
+
+    CUDA_CHECK(cudaMalloc(&device_z_values, bytes_z_values));
+    CUDA_CHECK(cudaMalloc(&device_activations, bytes_activations));
+
+}
+
+
+int main(){
     const int arrSize = 5;
     float host_z_values[arrSize] = {1., 2., 3., 4., 5.};
     float host_activations[arrSize] = {0.};
