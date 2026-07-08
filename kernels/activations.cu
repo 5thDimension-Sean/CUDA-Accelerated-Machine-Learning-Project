@@ -25,6 +25,12 @@
 
 dim3 block(5, 1);
 dim3 grid(1, 1);
+enum class ActivationType {
+    ReLU,
+    LRELU,
+    Sigmoid,
+    Softmax // The exception: only has a forward pass
+};
 
 #define CUDA_CHECK(call)                                                        \
     do {                                                                        \
@@ -111,42 +117,89 @@ __global__ void softMaxActivation(float *z_matrix, float *activation_matrix, int
     }
 }
 
-void wrapperKernel(float *z_matrix, float *activation_matrix, int width, int height) {
-    const int arrSize = 5;
-    float host_z_values[arrSize] = {-2.0f, -1.0f, 0.0f, 1.0f, 2.0f};
-    float host_activations[arrSize] = {0.};
-    float host_gradients[arrSize] = {0.};
-
-
-    const size_t bytes_z_values = arrSize * sizeof(float);
-    const size_t bytes_activations = arrSize * sizeof(float);
-    const size_t bytes_gradients = arrSize * sizeof(float);
-
-    float *device_z_values, *device_activations, *device_gradients;
-
-    CUDA_CHECK(cudaMalloc(&device_z_values, bytes_z_values));
-    CUDA_CHECK(cudaMalloc(&device_activations, bytes_activations));
-    CUDA_CHECK(cudaMalloc(&device_gradients, bytes_gradients));
-
-    CUDA_CHECK(cudaMemcpy(device_z_values, host_z_values, bytes_z_values, cudaMemcpyHostToDevice));
-    sigmoidActivation<< <grid, block>> > (device_z_values, device_activations, 5, 1, true);
-    sigmoidActivation <<<grid, block>>>(device_activations, device_gradients, 5, 1, false);
-    CUDA_CHECK(cudaMemcpy(host_activations, device_activations, bytes_activations, cudaMemcpyDeviceToHost));
-    for(int i = 0; i < arrSize; i++){
-        printf("%.4f ", host_activations[i]);
+//condensed wrapper function
+void wrapperKernel(float *host_z_matrix, float *host_activation_matrix, int width, int height, bool isForward, ActivationType type) {
+    if (!isForward && type == ActivationType::Softmax) {
+        fprintf(stderr, "Error: Softmax does not support a backward pass kernel!\n");
+        return;
     }
-    printf("\n");
-    CUDA_CHECK(cudaMemcpy(host_gradients, device_gradients, bytes_gradients, cudaMemcpyDeviceToHost));
-    for(int i = 0; i < arrSize; i++){
-        printf("%.4f ", host_gradients[i]);
+
+    int arrSize = width * height;
+    size_t bytes = arrSize * sizeof(float);
+
+    float *device_z_matrix, *device_activation_matrix;
+    CUDA_CHECK(cudaMalloc(&device_z_matrix, bytes));
+    CUDA_CHECK(cudaMalloc(&device_activation_matrix, bytes));
+
+    if (isForward) {
+        CUDA_CHECK(cudaMemcpy(device_z_matrix, host_z_matrix, bytes, cudaMemcpyHostToDevice));
+    } else {
+        CUDA_CHECK(cudaMemcpy(device_activation_matrix, host_activation_matrix, bytes, cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemcpy(device_z_matrix, host_z_matrix, bytes, cudaMemcpyHostToDevice));
     }
-    printf("\n");
-    cudaFree(device_z_values);
-    cudaFree(device_activations);
-    cudaFree(device_gradients);
+
+    if (type == ActivationType::ReLU) {
+        reLuActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+    } 
+    else if (type == ActivationType::LRELU) {
+        leakyreLuActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+    } 
+    else if (type == ActivationType::Sigmoid) {
+        sigmoidActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+    } 
+    else if (type == ActivationType::Softmax) {
+        softMaxActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+    }
+
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    CUDA_CHECK(cudaMemcpy(host_activation_matrix, device_activation_matrix, bytes, cudaMemcpyDeviceToHost));
+
+    printf("Activation execution (Type: %d, IsForward: %s) output:\n", (int)type, isForward ? "True" : "False");
+    for (int i = 0; i < arrSize; i++) {
+        printf("%.4f ", host_activation_matrix[i]);
+    }
+    printf("\n\n");
+
+    cudaFree(device_z_matrix);
+    cudaFree(device_activation_matrix);
 }
 
 
-int main(){
 
+int main(){
+  const int arrSize = 5;
+    
+    float host_z_values[arrSize] = {-2.0f, -1.0f, 0.0f, 1.0f, 2.0f};
+    float host_activations[arrSize] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    
+    printf("--- Case 1: ReLU Forward ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::ReLU);
+
+    printf("--- Case 2: ReLU Backward ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::ReLU);
+
+    for(int i = 0; i < arrSize; i++) host_activations[i] = 0.0f;
+    printf("--- Case 3: Leaky ReLU Forward ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::LRELU);
+
+    printf("--- Case 4: Leaky ReLU Backward ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::LRELU);
+
+    for(int i = 0; i < arrSize; i++) host_activations[i] = 0.0f;
+    printf("--- Case 5: Sigmoid Forward ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::Sigmoid);
+
+    printf("--- Case 6: Sigmoid Backward ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::Sigmoid);
+
+    for(int i = 0; i < arrSize; i++) host_activations[i] = 0.0f;
+    printf("--- Case 7: Softmax Forward ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::Softmax);
+
+    printf("--- Case 8: Softmax Backward (Expected Error Block) ---\n");
+    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::Softmax);
+
+    return 0;
 }
