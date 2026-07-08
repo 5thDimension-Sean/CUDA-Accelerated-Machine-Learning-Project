@@ -23,3 +23,6 @@
 9	13221	8052347284915421	CMakeFiles/activations.dir/kernels/activations.cu.obj	e0672e222b444673
 13299	19514	8052347417814790	CMakeFiles/activations.dir/cmake_device_link.obj	eb15b48a457ab59c
 19514	20016	8052347479960114	bin/activations.exe	1733c4e390b52435
+9	14354	8052400400036017	CMakeFiles/batchnorm.dir/kernels/batchnorm.cu.obj	209532b94dbad189
+14482	20630	8052400544764096	CMakeFiles/batchnorm.dir/cmake_device_link.obj	1ca0448ebc92d02c
+20630	21221	8052400606242055	bin/batchnorm.exe	f910cf1408029e7e
