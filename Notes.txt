@@ -644,3 +644,8 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     https://kevinzakka.github.io/2016/09/14/batch_normalization/
     This derives batch normalization
+    mean = 4.5000
+    variance = 5.2500
+    output: -1.5275 -1.0911 -0.6547 -0.2182 0.2182 0.6547 1.0911 1.5275 
+
+    Correct on this data set. Just try it with mathematical methods to see it work!
