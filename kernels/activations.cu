@@ -20,8 +20,11 @@
 #include "device_launch_parameters.h"
 #include <stdio.h>
 #include <cmath>
-#include <torch/torch.h>
+//#include <torch/torch.h>
 #include <iostream>
+
+dim3 block(5, 1);
+dim3 grid(1, 1);
 
 #define CUDA_CHECK(call)                                                        \
     do {                                                                        \
@@ -51,24 +54,6 @@ __global__ void sigmoidActivation(float *z_matrix, float *activation_matrix, int
     }
 }
 
-
-// TODO — Week 5: implement here
-void sigMoid(float *z_matrix, float *activation_matrix, int width, int height) {
-    const int arrSize = 5;
-    float host_z_values[arrSize] = {1., 2., 3., 4., 5.};
-    float host_activations[arrSize] = {0.};
-
-    const size_t bytes_z_values = arrSize * sizeof(float);
-    const size_t bytes_activations = arrSize * sizeof(float);
-
-    float *device_z_values, *device_activations;
-
-    CUDA_CHECK(cudaMalloc(&device_z_values, bytes_z_values));
-    CUDA_CHECK(cudaMalloc(&device_activations, bytes_activations));
-
-    CUDA_CHECK(cudaMemcpy(device_z_values, host_z_values, bytes_z_values, cudaMemcpyHostToDevice));
-    //sigmoidActivation<< <1, arrSize>> > (device_z_values, device_activations, 256, 256, true);
-}
 __global__ void reLuActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
     int col = blockIdx.x * blockDim.x + threadIdx.x; // X coordinate (Width)
     int row = blockIdx.y * blockDim.y + threadIdx.y; // Y coordinate (Height)
@@ -86,22 +71,6 @@ __global__ void reLuActivation(float *z_matrix, float *activation_matrix, int wi
     }
 }
 
-
-void ReLu(float *z_matrix, float *activation_matrix, int width, int height) {
-    const int arrSize = 5;
-    float host_z_values[arrSize] = {1., 2., 3., 4., 5.};
-    float host_activations[arrSize] = {0.};
-
-    const size_t bytes_z_values = arrSize * sizeof(float);
-    const size_t bytes_activations = arrSize * sizeof(float);
-
-    float *device_z_values, *device_activations;
-
-    CUDA_CHECK(cudaMalloc(&device_z_values, bytes_z_values));
-    CUDA_CHECK(cudaMalloc(&device_activations, bytes_activations));
-
-}
-
 __global__ void leakyreLuActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
     int col = blockIdx.x * blockDim.x + threadIdx.x; // X coordinate (Width)
     int row = blockIdx.y * blockDim.y + threadIdx.y; // Y coordinate (Height)
@@ -116,21 +85,6 @@ __global__ void leakyreLuActivation(float *z_matrix, float *activation_matrix, i
         activation_matrix[index] = (z_matrix[index] > 0.0f) ? 1.0f : 0.01f;
     }
     }
-}
-
-void leakyRelu(float *z_matrix, float *activation_matrix, int width, int height) {
-    const int arrSize = 5;
-    float host_z_values[arrSize] = {1., 2., 3., 4., 5.};
-    float host_activations[arrSize] = {0.};
-
-    const size_t bytes_z_values = arrSize * sizeof(float);
-    const size_t bytes_activations = arrSize * sizeof(float);
-
-    float *device_z_values, *device_activations;
-
-    CUDA_CHECK(cudaMalloc(&device_z_values, bytes_z_values));
-    CUDA_CHECK(cudaMalloc(&device_activations, bytes_activations));
-
 }
 
 __global__ void softMaxActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
@@ -157,33 +111,42 @@ __global__ void softMaxActivation(float *z_matrix, float *activation_matrix, int
     }
 }
 
-void softMax(float *z_matrix, float *activation_matrix, int width, int height) {
+void wrapperKernel(float *z_matrix, float *activation_matrix, int width, int height) {
     const int arrSize = 5;
-    float host_z_values[arrSize] = {1., 2., 3., 4., 5.};
+    float host_z_values[arrSize] = {-2.0f, -1.0f, 0.0f, 1.0f, 2.0f};
     float host_activations[arrSize] = {0.};
+    float host_gradients[arrSize] = {0.};
+
 
     const size_t bytes_z_values = arrSize * sizeof(float);
     const size_t bytes_activations = arrSize * sizeof(float);
+    const size_t bytes_gradients = arrSize * sizeof(float);
 
-    float *device_z_values, *device_activations;
+    float *device_z_values, *device_activations, *device_gradients;
 
     CUDA_CHECK(cudaMalloc(&device_z_values, bytes_z_values));
     CUDA_CHECK(cudaMalloc(&device_activations, bytes_activations));
+    CUDA_CHECK(cudaMalloc(&device_gradients, bytes_gradients));
 
+    CUDA_CHECK(cudaMemcpy(device_z_values, host_z_values, bytes_z_values, cudaMemcpyHostToDevice));
+    sigmoidActivation<< <grid, block>> > (device_z_values, device_activations, 5, 1, true);
+    sigmoidActivation <<<grid, block>>>(device_activations, device_gradients, 5, 1, false);
+    CUDA_CHECK(cudaMemcpy(host_activations, device_activations, bytes_activations, cudaMemcpyDeviceToHost));
+    for(int i = 0; i < arrSize; i++){
+        printf("%.4f ", host_activations[i]);
+    }
+    printf("\n");
+    CUDA_CHECK(cudaMemcpy(host_gradients, device_gradients, bytes_gradients, cudaMemcpyDeviceToHost));
+    for(int i = 0; i < arrSize; i++){
+        printf("%.4f ", host_gradients[i]);
+    }
+    printf("\n");
+    cudaFree(device_z_values);
+    cudaFree(device_activations);
+    cudaFree(device_gradients);
 }
 
 
 int main(){
-    const int arrSize = 5;
-    float host_z_values[arrSize] = {1., 2., 3., 4., 5.};
-    float host_activations[arrSize] = {0.};
-
-    const size_t bytes_z_values = arrSize * sizeof(float);
-    const size_t bytes_activations = arrSize * sizeof(float);
-
-    float *device_z_values, *device_activations;
-
-    CUDA_CHECK(cudaMalloc(&device_z_values, bytes_z_values));
-    CUDA_CHECK(cudaMalloc(&device_activations, bytes_activations));
 
 }
