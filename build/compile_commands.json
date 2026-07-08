@@ -46,5 +46,11 @@
   "command": "C:\\PROGRA~1\\NVIDIA~2\\CUDA\\v13.1\\bin\\nvcc.exe -forward-unknown-to-host-compiler -D_WINDOWS -Xcompiler=\" /GR /EHsc\" -O3 -Xcompiler -Wall -Xcompiler=\"-O2 -Ob2\" -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[compute_75,sm_75]\" \"--generate-code=arch=compute_86,code=[compute_86,sm_86]\" \"--generate-code=arch=compute_89,code=[compute_89,sm_89]\" -Xcompiler=-MD -x cu -rdc=true -c \"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\\activations.cu\" -o CMakeFiles\\activations.dir\\kernels\\activations.cu.obj -Xcompiler=-FdCMakeFiles\\activations.dir\\,-FS",
   "file": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/kernels/activations.cu",
   "output": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/activations.dir/kernels/activations.cu.obj"
+},
+{
+  "directory": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build",
+  "command": "C:\\PROGRA~1\\NVIDIA~2\\CUDA\\v13.1\\bin\\nvcc.exe -forward-unknown-to-host-compiler -D_WINDOWS -Xcompiler=\" /GR /EHsc\" -O3 -Xcompiler -Wall -Xcompiler=\"-O2 -Ob2\" -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[compute_75,sm_75]\" \"--generate-code=arch=compute_86,code=[compute_86,sm_86]\" \"--generate-code=arch=compute_89,code=[compute_89,sm_89]\" -Xcompiler=-MD -x cu -rdc=true -c \"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\\batchnorm.cu\" -o CMakeFiles\\batchnorm.dir\\kernels\\batchnorm.cu.obj -Xcompiler=-FdCMakeFiles\\batchnorm.dir\\,-FS",
+  "file": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/kernels/batchnorm.cu",
+  "output": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/batchnorm.dir/kernels/batchnorm.cu.obj"
 }
 ]

@@ -17,3 +17,23 @@
 // ============================================================================
 
 // TODO — Week 5: implement here
+
+const int N = 8; 
+
+//3 kernels mean, variance, normalize + scale
+
+__global__ void mean_kernel(float *x, float *mean, int N) {
+
+}
+
+__global__ void variance_kernel(float *x, float *mean, float *variance, int N){
+
+}
+
+__global__ void batchNormForward(float *x, float *y, float *mean, float *variance, float gamma, float beta, float epsilon, int N){
+
+}
+
+int main(){
+    
+}

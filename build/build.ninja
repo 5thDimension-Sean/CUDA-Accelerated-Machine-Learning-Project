@@ -504,6 +504,64 @@ build bin\activations.exe: CUDA_EXECUTABLE_LINKER__activations_Release CMakeFile
   TARGET_PDB = bin\activations.pdb
   TARGET_SUPPORT_DIR = CMakeFiles\activations.dir
 
+# =============================================================================
+# Object build statements for EXECUTABLE target batchnorm
+
+
+#############################################
+# Order-only phony target for batchnorm
+
+build cmake_object_order_depends_target_batchnorm: phony || .
+
+build CMakeFiles\batchnorm.dir\kernels\batchnorm.cu.obj: CUDA_COMPILER__batchnorm_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\kernels\batchnorm.cu || cmake_object_order_depends_target_batchnorm
+  CONFIG = Release
+  DEP_FILE = CMakeFiles\batchnorm.dir\kernels\batchnorm.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  OBJECT_DIR = CMakeFiles\batchnorm.dir
+  OBJECT_FILE_DIR = CMakeFiles\batchnorm.dir\kernels
+  TARGET_COMPILE_PDB = CMakeFiles\batchnorm.dir\
+  TARGET_PDB = bin\batchnorm.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\batchnorm.dir
+
+
+# =============================================================================
+# Device Link build statements for EXECUTABLE target batchnorm
+
+
+#############################################
+# Link the executable CMakeFiles\batchnorm.dir\cmake_device_link.obj
+
+build CMakeFiles\batchnorm.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__batchnorm_Release CMakeFiles\batchnorm.dir\kernels\batchnorm.cu.obj
+  LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\batchnorm.dir
+  TARGET_COMPILE_PDB = CMakeFiles\batchnorm.dir\
+  TARGET_FILE = CMakeFiles\batchnorm.dir\cmake_device_link.obj
+  TARGET_IMPLIB = batchnorm.lib
+  TARGET_PDB = bin\batchnorm.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\batchnorm.dir
+
+# =============================================================================
+# Link build statements for EXECUTABLE target batchnorm
+
+
+#############################################
+# Link the executable bin\batchnorm.exe
+
+build bin\batchnorm.exe: CUDA_EXECUTABLE_LINKER__batchnorm_Release CMakeFiles\batchnorm.dir\kernels\batchnorm.cu.obj CMakeFiles\batchnorm.dir\cmake_device_link.obj
+  CONFIG = Release
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
+  LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\batchnorm.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\batchnorm.dir\
+  TARGET_FILE = bin\batchnorm.exe
+  TARGET_IMPLIB = batchnorm.lib
+  TARGET_PDB = bin\batchnorm.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\batchnorm.dir
+
 
 #############################################
 # Utility command for edit_cache
@@ -534,6 +592,10 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 build activations: phony bin\activations.exe
 
 build activations.exe: phony bin\activations.exe
+
+build batchnorm: phony bin\batchnorm.exe
+
+build batchnorm.exe: phony bin\batchnorm.exe
 
 build benchmark: phony bin\benchmark.exe
 
@@ -571,7 +633,7 @@ build vector_add.exe: phony bin\vector_add.exe
 #############################################
 # Folder: D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build
 
-build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe
+build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe bin\batchnorm.exe
 
 # =============================================================================
 # Built-in targets
