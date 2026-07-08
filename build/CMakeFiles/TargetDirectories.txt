@@ -5,5 +5,6 @@ D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/matmul_benchmark.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/conv2d_benchmark.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/imageTest.dir
+D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/activations.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/edit_cache.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/rebuild_cache.dir

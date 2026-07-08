@@ -2,16 +2,16 @@
 16	29730	8050617228705904	CMakeFiles/benchmark.dir/benchmarks/benchmark.cu.obj	2cab31a0cba5639a
 57	29896	8050617229105424	CMakeFiles/memory_benchmark.dir/benchmarks/memory_benchmark.cu.obj	77283dd62706332a
 7	30259	8050617228614212	CMakeFiles/vector_add.dir/kernels/vector_add.cu.obj	986d59850716b842
-193	30647	8050617230465669	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
+11	13151	8052321129270580	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
 11	12409	8050645504146972	CMakeFiles/conv2d_benchmark.dir/benchmarks/conv2d_benchmark.cu.obj	7df2544e525e8c6a
 208	32081	8050617230685360	CMakeFiles/matmul_benchmark.dir/benchmarks/matmul_benchmark.cu.obj	463706b92960d2ed
 29876	43925	8050617527298497	CMakeFiles/benchmark.dir/cmake_device_link.obj	7575ea3a4a188392
 30204	44453	8050617530581856	CMakeFiles/memory_benchmark.dir/cmake_device_link.obj	6ab45e77ab4285e
-31227	44794	8050617540811222	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
+13244	19366	8052321261600240	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
 30608	45173	8050617534617667	CMakeFiles/vector_add.dir/cmake_device_link.obj	ce123dc5250dfa07
 43926	45825	8050617667788367	bin/benchmark.exe	e18bbd264cee5383
 44453	45963	8050617673156640	bin/memory_benchmark.exe	cc73e0de29070543
-44794	45988	8050617676481788	bin/streams_benchmark.exe	4a625f3b93110923
+19367	20136	8052321322826467	bin/streams_benchmark.exe	4a625f3b93110923
 12471	18245	8050645628757934	CMakeFiles/conv2d_benchmark.dir/cmake_device_link.obj	996723d7555a0909
 45173	46311	8050617680266789	bin/vector_add.exe	d011ea5741ffdf6f
 18246	18775	8050645686499242	bin/conv2d_benchmark.exe	f6aa2326ef89c419
@@ -20,6 +20,3 @@
 13	14287	8050744832659767	CMakeFiles/imageTest.dir/kernels/imageTest.cu.obj	3b58531f6e97ab11
 15267	21987	8050744985199913	CMakeFiles/imageTest.dir/cmake_device_link.obj	ab17734a5a52581f
 21987	22845	8050745052407356	bin/imageTest.exe	26c46246ded76f12
-11	13151	8052321129270580	CMakeFiles/streams_benchmark.dir/benchmarks/streams_benchmark.cu.obj	3e1bcb080284f3e1
-13244	19366	8052321261600240	CMakeFiles/streams_benchmark.dir/cmake_device_link.obj	6e5976cf5db92cd2
-19367	20136	8052321322826467	bin/streams_benchmark.exe	4a625f3b93110923

@@ -584,3 +584,6 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     https://www.youtube.com/watch?v=W5jFOYnU6fc
     https://www.geeksforgeeks.org/machine-learning/activation-functions-neural-networks/.
     https://www.derivative-calculator.net/
+
+    7/8/26 @ 1:23
+    Finished actiations.cu and planning to run
