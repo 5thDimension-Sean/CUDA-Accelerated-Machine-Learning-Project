@@ -20,3 +20,6 @@
 13	14287	8050744832659767	CMakeFiles/imageTest.dir/kernels/imageTest.cu.obj	3b58531f6e97ab11
 15267	21987	8050744985199913	CMakeFiles/imageTest.dir/cmake_device_link.obj	ab17734a5a52581f
 21987	22845	8050745052407356	bin/imageTest.exe	26c46246ded76f12
+9	13221	8052347284915421	CMakeFiles/activations.dir/kernels/activations.cu.obj	e0672e222b444673
+13299	19514	8052347417814790	CMakeFiles/activations.dir/cmake_device_link.obj	eb15b48a457ab59c
+19514	20016	8052347479960114	bin/activations.exe	1733c4e390b52435
