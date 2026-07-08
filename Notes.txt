@@ -587,3 +587,58 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     7/8/26 @ 1:23
     Finished actiations.cu and planning to run
+    --- Case 1: ReLU Forward ---
+    Activation execution (Type: 0, IsForward: True) output:
+    0.0000 0.0000 0.0000 1.0000 2.0000 
+
+    --- Case 2: ReLU Backward ---
+    Activation execution (Type: 0, IsForward: False) output:
+    0.0000 0.0000 0.0000 1.0000 1.0000 
+
+    --- Case 3: Leaky ReLU Forward ---
+    Activation execution (Type: 1, IsForward: True) output:
+    -0.0200 -0.0100 0.0000 1.0000 2.0000 
+
+    --- Case 4: Leaky ReLU Backward ---
+    Activation execution (Type: 1, IsForward: False) output:
+    0.0100 0.0100 0.0100 1.0000 1.0000 
+
+    --- Case 5: Sigmoid Forward ---
+    Activation execution (Type: 2, IsForward: True) output:
+    0.1192 0.2689 0.5000 0.7311 0.8808 
+
+    --- Case 6: Sigmoid Backward ---
+    Activation execution (Type: 2, IsForward: False) output:
+    0.1050 0.1966 0.2500 0.1966 0.1050 
+
+    --- Case 7: Softmax Forward ---
+    Activation execution (Type: 3, IsForward: True) output:
+    0.0117 0.0317 0.0861 0.2341 0.6364 
+
+    --- Case 8: Softmax Backward (Expected Error Block) ---
+    Error: Softmax does not support a backward pass kernel!
+
+    Perfect first try!
+    What do these values mean though? 
+    from the host z value array
+    ReLU forward {0, 0, 0, 1, 2}
+    Negative values clamped to zero, positives pass through unchanged. The "dead neuron" problem:  anything negative contributes nothing.
+
+    ReLU backward {0, 0, 0, 1, 1}
+    The gradient mask:  tells backprop which neurons were "alive" during the forward pass. Dead neurons (<=0) get zero gradient, meaning they receive no weight update during training.
+
+    Leaky ReLU forward {-0.02, -0.01, 0, 1, 2}
+    Same as ReLU but negatives aren't fully killed:  they leak through at 1% of their value. Fixes the dead neuron problem.
+
+    Leaky ReLU backward {0.01, 0.01, 0.01, 1, 1}
+    Negative inputs still get a small gradient (0.01) so weights can still update even for negative activations.
+
+    Sigmoid forward {0.119, 0.269, 0.5, 0.731, 0.881}
+    Squashes everything into (0,1). Notice it's symmetric around 0.5 at input 0. Used for probability outputs.
+
+    Sigmoid backward {0.105, 0.197, 0.25, 0.197, 0.105}
+    Peaks at 0.25 when input is 0, drops toward zero at extremes: this is the vanishing gradient problem. Inputs far from zero produce near-zero gradients, slowing training to a crawl. This is why ReLU replaced sigmoid in deep networks.
+
+    Softmax forward {0.012, 0.032, 0.086, 0.234, 0.636}
+    Converts raw scores into a probability distribution:  all values sum to 1.0. The largest input (2) dominates at 63.6%. Used as the final layer in classifiers.
+
