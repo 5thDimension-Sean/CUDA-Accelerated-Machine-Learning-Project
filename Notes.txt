@@ -642,3 +642,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Softmax forward {0.012, 0.032, 0.086, 0.234, 0.636}
     Converts raw scores into a probability distribution:  all values sum to 1.0. The largest input (2) dominates at 63.6%. Used as the final layer in classifiers.
 
+    https://kevinzakka.github.io/2016/09/14/batch_normalization/
+    This derives batch normalization
