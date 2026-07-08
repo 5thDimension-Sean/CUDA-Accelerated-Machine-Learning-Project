@@ -113,7 +113,7 @@ Run any of these from the project root after building. The notes below are infer
 | `& ".\build\bin\vector_add.exe"` | Verification kernel. Element-wise vector addition; confirms the CUDA setup works and reports GPU-vs-CPU speedup. |
 | `& ".\build\bin\benchmark.exe"` | General kernel performance benchmark suite. |
 | `& ".\build\bin\memory_benchmark.exe"` | Measures memory bandwidth and host-to-device transfer throughput. |
-| `& ".\build\bin\streams_benchmark.exe"` | Tests CUDA streams, overlapping compute with memory transfers. |
+| `& ".\build\bin\streams_benchmark.exe" ` | Tests CUDA streams, overlapping compute with memory transfers. |
 | `& ".\build\bin\matmul_benchmark.exe"` | Times matrix multiplication (GEMM) on the GPU. |
 | `python benchmarks\gemm_benchmark.py` | Python-driven GEMM benchmark. |
 | `& ".\build\bin\conv2d_benchmark.exe"` | Benchmarks the 2D convolution kernel. |
