@@ -26,3 +26,6 @@
 9	14354	8052400400036017	CMakeFiles/batchnorm.dir/kernels/batchnorm.cu.obj	209532b94dbad189
 14482	20630	8052400544764096	CMakeFiles/batchnorm.dir/cmake_device_link.obj	1ca0448ebc92d02c
 20630	21221	8052400606242055	bin/batchnorm.exe	f910cf1408029e7e
+13	6688	8053165461321795	CMakeFiles/pooling.dir/kernels/pooling.cu.obj	d40d48e8e15d66be
+6813	9114	8053165529324780	CMakeFiles/pooling.dir/cmake_device_link.obj	bf83ab6ca54191e6
+9114	9319	8053165552341045	bin/pooling.exe	7fb34e05cea576b0
