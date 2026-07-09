@@ -658,3 +658,4 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     One mistake made during the writing was fliping h_input and d_input as it's contradictary. Therefore, I swapped and it fixed. 
 
     Next: layer.cu. Layers are like a bundle so weights, biases, gradients, forward nad backward functions similar to activations.cu
+    However, it will be faster as it doesn't need wrapper functions. 

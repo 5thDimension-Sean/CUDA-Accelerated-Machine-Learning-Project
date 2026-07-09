@@ -620,6 +620,64 @@ build bin\pooling.exe: CUDA_EXECUTABLE_LINKER__pooling_Release CMakeFiles\poolin
   TARGET_PDB = bin\pooling.pdb
   TARGET_SUPPORT_DIR = CMakeFiles\pooling.dir
 
+# =============================================================================
+# Object build statements for EXECUTABLE target layer
+
+
+#############################################
+# Order-only phony target for layer
+
+build cmake_object_order_depends_target_layer: phony || .
+
+build CMakeFiles\layer.dir\kernels\layer.cu.obj: CUDA_COMPILER__layer_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\kernels\layer.cu || cmake_object_order_depends_target_layer
+  CONFIG = Release
+  DEP_FILE = CMakeFiles\layer.dir\kernels\layer.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  OBJECT_DIR = CMakeFiles\layer.dir
+  OBJECT_FILE_DIR = CMakeFiles\layer.dir\kernels
+  TARGET_COMPILE_PDB = CMakeFiles\layer.dir\
+  TARGET_PDB = bin\layer.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\layer.dir
+
+
+# =============================================================================
+# Device Link build statements for EXECUTABLE target layer
+
+
+#############################################
+# Link the executable CMakeFiles\layer.dir\cmake_device_link.obj
+
+build CMakeFiles\layer.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__layer_Release CMakeFiles\layer.dir\kernels\layer.cu.obj
+  LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\layer.dir
+  TARGET_COMPILE_PDB = CMakeFiles\layer.dir\
+  TARGET_FILE = CMakeFiles\layer.dir\cmake_device_link.obj
+  TARGET_IMPLIB = layer.lib
+  TARGET_PDB = bin\layer.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\layer.dir
+
+# =============================================================================
+# Link build statements for EXECUTABLE target layer
+
+
+#############################################
+# Link the executable bin\layer.exe
+
+build bin\layer.exe: CUDA_EXECUTABLE_LINKER__layer_Release CMakeFiles\layer.dir\kernels\layer.cu.obj CMakeFiles\layer.dir\cmake_device_link.obj
+  CONFIG = Release
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
+  LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\layer.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\layer.dir\
+  TARGET_FILE = bin\layer.exe
+  TARGET_IMPLIB = layer.lib
+  TARGET_PDB = bin\layer.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\layer.dir
+
 
 #############################################
 # Utility command for edit_cache
@@ -667,6 +725,10 @@ build imageTest: phony bin\imageTest.exe
 
 build imageTest.exe: phony bin\imageTest.exe
 
+build layer: phony bin\layer.exe
+
+build layer.exe: phony bin\layer.exe
+
 build matmul_benchmark: phony bin\matmul_benchmark.exe
 
 build matmul_benchmark.exe: phony bin\matmul_benchmark.exe
@@ -695,7 +757,7 @@ build vector_add.exe: phony bin\vector_add.exe
 #############################################
 # Folder: D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build
 
-build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe bin\batchnorm.exe bin\pooling.exe
+build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe bin\batchnorm.exe bin\pooling.exe bin\layer.exe
 
 # =============================================================================
 # Built-in targets
