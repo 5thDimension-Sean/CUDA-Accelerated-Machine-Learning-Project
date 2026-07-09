@@ -652,3 +652,9 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
 7/9/26 @ 11:53 AM
     Starting on pooling.cu. It slides a box and get's the largest number. Similar to image detection.
+    8.0000 9.0000 
+    -1.0000 6.0000 
+
+    One mistake made during the writing was fliping h_input and d_input as it's contradictary. Therefore, I swapped and it fixed. 
+
+    Next: layer.cu. Layers are like a bundle so weights, biases, gradients, forward nad backward functions similar to activations.cu
