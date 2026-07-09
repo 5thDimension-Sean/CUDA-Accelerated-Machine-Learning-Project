@@ -43,7 +43,16 @@ add_executable(batchnorm kernels/batchnorm.cu)
 set_target_properties(batchnorm PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 add_executable(pooling kernels/pooling.cu)
 set_target_properties(pooling PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-add_executable(layer kernels/layer.cu)
-set_target_properties(layer PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+# Week 5: Layer abstraction — forward pass test (RELU -> POOL chain).
+# Links the test main + layer code + the kernels it calls. BUILD_AS_LIBRARY
+# skips the individual main()s in the kernel files so there's only one main.
+add_executable(forward_pass
+    network/test_forward_pass.cu
+    network/layer.cu
+    kernels/activations.cu
+    kernels/pooling.cu)
+set_target_properties(forward_pass PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+target_compile_definitions(forward_pass PRIVATE BUILD_AS_LIBRARY)
+target_include_directories(forward_pass PRIVATE network kernels)
 
 # Uncomment each block as you reach that week.

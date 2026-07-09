@@ -32,8 +32,8 @@ void layer_setup(Layer *layer) {
     size_t out_size = layer->out_H * layer->out_W * layer->out_C * sizeof(float);
     cudaMalloc((void**)&layer->d_output, out_size);
     if (layer->type == LayerType::CONV || layer->type == LayerType::FC || layer->type == LayerType::BATCHNORM) {
-        size_t weight_size = layer->out_C * layer->in_C * layer->filter_H * layer->filter_W;  // for CONV
-        size_t bias_size = layer->out_C * sizeof(float); 
+        size_t weight_size = layer->out_C * layer->in_C * layer->filter_H * layer->filter_W * sizeof(float);  // for CONV
+        size_t bias_size = layer->out_C * sizeof(float);
 
         cudaMalloc((void**)&layer->d_weights, weight_size);
         cudaMalloc((void**)&layer->d_bias, bias_size);
@@ -55,7 +55,13 @@ float *layer_forward(Layer *layer, float *d_input) {
             sigmoidActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::BATCHNORM:
-            batchNormForwardPerChannel<<<grid, block>>>(d_input, layer->d_output, layer->d_weights, layer->d_bias, /*gamma*/ nullptr, /*beta*/ nullptr, layer->epsilon, layer->in_H, layer->in_W, layer->in_C);
+            // TODO(not runnable yet): needs per-channel d_mean/d_variance buffers
+            // computed by a per-channel reduction. gamma=d_weights, beta=d_bias.
+            // batchNormForwardPerChannel<<<grid1D, block1D>>>(
+            //     d_input, layer->d_output,
+            //     layer->d_mean, layer->d_variance,   // <-- still missing
+            //     layer->d_weights, layer->d_bias,    // gamma, beta
+            //     layer->epsilon, layer->in_H, layer->in_W, layer->in_C);
             break;
         case LayerType::RELU:
             reLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
@@ -67,10 +73,16 @@ float *layer_forward(Layer *layer, float *d_input) {
             softMaxActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::FC:
-            matmul_tiled<<<grid, block>>>(d_input, layer->d_weights, layer->d_output, layer->in_W);
+            // TODO(not runnable yet): matmul_tiled is square-only; FC needs a
+            // non-square matmul + out dims set in layer_setup.
+            // matmul_tiled<<<grid, block>>>(d_input, layer->d_weights, layer->d_output, layer->in_W);
             break;
         case LayerType::CONV:
-            conv2d_shared<<<grid, block>>>(d_input, layer->d_output, layer->in_H, layer->in_W, layer->filter_H, layer->filter_W);
+            // TODO(not runnable yet): conv2d_shared reads its filter from the
+            // __constant__ c_filter (needs cudaMemcpyToSymbol first) and uses
+            // extern __shared__ (needs a shared-mem size as the 3rd launch arg).
+            // conv2d_shared<<<grid, block, shmem_bytes>>>(d_input, layer->d_output,
+            //     layer->in_H, layer->in_W, layer->filter_H, layer->filter_W);
             break;
         case LayerType::LRELU:
             leakyreLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
