@@ -649,3 +649,6 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     output: -1.5275 -1.0911 -0.6547 -0.2182 0.2182 0.6547 1.0911 1.5275 
 
     Correct on this data set. Just try it with mathematical methods to see it work!
+
+7/9/26 @ 11:53 AM
+    Starting on pooling.cu. It slides a box and get's the largest number. Similar to image detection.
