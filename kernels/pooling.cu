@@ -73,7 +73,7 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int H, int W, int P, int
     CUDA_CHECK(cudaMemcpy(d_input, h_input, bytes_in, cudaMemcpyHostToDevice));
     maxPool2D<<<grid, block>>>(d_input, d_output, H, W, out_H, out_W, P, S);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaMemcpy(d_output, h_output, bytes_out, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(h_output, d_output, bytes_out, cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaFree(d_input));
     CUDA_CHECK(cudaFree(d_output));
 }
