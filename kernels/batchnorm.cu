@@ -117,6 +117,27 @@ __global__ void batchNormForward(
         d_y[idx] = gamma * x_hat + beta;
     }
 }
+// ---------------------------------------------------------------------------
+// Per-channel version for the network layer. gamma/beta/mean/variance are
+// vectors of length C (one value per channel), so they're passed as pointers
+// (compatible with a Layer's d_weights / d_bias). Assumes [C, H, W] layout,
+// so a thread's channel is idx / (H*W). One thread per element.
+// ---------------------------------------------------------------------------
+__global__ void batchNormForwardPerChannel(
+    const float *d_x, float *d_y,
+    const float *mean, const float *variance,   // length C
+    const float *gamma, const float *beta,      // length C
+    float epsilon, int H, int W, int C
+) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int total = C * H * W;
+    if (idx < total) {
+        int c = idx / (H * W);   // which channel this element belongs to
+        float x_hat = (d_x[idx] - mean[c]) / sqrtf(variance[c] + epsilon);
+        d_y[idx] = gamma[c] * x_hat + beta[c];
+    }
+}
+
 //Mean, variance, gamma, beta, epsilon, and N are scalar
 void batchNormWrapKernel(float *matrix, float *matriy, float mean, float variance,
                          float gamma, float beta, float epsilon, int N) {

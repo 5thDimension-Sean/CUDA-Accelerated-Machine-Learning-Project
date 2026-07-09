@@ -12,6 +12,13 @@ __global__ void batchNormForward(const float *d_x, float *d_y,
                                  float gamma, float beta,
                                  float epsilon, int N);
 
+// per-channel version for the network layer (gamma/beta/mean/variance are
+// length-C vectors, passed as pointers; [C, H, W] layout)
+__global__ void batchNormForwardPerChannel(const float *d_x, float *d_y,
+                                           const float *mean, const float *variance,
+                                           const float *gamma, const float *beta,
+                                           float epsilon, int H, int W, int C);
+
 // --- host wrappers (malloc + copy + launch + copy-back + free) ---
 void meanWrapKernel(float *matrix, float *mean, int N);
 void varianceWrapKernel(float *matrix, float mean, float *variance, int N);
