@@ -120,6 +120,7 @@ Run any of these from the project root after building. The notes below are infer
 | `& ".\build\bin\imageTest.exe"` | Image processing and inference demo test. |
 | `& ".\build\bin\activations.exe"` | Exercises activation-function kernels (ReLU, sigmoid, and others). |
 | `& ".\build\bin\batchnorm.exe"` | Batch Normalization forward pass on a 1D input array. |
+| `& ".\build\bin\pooling.exe"` | Finds the largest number and works like an object detector in the future.  |
 
 ---
 
