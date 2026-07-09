@@ -8,6 +8,6 @@ D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/activations.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/batchnorm.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/pooling.dir
-D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/layer.dir
+D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/forward_pass.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/edit_cache.dir
 D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/rebuild_cache.dir

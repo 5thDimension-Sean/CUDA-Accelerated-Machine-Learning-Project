@@ -621,62 +621,100 @@ build bin\pooling.exe: CUDA_EXECUTABLE_LINKER__pooling_Release CMakeFiles\poolin
   TARGET_SUPPORT_DIR = CMakeFiles\pooling.dir
 
 # =============================================================================
-# Object build statements for EXECUTABLE target layer
+# Object build statements for EXECUTABLE target forward_pass
 
 
 #############################################
-# Order-only phony target for layer
+# Order-only phony target for forward_pass
 
-build cmake_object_order_depends_target_layer: phony || .
+build cmake_object_order_depends_target_forward_pass: phony || .
 
-build CMakeFiles\layer.dir\kernels\layer.cu.obj: CUDA_COMPILER__layer_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\kernels\layer.cu || cmake_object_order_depends_target_layer
+build CMakeFiles\forward_pass.dir\network\test_forward_pass.cu.obj: CUDA_COMPILER__forward_pass_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\network\test_forward_pass.cu || cmake_object_order_depends_target_forward_pass
   CONFIG = Release
-  DEP_FILE = CMakeFiles\layer.dir\kernels\layer.cu.obj.d
+  DEFINES = -DBUILD_AS_LIBRARY
+  DEP_FILE = CMakeFiles\forward_pass.dir\network\test_forward_pass.cu.obj.d
   FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
-  OBJECT_DIR = CMakeFiles\layer.dir
-  OBJECT_FILE_DIR = CMakeFiles\layer.dir\kernels
-  TARGET_COMPILE_PDB = CMakeFiles\layer.dir\
-  TARGET_PDB = bin\layer.pdb
-  TARGET_SUPPORT_DIR = CMakeFiles\layer.dir
+  INCLUDES = -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\network" -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\kernels"
+  OBJECT_DIR = CMakeFiles\forward_pass.dir
+  OBJECT_FILE_DIR = CMakeFiles\forward_pass.dir\network
+  TARGET_COMPILE_PDB = CMakeFiles\forward_pass.dir\
+  TARGET_PDB = bin\forward_pass.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\forward_pass.dir
+
+build CMakeFiles\forward_pass.dir\network\layer.cu.obj: CUDA_COMPILER__forward_pass_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\network\layer.cu || cmake_object_order_depends_target_forward_pass
+  CONFIG = Release
+  DEFINES = -DBUILD_AS_LIBRARY
+  DEP_FILE = CMakeFiles\forward_pass.dir\network\layer.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  INCLUDES = -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\network" -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\kernels"
+  OBJECT_DIR = CMakeFiles\forward_pass.dir
+  OBJECT_FILE_DIR = CMakeFiles\forward_pass.dir\network
+  TARGET_COMPILE_PDB = CMakeFiles\forward_pass.dir\
+  TARGET_PDB = bin\forward_pass.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\forward_pass.dir
+
+build CMakeFiles\forward_pass.dir\kernels\activations.cu.obj: CUDA_COMPILER__forward_pass_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\kernels\activations.cu || cmake_object_order_depends_target_forward_pass
+  CONFIG = Release
+  DEFINES = -DBUILD_AS_LIBRARY
+  DEP_FILE = CMakeFiles\forward_pass.dir\kernels\activations.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  INCLUDES = -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\network" -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\kernels"
+  OBJECT_DIR = CMakeFiles\forward_pass.dir
+  OBJECT_FILE_DIR = CMakeFiles\forward_pass.dir\kernels
+  TARGET_COMPILE_PDB = CMakeFiles\forward_pass.dir\
+  TARGET_PDB = bin\forward_pass.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\forward_pass.dir
+
+build CMakeFiles\forward_pass.dir\kernels\pooling.cu.obj: CUDA_COMPILER__forward_pass_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\kernels\pooling.cu || cmake_object_order_depends_target_forward_pass
+  CONFIG = Release
+  DEFINES = -DBUILD_AS_LIBRARY
+  DEP_FILE = CMakeFiles\forward_pass.dir\kernels\pooling.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  INCLUDES = -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\network" -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\kernels"
+  OBJECT_DIR = CMakeFiles\forward_pass.dir
+  OBJECT_FILE_DIR = CMakeFiles\forward_pass.dir\kernels
+  TARGET_COMPILE_PDB = CMakeFiles\forward_pass.dir\
+  TARGET_PDB = bin\forward_pass.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\forward_pass.dir
 
 
 # =============================================================================
-# Device Link build statements for EXECUTABLE target layer
+# Device Link build statements for EXECUTABLE target forward_pass
 
 
 #############################################
-# Link the executable CMakeFiles\layer.dir\cmake_device_link.obj
+# Link the executable CMakeFiles\forward_pass.dir\cmake_device_link.obj
 
-build CMakeFiles\layer.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__layer_Release CMakeFiles\layer.dir\kernels\layer.cu.obj
+build CMakeFiles\forward_pass.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__forward_pass_Release CMakeFiles\forward_pass.dir\network\test_forward_pass.cu.obj CMakeFiles\forward_pass.dir\network\layer.cu.obj CMakeFiles\forward_pass.dir\kernels\activations.cu.obj CMakeFiles\forward_pass.dir\kernels\pooling.cu.obj
   LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
   LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
-  OBJECT_DIR = CMakeFiles\layer.dir
-  TARGET_COMPILE_PDB = CMakeFiles\layer.dir\
-  TARGET_FILE = CMakeFiles\layer.dir\cmake_device_link.obj
-  TARGET_IMPLIB = layer.lib
-  TARGET_PDB = bin\layer.pdb
-  TARGET_SUPPORT_DIR = CMakeFiles\layer.dir
+  OBJECT_DIR = CMakeFiles\forward_pass.dir
+  TARGET_COMPILE_PDB = CMakeFiles\forward_pass.dir\
+  TARGET_FILE = CMakeFiles\forward_pass.dir\cmake_device_link.obj
+  TARGET_IMPLIB = forward_pass.lib
+  TARGET_PDB = bin\forward_pass.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\forward_pass.dir
 
 # =============================================================================
-# Link build statements for EXECUTABLE target layer
+# Link build statements for EXECUTABLE target forward_pass
 
 
 #############################################
-# Link the executable bin\layer.exe
+# Link the executable bin\forward_pass.exe
 
-build bin\layer.exe: CUDA_EXECUTABLE_LINKER__layer_Release CMakeFiles\layer.dir\kernels\layer.cu.obj CMakeFiles\layer.dir\cmake_device_link.obj
+build bin\forward_pass.exe: CUDA_EXECUTABLE_LINKER__forward_pass_Release CMakeFiles\forward_pass.dir\network\test_forward_pass.cu.obj CMakeFiles\forward_pass.dir\network\layer.cu.obj CMakeFiles\forward_pass.dir\kernels\activations.cu.obj CMakeFiles\forward_pass.dir\kernels\pooling.cu.obj CMakeFiles\forward_pass.dir\cmake_device_link.obj
   CONFIG = Release
   FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
   LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
-  OBJECT_DIR = CMakeFiles\layer.dir
+  OBJECT_DIR = CMakeFiles\forward_pass.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_COMPILE_PDB = CMakeFiles\layer.dir\
-  TARGET_FILE = bin\layer.exe
-  TARGET_IMPLIB = layer.lib
-  TARGET_PDB = bin\layer.pdb
-  TARGET_SUPPORT_DIR = CMakeFiles\layer.dir
+  TARGET_COMPILE_PDB = CMakeFiles\forward_pass.dir\
+  TARGET_FILE = bin\forward_pass.exe
+  TARGET_IMPLIB = forward_pass.lib
+  TARGET_PDB = bin\forward_pass.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\forward_pass.dir
 
 
 #############################################
@@ -721,13 +759,13 @@ build conv2d_benchmark: phony bin\conv2d_benchmark.exe
 
 build conv2d_benchmark.exe: phony bin\conv2d_benchmark.exe
 
+build forward_pass: phony bin\forward_pass.exe
+
+build forward_pass.exe: phony bin\forward_pass.exe
+
 build imageTest: phony bin\imageTest.exe
 
 build imageTest.exe: phony bin\imageTest.exe
-
-build layer: phony bin\layer.exe
-
-build layer.exe: phony bin\layer.exe
 
 build matmul_benchmark: phony bin\matmul_benchmark.exe
 
@@ -757,7 +795,7 @@ build vector_add.exe: phony bin\vector_add.exe
 #############################################
 # Folder: D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build
 
-build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe bin\batchnorm.exe bin\pooling.exe bin\layer.exe
+build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe bin\batchnorm.exe bin\pooling.exe bin\forward_pass.exe
 
 # =============================================================================
 # Built-in targets

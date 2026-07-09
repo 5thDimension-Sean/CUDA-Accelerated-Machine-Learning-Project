@@ -61,8 +61,26 @@
 },
 {
   "directory": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build",
-  "command": "C:\\PROGRA~1\\NVIDIA~2\\CUDA\\v13.1\\bin\\nvcc.exe -forward-unknown-to-host-compiler -D_WINDOWS -Xcompiler=\" /GR /EHsc\" -O3 -Xcompiler -Wall -Xcompiler=\"-O2 -Ob2\" -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[compute_75,sm_75]\" \"--generate-code=arch=compute_86,code=[compute_86,sm_86]\" \"--generate-code=arch=compute_89,code=[compute_89,sm_89]\" -Xcompiler=-MD -x cu -rdc=true -c \"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\\layer.cu\" -o CMakeFiles\\layer.dir\\kernels\\layer.cu.obj -Xcompiler=-FdCMakeFiles\\layer.dir\\,-FS",
-  "file": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/kernels/layer.cu",
-  "output": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/layer.dir/kernels/layer.cu.obj"
+  "command": "C:\\PROGRA~1\\NVIDIA~2\\CUDA\\v13.1\\bin\\nvcc.exe -forward-unknown-to-host-compiler -DBUILD_AS_LIBRARY -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\network\" -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\" -D_WINDOWS -Xcompiler=\" /GR /EHsc\" -O3 -Xcompiler -Wall -Xcompiler=\"-O2 -Ob2\" -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[compute_75,sm_75]\" \"--generate-code=arch=compute_86,code=[compute_86,sm_86]\" \"--generate-code=arch=compute_89,code=[compute_89,sm_89]\" -Xcompiler=-MD -x cu -rdc=true -c \"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\network\\test_forward_pass.cu\" -o CMakeFiles\\forward_pass.dir\\network\\test_forward_pass.cu.obj -Xcompiler=-FdCMakeFiles\\forward_pass.dir\\,-FS",
+  "file": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/network/test_forward_pass.cu",
+  "output": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/forward_pass.dir/network/test_forward_pass.cu.obj"
+},
+{
+  "directory": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build",
+  "command": "C:\\PROGRA~1\\NVIDIA~2\\CUDA\\v13.1\\bin\\nvcc.exe -forward-unknown-to-host-compiler -DBUILD_AS_LIBRARY -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\network\" -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\" -D_WINDOWS -Xcompiler=\" /GR /EHsc\" -O3 -Xcompiler -Wall -Xcompiler=\"-O2 -Ob2\" -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[compute_75,sm_75]\" \"--generate-code=arch=compute_86,code=[compute_86,sm_86]\" \"--generate-code=arch=compute_89,code=[compute_89,sm_89]\" -Xcompiler=-MD -x cu -rdc=true -c \"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\network\\layer.cu\" -o CMakeFiles\\forward_pass.dir\\network\\layer.cu.obj -Xcompiler=-FdCMakeFiles\\forward_pass.dir\\,-FS",
+  "file": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/network/layer.cu",
+  "output": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/forward_pass.dir/network/layer.cu.obj"
+},
+{
+  "directory": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build",
+  "command": "C:\\PROGRA~1\\NVIDIA~2\\CUDA\\v13.1\\bin\\nvcc.exe -forward-unknown-to-host-compiler -DBUILD_AS_LIBRARY -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\network\" -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\" -D_WINDOWS -Xcompiler=\" /GR /EHsc\" -O3 -Xcompiler -Wall -Xcompiler=\"-O2 -Ob2\" -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[compute_75,sm_75]\" \"--generate-code=arch=compute_86,code=[compute_86,sm_86]\" \"--generate-code=arch=compute_89,code=[compute_89,sm_89]\" -Xcompiler=-MD -x cu -rdc=true -c \"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\\activations.cu\" -o CMakeFiles\\forward_pass.dir\\kernels\\activations.cu.obj -Xcompiler=-FdCMakeFiles\\forward_pass.dir\\,-FS",
+  "file": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/kernels/activations.cu",
+  "output": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/forward_pass.dir/kernels/activations.cu.obj"
+},
+{
+  "directory": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build",
+  "command": "C:\\PROGRA~1\\NVIDIA~2\\CUDA\\v13.1\\bin\\nvcc.exe -forward-unknown-to-host-compiler -DBUILD_AS_LIBRARY -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\network\" -I\"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\" -D_WINDOWS -Xcompiler=\" /GR /EHsc\" -O3 -Xcompiler -Wall -Xcompiler=\"-O2 -Ob2\" -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[compute_75,sm_75]\" \"--generate-code=arch=compute_86,code=[compute_86,sm_86]\" \"--generate-code=arch=compute_89,code=[compute_89,sm_89]\" -Xcompiler=-MD -x cu -rdc=true -c \"D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\kernels\\pooling.cu\" -o CMakeFiles\\forward_pass.dir\\kernels\\pooling.cu.obj -Xcompiler=-FdCMakeFiles\\forward_pass.dir\\,-FS",
+  "file": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/kernels/pooling.cu",
+  "output": "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/CMakeFiles/forward_pass.dir/kernels/pooling.cu.obj"
 }
 ]

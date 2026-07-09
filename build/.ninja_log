@@ -29,3 +29,20 @@
 13	6688	8053165461321795	CMakeFiles/pooling.dir/kernels/pooling.cu.obj	d40d48e8e15d66be
 6813	9114	8053165529324780	CMakeFiles/pooling.dir/cmake_device_link.obj	bf83ab6ca54191e6
 9114	9319	8053165552341045	bin/pooling.exe	7fb34e05cea576b0
+3	211	8053200106289129	build.ninja	2ba07654064aded4
+3	211	8053200106289129	D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake	2ba07654064aded4
+42	7051	8053200107697996	CMakeFiles/forward_pass.dir/network/test_forward_pass.cu.obj	7314b93c047821fc
+47	7248	8053200107758943	CMakeFiles/forward_pass.dir/network/layer.cu.obj	a3752ebb021ebff2
+60	10570	8053200107884163	CMakeFiles/forward_pass.dir/kernels/pooling.cu.obj	693d435ae3e29c19
+53	10845	8053200107824051	CMakeFiles/forward_pass.dir/kernels/activations.cu.obj	392ffee187d7fa43
+31	11372	8053200107596421	CMakeFiles/batchnorm.dir/kernels/batchnorm.cu.obj	209532b94dbad189
+26	12035	8053200107546461	CMakeFiles/activations.dir/kernels/activations.cu.obj	e0672e222b444673
+36	13090	8053200107647964	CMakeFiles/pooling.dir/kernels/pooling.cu.obj	d40d48e8e15d66be
+11365	14404	8053200220940400	CMakeFiles/forward_pass.dir/cmake_device_link.obj	a41a85b23d48ad65
+14404	14621	8053200251319234	bin/forward_pass.exe	fa4d659fa3e1bcf1
+12027	15198	8053200227555412	CMakeFiles/batchnorm.dir/cmake_device_link.obj	1ca0448ebc92d02c
+15198	15454	8053200259263254	bin/batchnorm.exe	f910cf1408029e7e
+13051	16183	8053200237789969	CMakeFiles/activations.dir/cmake_device_link.obj	eb15b48a457ab59c
+16183	16418	8053200269114002	bin/activations.exe	1733c4e390b52435
+14078	16980	8053200248070732	CMakeFiles/pooling.dir/cmake_device_link.obj	bf83ab6ca54191e6
+16980	17168	8053200277086862	bin/pooling.exe	7fb34e05cea576b0
