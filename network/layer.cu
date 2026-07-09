@@ -7,48 +7,68 @@
 // ============================================================================
 #include "layer.cuh"
 
-// ----------------------------------------------------------------------------
-// layer_setup: compute output dims from input dims + params, then allocate
-// d_output (and weights/bias if this type needs them). Null the backprop ptrs.
-// ----------------------------------------------------------------------------
 void layer_setup(Layer *layer) {
-    // TODO:
-    //  - switch on layer->type to set out_H / out_W / out_C:
-    //      RELU / BATCHNORM: out dims == in dims (element-wise)
-    //      POOL:             out_H = (in_H - P)/S + 1, out_W likewise, out_C == in_C
-    //      CONV / FC:        depends on weights (later)
-    //  - cudaMalloc d_output for (out_H * out_W * out_C) floats
-    //  - cudaMalloc d_weights / d_bias only for CONV / FC / BATCHNORM
-    //  - layer->d_input = layer->d_grad_weights = layer->d_grad_bias = nullptr;
-}
+    switch (layer->type) {
+        case LayerType::RELU:
+        case LayerType::BATCHNORM:
+            layer->out_H = layer->in_H;
+            layer->out_W = layer->in_W;
+            layer->out_C = layer->in_C;
+            break;
 
-// ----------------------------------------------------------------------------
-// layer_forward: run this layer's kernel on d_input into d_output.
-// Pure launch — NO malloc / memcpy / free. Returns d_output so calls chain.
-// ----------------------------------------------------------------------------
+        case LayerType::POOL:
+            layer->out_H = (layer->in_H - layer->P) / layer->S + 1;
+            layer->out_W = (layer->in_W - layer->P) / layer->S + 1;
+            layer->out_C = layer->in_C;
+            break;
+
+        case LayerType::CONV:
+        case LayerType::FC:
+            break;
+    }
+    size_t out_size = layer->out_H * layer->out_W * layer->out_C * sizeof(float);
+    cudaMalloc((void**)&layer->d_output, out_size);
+    if (layer->type == LayerType::CONV || layer->type == LayerType::FC || layer->type == LayerType::BATCHNORM) {
+        size_t weight_size = layer->out_C * layer->in_C * layer->filter_H * layer->filter_W;  // for CONV
+        size_t bias_size = layer->out_C * sizeof(float); 
+
+        cudaMalloc((void**)&layer->d_weights, weight_size);
+        cudaMalloc((void**)&layer->d_bias, bias_size);
+    } else {
+        layer->d_weights = nullptr;
+        layer->d_bias = nullptr;
+    }
+    layer->d_input = nullptr;
+    layer->d_grad_weights = nullptr;
+    layer->d_grad_bias = nullptr;
+}
 float *layer_forward(Layer *layer, float *d_input) {
     layer->d_input = d_input;   // cache for the backward pass (Week 6)
 
-    // TODO: build grid/block from this layer's output dims, then launch:
     switch (layer->type) {
-        case LayerType::CONV:
-            // TODO: launch conv kernel
+        case LayerType::SIGMOID:
+            sigmoidActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H);
             break;
         case LayerType::BATCHNORM:
-            // TODO: launch batchNormForward into layer->d_output
+            batchNormForward<<<grid, block>>>(d_input, layer->d_output, layer->d_weights, layer->d_bias, layer->in_H, layer->in_W, layer->in_C, layer->epsilon);
             break;
         case LayerType::RELU:
-            // reLuActivation<<<grid, block>>>(d_input, layer->d_output,
-            //                                 width, height, /*isForward=*/true);
+            reLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::POOL:
-            // maxPool2D<<<grid, block>>>(d_input, layer->d_output,
-            //                            layer->in_H, layer->in_W,
-            //                            layer->out_H, layer->out_W,
-            //                            layer->P, layer->S);
+            maxPool2D<<<grid, block>>>(d_input, layer->d_output, layer->in_H, layer->in_W, layer->out_H, layer->out_W, layer->P, layer->S);
+            break;
+        case LayerType::SF:
+            softMaxActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H);
             break;
         case LayerType::FC:
-            // TODO: launch matmul + bias
+            matmul_tiled<<<grid, block>>>(d_input, layer->d_weights, layer->d_output, layer->in_H, layer->in_W, layer->out_W);
+            break;
+        case LayerType::CONV:
+            conv2D_shared<<<grid, block>>>(d_input, layer->d_output, layer->d_weights, layer->d_bias, layer->in_H, layer->in_W, layer->in_C, layer->out_H, layer->out_W, layer->out_C);
+            break;
+        case LayerType::LRELU:
+            leakyreLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H);
             break;
     }
 
@@ -56,11 +76,7 @@ float *layer_forward(Layer *layer, float *d_input) {
     return layer->d_output;
 }
 
-// ----------------------------------------------------------------------------
-// layer_free: release every device buffer this layer owns.
-// ----------------------------------------------------------------------------
 void layer_free(Layer *layer) {
-    // guard each with `if (ptr)` since some are nullptr depending on type
     if (layer->d_output)       cudaFree(layer->d_output);
     if (layer->d_weights)      cudaFree(layer->d_weights);
     if (layer->d_bias)         cudaFree(layer->d_bias);

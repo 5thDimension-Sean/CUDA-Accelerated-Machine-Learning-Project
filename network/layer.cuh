@@ -12,11 +12,14 @@
 #include "../kernels/pooling.cuh"
 
 enum class LayerType {
-    CONV,
+    SIGMOID,
     BATCHNORM,
     RELU,
     POOL,
-    FC
+    SF, 
+    FC, 
+    CONV, 
+    LRELU
 };
 
 struct Layer {
