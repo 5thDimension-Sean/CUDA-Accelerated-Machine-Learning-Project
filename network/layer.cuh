@@ -10,6 +10,8 @@
 #include "../kernels/activations.cuh"
 #include "../kernels/batchnorm.cuh"
 #include "../kernels/pooling.cuh"
+#include "../kernels/conv2d.cuh"
+#include "../kernels/matmul.cuh"
 
 enum class LayerType {
     SIGMOID,
