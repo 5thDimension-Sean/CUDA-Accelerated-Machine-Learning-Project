@@ -55,7 +55,7 @@ float *layer_forward(Layer *layer, float *d_input) {
             sigmoidActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::BATCHNORM:
-            batchNormForward<<<grid, block>>>(d_input, layer->d_output, layer->d_weights, layer->d_bias, layer->in_H, layer->in_W, layer->in_C, layer->epsilon);
+            batchNormForwardPerChannel<<<grid, block>>>(d_input, layer->d_output, layer->d_weights, layer->d_bias, /*gamma*/ nullptr, /*beta*/ nullptr, layer->epsilon, layer->in_H, layer->in_W, layer->in_C);
             break;
         case LayerType::RELU:
             reLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
