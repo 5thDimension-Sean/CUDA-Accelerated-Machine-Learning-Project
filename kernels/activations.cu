@@ -16,31 +16,14 @@
 //   x = torch.tensor([...])
 //   torch.nn.functional.relu(x)
 // ============================================================================
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include <stdio.h>
+#include "common.cuh"
+#include "activations.cuh"
 #include <cmath>
 //#include <torch/torch.h>
 #include <iostream>
 
-dim3 block(5, 1);
-dim3 grid(1, 1);
-enum class ActivationType {
-    ReLU,
-    LRELU,
-    Sigmoid,
-    Softmax // The exception: only has a forward pass
-};
-
-#define CUDA_CHECK(call)                                                        \
-    do {                                                                        \
-        cudaError_t err = (call);                                               \
-        if (err != cudaSuccess) {                                               \
-            fprintf(stderr, "CUDA error at %s:%d - %s\n",                      \
-                    __FILE__, __LINE__, cudaGetErrorString(err));               \
-            exit(EXIT_FAILURE);                                                 \
-        }                                                                       \
-    } while (0)
+static dim3 block(5, 1);
+static dim3 grid(1, 1);
 
 __global__ void sigmoidActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
     int col = blockIdx.x * blockDim.x + threadIdx.x; // X coordinate (Width)
@@ -168,6 +151,7 @@ void wrapperKernel(float *host_z_matrix, float *host_activation_matrix, int widt
 
 
 
+#ifndef BUILD_AS_LIBRARY
 int main(){
   const int arrSize = 5;
     
@@ -203,3 +187,4 @@ int main(){
 
     return 0;
 }
+#endif

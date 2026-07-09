@@ -15,26 +15,13 @@
 //   - Original BatchNorm paper: arxiv.org/abs/1502.03167
 //   - The backward pass derivation: kevinzakka.github.io/2016/09/14/batch_normalization
 // ============================================================================
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include <stdio.h>
+#include "common.cuh"
 #include <cmath>
 #include <iostream>
 
-// TODO — Week 5: implement here
-#define CUDA_CHECK(call)                                                        \
-    do {                                                                        \
-        cudaError_t err = (call);                                               \
-        if (err != cudaSuccess) {                                               \
-            fprintf(stderr, "CUDA error at %s:%d - %s\n",                      \
-                    __FILE__, __LINE__, cudaGetErrorString(err));               \
-            exit(EXIT_FAILURE);                                                 \
-        }                                                                       \
-    } while (0)
-
-const int N = 8; 
-dim3 block(8);
-dim3 grid(1);
+static const int N = 8;
+static dim3 block(8);
+static dim3 grid(1);
 //3 kernels mean, variance, normalize + scale
 
 __global__ void mean_kernel(float *x, float *mean, int N) {
@@ -145,6 +132,7 @@ void batchNormWrapKernel(float *matrix, float *matriy, float mean, float varianc
     CUDA_CHECK(cudaFree(d_y));
 }
 
+#ifndef BUILD_AS_LIBRARY
 int main() {
     float arrX[N] = {1, 2, 3, 4, 5, 6, 7, 8};
     float mean = 0.0f, variance = 0.0f;
@@ -164,3 +152,4 @@ int main() {
 
     return 0;
 }
+#endif

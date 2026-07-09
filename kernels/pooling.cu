@@ -12,35 +12,19 @@
 // Also implement: average pooling (output = mean of window, not max).
 // ============================================================================
 
-// TODO — Week 5: implement here
-
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include <stdio.h>
+#include "common.cuh"
 #include <cmath>
 #include <iostream>
 
-// TODO — Week 5: implement here
-#define CUDA_CHECK(call)                                                        \
-    do {                                                                        \
-        cudaError_t err = (call);                                               \
-        if (err != cudaSuccess) {                                               \
-            fprintf(stderr, "CUDA error at %s:%d - %s\n",                      \
-                    __FILE__, __LINE__, cudaGetErrorString(err));               \
-            exit(EXIT_FAILURE);                                                 \
-        }                                                                       \
-    } while (0)
-
-
-int P = 2; //pool window size
-int S = 2; //stride
-int H = 4; //input dim
-int W = 4; //input dim
+static int P = 2; //pool window size
+static int S = 2; //stride
+static int H = 4; //input dim
+static int W = 4; //input dim
 //4x4 input
-dim3 block(16, 16);
-int out_H = (H - P) / S + 1;
-int out_W = (W - P) / S + 1;
-dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
+static dim3 block(16, 16);
+static int out_H = (H - P) / S + 1;
+static int out_W = (W - P) / S + 1;
+static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
 
 __global__ void maxPool2D(const float *input, float *output, int H, int W, int out_H, int out_W, int P, int S){
     int out_x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -79,6 +63,7 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int H, int W, int P, int
 }
 
 
+#ifndef BUILD_AS_LIBRARY
 int main(){
     float h_input[16] = {
      1,  3,  2,  9,
@@ -97,3 +82,4 @@ int main(){
     }
     return 0;
 }
+#endif
