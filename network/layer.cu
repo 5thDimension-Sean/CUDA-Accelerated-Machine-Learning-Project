@@ -6,7 +6,6 @@
 // are visible here. Don't re-include or re-define them.
 // ============================================================================
 #include "layer.cuh"
-
 void layer_setup(Layer *layer) {
     switch (layer->type) {
         case LayerType::RELU:
@@ -23,6 +22,10 @@ void layer_setup(Layer *layer) {
             break;
 
         case LayerType::CONV:
+            layer->out_H = layer->in_H - layer->filter_H + 1;
+            layer->out_W = layer->in_W - layer->filter_W + 1;
+            layer->out_C = layer->num_filters;
+            break;
         case LayerType::FC:
             break;
     }
@@ -44,10 +47,12 @@ void layer_setup(Layer *layer) {
 }
 float *layer_forward(Layer *layer, float *d_input) {
     layer->d_input = d_input;   // cache for the backward pass (Week 6)
+    dim3 block(16, 16);
+    dim3 grid((layer->out_W + block.x - 1) / block.x, (layer->out_H + block.y - 1) / block.y);
 
     switch (layer->type) {
         case LayerType::SIGMOID:
-            sigmoidActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H);
+            sigmoidActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::BATCHNORM:
             batchNormForward<<<grid, block>>>(d_input, layer->d_output, layer->d_weights, layer->d_bias, layer->in_H, layer->in_W, layer->in_C, layer->epsilon);
@@ -59,16 +64,16 @@ float *layer_forward(Layer *layer, float *d_input) {
             maxPool2D<<<grid, block>>>(d_input, layer->d_output, layer->in_H, layer->in_W, layer->out_H, layer->out_W, layer->P, layer->S);
             break;
         case LayerType::SF:
-            softMaxActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H);
+            softMaxActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::FC:
-            matmul_tiled<<<grid, block>>>(d_input, layer->d_weights, layer->d_output, layer->in_H, layer->in_W, layer->out_W);
+            matmul_tiled<<<grid, block>>>(d_input, layer->d_weights, layer->d_output, layer->in_W);
             break;
         case LayerType::CONV:
-            conv2D_shared<<<grid, block>>>(d_input, layer->d_output, layer->d_weights, layer->d_bias, layer->in_H, layer->in_W, layer->in_C, layer->out_H, layer->out_W, layer->out_C);
+            conv2d_shared<<<grid, block>>>(d_input, layer->d_output, layer->in_H, layer->in_W, layer->filter_H, layer->filter_W);
             break;
         case LayerType::LRELU:
-            leakyreLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H);
+            leakyreLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
     }
 
