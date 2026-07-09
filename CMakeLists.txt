@@ -41,5 +41,7 @@ add_executable(activations kernels/activations.cu)
 set_target_properties(activations PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 add_executable(batchnorm kernels/batchnorm.cu)
 set_target_properties(batchnorm PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+add_executable(pooling kernels/pooling.cu)
+set_target_properties(pooling PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 # Uncomment each block as you reach that week.
