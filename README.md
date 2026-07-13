@@ -122,6 +122,7 @@ Run any of these from the project root after building. The notes below are infer
 | `& ".\build\bin\batchnorm.exe"` | Batch Normalization forward pass on a 1D input array. |
 | `& ".\build\bin\pooling.exe"` | Finds the largest number and works like an object detector in the future.  |
 | `& ".\build\bin\forward_pass.exe"` | A start to neural networks |
+| `& ".\build\bin\loss.exe"` | Training loop by computing the loss |
 
 ---
 
