@@ -21,11 +21,14 @@
 #include <cmath>
 //#include <torch/torch.h>
 #include <iostream>
+#include <algorithm>
+#include <functional>
+#include <vector>
 
 static dim3 block(5, 1);
 static dim3 grid(1, 1);
 
-__global__ void sigmoidActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
+__global__ void sigmoidActivation(float *z_matrix, float *activation_matrix, float *doutMatrix, int width, int height, bool isForward) {
     int col = blockIdx.x * blockDim.x + threadIdx.x; // X coordinate (Width)
     int row = blockIdx.y * blockDim.y + threadIdx.y; // Y coordinate (Height)
     if (row < height && col < width) {
@@ -37,13 +40,14 @@ __global__ void sigmoidActivation(float *z_matrix, float *activation_matrix, int
         //backward or derivative of sigmoid formula
         //activation_matrix[index] = expf(z_matrix[index])/(pow(1.0f + expf(z_matrix[index]), 2)); Slow due to pow 
         float s = activation_matrix[index];
+        float dout = doutMatrix[index];
 
-        activation_matrix[index] = s * (1.0f - s);
+        activation_matrix[index] = dout * (s * (1.0f - s));
     }
     }
 }
 
-__global__ void reLuActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
+__global__ void reLuActivation(float *z_matrix, float *activation_matrix, float *doutMatrix, int width, int height, bool isForward) {
     int col = blockIdx.x * blockDim.x + threadIdx.x; // X coordinate (Width)
     int row = blockIdx.y * blockDim.y + threadIdx.y; // Y coordinate (Height)
     if (row < height && col < width) {
@@ -54,13 +58,13 @@ __global__ void reLuActivation(float *z_matrix, float *activation_matrix, int wi
     }else{
         //backward or derivative of sigmoid formula
         //activation_matrix[index] = expf(z_matrix[index])/(pow(1.0f + expf(z_matrix[index]), 2)); Slow due to pow 
-
-        activation_matrix[index] = (z_matrix[index] > 0.0f) ? 1.0f : 0.0f;
+        float dout = doutMatrix[index];
+        activation_matrix[index] = dout*(z_matrix[index] > 0.0f) ? 1.0f : 0.0f;
     }
     }
 }
 
-__global__ void leakyreLuActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
+__global__ void leakyreLuActivation(float *z_matrix, float *activation_matrix, float *doutMatrix, int width, int height, bool isForward) {
     int col = blockIdx.x * blockDim.x + threadIdx.x; // X coordinate (Width)
     int row = blockIdx.y * blockDim.y + threadIdx.y; // Y coordinate (Height)
     if (row < height && col < width) {
@@ -70,13 +74,14 @@ __global__ void leakyreLuActivation(float *z_matrix, float *activation_matrix, i
         activation_matrix[index] = max(0.01f*z_matrix[index], z_matrix[index]);
     }else{
         //backward or derivative of leaky relu formula
+        float dout = doutMatrix[index];
 
-        activation_matrix[index] = (z_matrix[index] > 0.0f) ? 1.0f : 0.01f;
+        activation_matrix[index] = dout * ((z_matrix[index] > 0.0f) ? 1.0f : 0.01f);
     }
     }
 }
 
-__global__ void softMaxActivation(float *z_matrix, float *activation_matrix, int width, int height, bool isForward) {
+__global__ void softMaxActivation(float *z_matrix, float *activation_matrix, float *doutMatrix, int width, int height, bool isForward) {
       int col = blockIdx.x * blockDim.x + threadIdx.x;
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     __shared__ float row_sum;
@@ -101,7 +106,7 @@ __global__ void softMaxActivation(float *z_matrix, float *activation_matrix, int
 }
 
 //condensed wrapper function
-void wrapperKernel(float *host_z_matrix, float *host_activation_matrix, int width, int height, bool isForward, ActivationType type) {
+void wrapperKernel(float *host_z_matrix, float *host_activation_matrix, float *host_dout_matrix, int width, int height, bool isForward, ActivationType type) {
     if (!isForward && type == ActivationType::Softmax) {
         fprintf(stderr, "Error: Softmax does not support a backward pass kernel!\n");
         return;
@@ -110,28 +115,30 @@ void wrapperKernel(float *host_z_matrix, float *host_activation_matrix, int widt
     int arrSize = width * height;
     size_t bytes = arrSize * sizeof(float);
 
-    float *device_z_matrix, *device_activation_matrix;
+    float *device_z_matrix, *device_activation_matrix, *device_dout_matrix;
     CUDA_CHECK(cudaMalloc(&device_z_matrix, bytes));
     CUDA_CHECK(cudaMalloc(&device_activation_matrix, bytes));
+    CUDA_CHECK(cudaMalloc(&device_dout_matrix, bytes));
 
     if (isForward) {
         CUDA_CHECK(cudaMemcpy(device_z_matrix, host_z_matrix, bytes, cudaMemcpyHostToDevice));
     } else {
         CUDA_CHECK(cudaMemcpy(device_activation_matrix, host_activation_matrix, bytes, cudaMemcpyHostToDevice));
         CUDA_CHECK(cudaMemcpy(device_z_matrix, host_z_matrix, bytes, cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemcpy(device_dout_matrix, host_dout_matrix, bytes, cudaMemcpyHostToDevice));
     }
 
     if (type == ActivationType::ReLU) {
-        reLuActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+        reLuActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, device_dout_matrix, width, height, isForward);
     } 
     else if (type == ActivationType::LRELU) {
-        leakyreLuActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+        leakyreLuActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, device_dout_matrix, width, height, isForward);
     } 
     else if (type == ActivationType::Sigmoid) {
-        sigmoidActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+        sigmoidActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, device_dout_matrix, width, height, isForward);
     } 
     else if (type == ActivationType::Softmax) {
-        softMaxActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, width, height, isForward);
+        softMaxActivation<<<grid, block>>>(device_z_matrix, device_activation_matrix, device_dout_matrix, width, height, isForward);
     }
 
     CUDA_CHECK(cudaGetLastError());
@@ -147,6 +154,7 @@ void wrapperKernel(float *host_z_matrix, float *host_activation_matrix, int widt
 
     cudaFree(device_z_matrix);
     cudaFree(device_activation_matrix);
+    cudaFree(device_dout_matrix);
 }
 
 
@@ -157,33 +165,34 @@ int main(){
     
     float host_z_values[arrSize] = {-2.0f, -1.0f, 0.0f, 1.0f, 2.0f};
     float host_activations[arrSize] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    
+    float host_dout_values[arrSize] = {2.0f, 2.0f, 2.0f, 2.0f, 2.0f};
+
     printf("--- Case 1: ReLU Forward ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::ReLU);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, true, ActivationType::ReLU);
 
     printf("--- Case 2: ReLU Backward ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::ReLU);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, false, ActivationType::ReLU);
 
     for(int i = 0; i < arrSize; i++) host_activations[i] = 0.0f;
     printf("--- Case 3: Leaky ReLU Forward ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::LRELU);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, true, ActivationType::LRELU);
 
     printf("--- Case 4: Leaky ReLU Backward ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::LRELU);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, false, ActivationType::LRELU);
 
     for(int i = 0; i < arrSize; i++) host_activations[i] = 0.0f;
     printf("--- Case 5: Sigmoid Forward ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::Sigmoid);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, true, ActivationType::Sigmoid);
 
     printf("--- Case 6: Sigmoid Backward ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::Sigmoid);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, false, ActivationType::Sigmoid);
 
     for(int i = 0; i < arrSize; i++) host_activations[i] = 0.0f;
     printf("--- Case 7: Softmax Forward ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, true, ActivationType::Softmax);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, true, ActivationType::Softmax);
 
     printf("--- Case 8: Softmax Backward (Expected Error Block) ---\n");
-    wrapperKernel(host_z_values, host_activations, arrSize, 1, false, ActivationType::Softmax);
+    wrapperKernel(host_z_values, host_activations, host_dout_values, arrSize, 1, false, ActivationType::Softmax);
 
     return 0;
 }

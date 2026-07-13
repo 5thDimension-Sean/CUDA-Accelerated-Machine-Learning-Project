@@ -659,3 +659,11 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     Next: layer.cu. Layers are like a bundle so weights, biases, gradients, forward nad backward functions similar to activations.cu
     However, it will be faster as it doesn't need wrapper functions. 
+    MSE loss: 0.046667
+    MSE gradients: -0.0667 0.0667 -0.1000 0.1000 -0.0333 0.0333 
+    Cross-entropy loss: 0.114197
+    Cross-entropy gradients: -0.0333 0.0333 -0.0500 0.0500 -0.0167 0.0167 
+
+    Completed loss.cu and step 2/4 for the training loop. Step 3 is backward and step 4 would be update weights. 
+    Also YOLO loss is just htree of the stacekd localization loss. MSE + confidence loss + classification loss and cross-entropy. 
+    
