@@ -37,3 +37,6 @@
 53	10845	8053200107824051	CMakeFiles/forward_pass.dir/kernels/activations.cu.obj	392ffee187d7fa43
 11365	14404	8053200220940400	CMakeFiles/forward_pass.dir/cmake_device_link.obj	a41a85b23d48ad65
 14404	14621	8053200251319234	bin/forward_pass.exe	fa4d659fa3e1bcf1
+20	6687	8056656593567434	CMakeFiles/loss.dir/network/loss.cu.obj	4c1c2d8b2086648b
+6798	9973	8056656661355363	CMakeFiles/loss.dir/cmake_device_link.obj	384bbc744a4a0945
+9973	10239	8056656693105254	bin/loss.exe	7fb149721100a792
