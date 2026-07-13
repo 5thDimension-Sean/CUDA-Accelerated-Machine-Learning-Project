@@ -38,6 +38,7 @@ struct Layer {
     float epsilon;             // BATCHNORM
     int filter_H, filter_W;     // CONV: filter dimensions
     int num_filters;           // CONV: number of filters
+    float* doutMatrix;              // cached gradient from the next layer, needed by backward
 };
 void layer_setup(Layer *layer);
 float *layer_forward(Layer *layer, float *d_input);
