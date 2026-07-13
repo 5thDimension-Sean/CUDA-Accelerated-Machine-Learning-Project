@@ -59,7 +59,7 @@ __global__ void reLuActivation(float *z_matrix, float *activation_matrix, float 
         //backward or derivative of sigmoid formula
         //activation_matrix[index] = expf(z_matrix[index])/(pow(1.0f + expf(z_matrix[index]), 2)); Slow due to pow 
         float dout = doutMatrix[index];
-        activation_matrix[index] = dout*(z_matrix[index] > 0.0f) ? 1.0f : 0.0f;
+        activation_matrix[index] = dout * ((z_matrix[index] > 0.0f) ? 1.0f : 0.0f);
     }
     }
 }

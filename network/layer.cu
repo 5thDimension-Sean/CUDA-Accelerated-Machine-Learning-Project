@@ -52,7 +52,7 @@ float *layer_forward(Layer *layer, float *d_input) {
 
     switch (layer->type) {
         case LayerType::SIGMOID:
-            sigmoidActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
+            sigmoidActivation<<<grid, block>>>(d_input, layer->d_output, /*doutMatrix=*/nullptr, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::BATCHNORM:
             // TODO(not runnable yet): needs per-channel d_mean/d_variance buffers
@@ -64,13 +64,13 @@ float *layer_forward(Layer *layer, float *d_input) {
             //     layer->epsilon, layer->in_H, layer->in_W, layer->in_C);
             break;
         case LayerType::RELU:
-            reLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
+            reLuActivation<<<grid, block>>>(d_input, layer->d_output, /*doutMatrix=*/nullptr, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::POOL:
             maxPool2D<<<grid, block>>>(d_input, layer->d_output, layer->in_H, layer->in_W, layer->out_H, layer->out_W, layer->P, layer->S);
             break;
         case LayerType::SF:
-            softMaxActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
+            softMaxActivation<<<grid, block>>>(d_input, layer->d_output, /*doutMatrix=*/nullptr, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::FC:
             // TODO(not runnable yet): matmul_tiled is square-only; FC needs a
@@ -85,7 +85,7 @@ float *layer_forward(Layer *layer, float *d_input) {
             //     layer->in_H, layer->in_W, layer->filter_H, layer->filter_W);
             break;
         case LayerType::LRELU:
-            leakyreLuActivation<<<grid, block>>>(d_input, layer->d_output, layer->in_W, layer->in_H, /*isForward=*/true);
+            leakyreLuActivation<<<grid, block>>>(d_input, layer->d_output, /*doutMatrix=*/nullptr, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
     }
 
