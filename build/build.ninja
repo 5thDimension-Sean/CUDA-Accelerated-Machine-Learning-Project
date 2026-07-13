@@ -563,6 +563,65 @@ build bin\batchnorm.exe: CUDA_EXECUTABLE_LINKER__batchnorm_Release CMakeFiles\ba
   TARGET_SUPPORT_DIR = CMakeFiles\batchnorm.dir
 
 # =============================================================================
+# Object build statements for EXECUTABLE target loss
+
+
+#############################################
+# Order-only phony target for loss
+
+build cmake_object_order_depends_target_loss: phony || .
+
+build CMakeFiles\loss.dir\network\loss.cu.obj: CUDA_COMPILER__loss_unscanned_Release D$:\Projects\Projects\CUDA$ Accelerated$ Machine-Learning$ Project\network\loss.cu || cmake_object_order_depends_target_loss
+  CONFIG = Release
+  DEP_FILE = CMakeFiles\loss.dir\network\loss.cu.obj.d
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG -std=c++17 "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  INCLUDES = -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\network" -I"D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\kernels"
+  OBJECT_DIR = CMakeFiles\loss.dir
+  OBJECT_FILE_DIR = CMakeFiles\loss.dir\network
+  TARGET_COMPILE_PDB = CMakeFiles\loss.dir\
+  TARGET_PDB = bin\loss.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\loss.dir
+
+
+# =============================================================================
+# Device Link build statements for EXECUTABLE target loss
+
+
+#############################################
+# Link the executable CMakeFiles\loss.dir\cmake_device_link.obj
+
+build CMakeFiles\loss.dir\cmake_device_link.obj: CUDA_EXECUTABLE_DEVICE_LINKER__loss_Release CMakeFiles\loss.dir\network\loss.cu.obj
+  LANGUAGE_COMPILE_FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_LIBRARIES = cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\loss.dir
+  TARGET_COMPILE_PDB = CMakeFiles\loss.dir\
+  TARGET_FILE = CMakeFiles\loss.dir\cmake_device_link.obj
+  TARGET_IMPLIB = loss.lib
+  TARGET_PDB = bin\loss.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\loss.dir
+
+# =============================================================================
+# Link build statements for EXECUTABLE target loss
+
+
+#############################################
+# Link the executable bin\loss.exe
+
+build bin\loss.exe: CUDA_EXECUTABLE_LINKER__loss_Release CMakeFiles\loss.dir\network\loss.cu.obj CMakeFiles\loss.dir\cmake_device_link.obj
+  CONFIG = Release
+  FLAGS = -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO
+  LINK_LIBRARIES = cudadevrt.lib  cudart.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\loss.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\loss.dir\
+  TARGET_FILE = bin\loss.exe
+  TARGET_IMPLIB = loss.lib
+  TARGET_PDB = bin\loss.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles\loss.dir
+
+# =============================================================================
 # Object build statements for EXECUTABLE target pooling
 
 
@@ -767,6 +826,10 @@ build imageTest: phony bin\imageTest.exe
 
 build imageTest.exe: phony bin\imageTest.exe
 
+build loss: phony bin\loss.exe
+
+build loss.exe: phony bin\loss.exe
+
 build matmul_benchmark: phony bin\matmul_benchmark.exe
 
 build matmul_benchmark.exe: phony bin\matmul_benchmark.exe
@@ -795,7 +858,7 @@ build vector_add.exe: phony bin\vector_add.exe
 #############################################
 # Folder: D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build
 
-build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe bin\batchnorm.exe bin\pooling.exe bin\forward_pass.exe
+build all: phony bin\vector_add.exe bin\benchmark.exe bin\memory_benchmark.exe bin\streams_benchmark.exe bin\matmul_benchmark.exe bin\conv2d_benchmark.exe bin\imageTest.exe bin\activations.exe bin\batchnorm.exe bin\loss.exe bin\pooling.exe bin\forward_pass.exe
 
 # =============================================================================
 # Built-in targets
