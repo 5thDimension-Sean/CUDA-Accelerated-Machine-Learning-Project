@@ -59,7 +59,7 @@ float *layer_forward(Layer *layer, float *d_input) {
             // computed by a per-channel reduction. gamma=d_weights, beta=d_bias.
             // batchNormForwardPerChannel<<<grid1D, block1D>>>(
             //     d_input, layer->d_output,
-            //     layer->d_mean, layer->d_variance,   // <-- still missing
+            //     layer->d_mean, layer->d_variance,   // per-channel mean/variance
             //     layer->d_weights, layer->d_bias,    // gamma, beta
             //     layer->epsilon, layer->in_H, layer->in_W, layer->in_C);
             break;

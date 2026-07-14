@@ -26,40 +26,55 @@ static int out_H = (H - P) / S + 1;
 static int out_W = (W - P) / S + 1;
 static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
 
-__global__ void maxPool2D(const float *input, float *output, int H, int W, int out_H, int out_W, int P, int S){
+__global__ void maxPool2D(const float *input, float *output, int *argmax, int H, int W, int out_H, int out_W, int P, int S, bool isForward) {
     int out_x = blockIdx.x * blockDim.x + threadIdx.x;
     int out_y = blockIdx.y * blockDim.y + threadIdx.y;
-
     if (out_x < out_W && out_y < out_H) {
         float max_val = -INFINITY;
-        for (int i = 0; i < P; ++i) {
-            for (int j = 0; j < P; ++j) {
-                int in_x = out_x * S + j;
-                int in_y = out_y * S + i;
-                if (in_x < W && in_y < H) {
-                    float val = input[in_y * W + in_x];
-                    if (val > max_val) {
-                        max_val = val;
+        if(isForward){
+            for (int i = 0; i < P; ++i) {
+                for (int j = 0; j < P; ++j) {
+                    int in_x = out_x * S + j;
+                    int in_y = out_y * S + i;
+                    if (in_x < W && in_y < H) {
+                        float val = input[in_y * W + in_x];
+                        if (val > max_val) {
+                            max_val = val;
+                            argmax[out_y * out_W + out_x] = in_y * W + in_x; // store the index of max
+                        }
                     }
                 }
             }
+            output[out_y * out_W + out_x] = max_val;
+        }else {
+
+            int max_pos = argmax[out_y * out_W + out_x];
+
+            if (max_pos != -1) {
+                atomicAdd(&output[max_pos], input[out_y * out_W + out_x]);
+            }
         }
-        output[out_y * out_W + out_x] = max_val;
     }
 }
 
-void maxPoolWrapKernel(float *h_input, float *h_output, int H, int W, int P, int S) {
+
+
+void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int W, int P, int S, bool isForward) {
     float *d_input, *d_output;
+    int *d_argmax;
     size_t bytes_in  = H * W * sizeof(float);
     size_t bytes_out = out_H * out_W * sizeof(float);
     CUDA_CHECK(cudaMalloc(&d_input, bytes_in));
     CUDA_CHECK(cudaMalloc(&d_output, bytes_out));
+    CUDA_CHECK(cudaMalloc(&d_argmax, out_H * out_W * sizeof(int)));
     CUDA_CHECK(cudaMemcpy(d_input, h_input, bytes_in, cudaMemcpyHostToDevice));
-    maxPool2D<<<grid, block>>>(d_input, d_output, H, W, out_H, out_W, P, S);
+    maxPool2D<<<grid, block>>>(d_input, d_output, d_argmax, H, W, out_H, out_W, P, S, isForward);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaMemcpy(h_output, d_output, bytes_out, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(argmax, d_argmax, out_H * out_W * sizeof(int), cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaFree(d_input));
     CUDA_CHECK(cudaFree(d_output));
+    CUDA_CHECK(cudaFree(d_argmax));
 }
 
 
@@ -72,11 +87,21 @@ int main(){
     -5, -2, -4,  1
 };
     float h_output[4];
+    int argmax[4];
 
-    maxPoolWrapKernel(h_input, h_output, H, W, P, S);
+    maxPoolWrapKernel(h_input, h_output, argmax, H, W, P, S, true);
     for(int i = 0; i < out_H; i++){
         for(int j = 0; j < out_W; j++){
             printf("%.4f ", h_output[i * out_W + j]);
+            printf("\n argmax: %d", argmax[i * out_W + j]);
+        }
+        printf("\n");
+    }
+    maxPoolWrapKernel(h_input, h_output, argmax, H, W, P, S, false);
+    for(int i = 0; i < out_H; i++){
+        for(int j = 0; j < out_W; j++){
+            printf("%.4f ", h_output[i * out_W + j]);
+            printf("\n argmax: %d", argmax[i * out_W + j]);
         }
         printf("\n");
     }
