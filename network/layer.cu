@@ -19,6 +19,7 @@ void layer_setup(Layer *layer) {
             layer->out_H = (layer->in_H - layer->P) / layer->S + 1;
             layer->out_W = (layer->in_W - layer->P) / layer->S + 1;
             layer->out_C = layer->in_C;
+            layer->argmax = nullptr;  // will be allocated in layer_forward
             break;
 
         case LayerType::CONV:
@@ -67,7 +68,7 @@ float *layer_forward(Layer *layer, float *d_input) {
             reLuActivation<<<grid, block>>>(d_input, layer->d_output, /*doutMatrix=*/nullptr, layer->in_W, layer->in_H, /*isForward=*/true);
             break;
         case LayerType::POOL:
-            maxPool2D<<<grid, block>>>(d_input, layer->d_output, layer->in_H, layer->in_W, layer->out_H, layer->out_W, layer->P, layer->S);
+            maxPool2D<<<grid, block>>>(d_input, layer->d_output, layer->argmax, layer->in_H, layer->in_W, layer->out_H, layer->out_W, layer->P, layer->S);
             break;
         case LayerType::SF:
             softMaxActivation<<<grid, block>>>(d_input, layer->d_output, /*doutMatrix=*/nullptr, layer->in_W, layer->in_H, /*isForward=*/true);
