@@ -675,6 +675,18 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Output after FC: 1.0000 2.0000 3.0000 3.0000 4.0000 7.0000 
 
     Next up would be writing the three backward kernels
+    Output after FC: 1.0000 2.0000 3.0000 3.0000 4.0000 7.0000 Backwards FC: dW[0]: 13.0000 dW[1]: 18.0000 dW[2]: 17.0000 dW[3]: 24.0000 dW[4]: 21.0000 dW[5]: 30.0000 
+    dB[0]: 5.0000 dB[1]: 7.0000 dB[2]: 9.0000 
+    dX[0]: 4.0000 dX[1]: 5.0000 dX[2]: 10.0000 dX[3]: 11.0000 
+    Next is the training using xor. We will use a training loop and print out the loss approach 0 showing mastery. 
+    Training steps: 
+    Z1 = X*W1T + bl -> fc_forward -> 4x4 
+    A1 = sigmoid(Z1)
+    Z2 = A1*W2T + b2 -> fc_Forward -> 4x1 
+    A2 = sigmoid(Z2)
+    loss = MSE(A2, target) //this is what will be printed
+
+    and backwards would be using element wise multiplication.
 
 
     
