@@ -19,7 +19,6 @@ void layer_setup(Layer *layer) {
             layer->out_H = (layer->in_H - layer->P) / layer->S + 1;
             layer->out_W = (layer->in_W - layer->P) / layer->S + 1;
             layer->out_C = layer->in_C;
-            layer->argmax = nullptr;  // will be allocated in layer_forward
             break;
 
         case LayerType::CONV:
@@ -32,19 +31,34 @@ void layer_setup(Layer *layer) {
     }
     size_t out_size = layer->out_H * layer->out_W * layer->out_C * sizeof(float);
     cudaMalloc((void**)&layer->d_output, out_size);
+
+    // gradient w.r.t. input — sized like the INPUT, produced by backward and handed back
+    size_t in_size = layer->in_H * layer->in_W * layer->in_C * sizeof(float);
+    cudaMalloc((void**)&layer->d_grad_input, in_size);
+
     if (layer->type == LayerType::CONV || layer->type == LayerType::FC || layer->type == LayerType::BATCHNORM) {
         size_t weight_size = layer->out_C * layer->in_C * layer->filter_H * layer->filter_W * sizeof(float);  // for CONV
         size_t bias_size = layer->out_C * sizeof(float);
 
         cudaMalloc((void**)&layer->d_weights, weight_size);
         cudaMalloc((void**)&layer->d_bias, bias_size);
+        cudaMalloc((void**)&layer->d_grad_weights, weight_size);
+        cudaMalloc((void**)&layer->d_grad_bias, bias_size);
     } else {
         layer->d_weights = nullptr;
         layer->d_bias = nullptr;
+        layer->d_grad_weights = nullptr;
+        layer->d_grad_bias = nullptr;
     }
+
+    // POOL needs an argmax buffer (output-sized ints) to route gradients in backward
+    if (layer->type == LayerType::POOL) {
+        cudaMalloc((void**)&layer->argmax, layer->out_H * layer->out_W * sizeof(int));
+    } else {
+        layer->argmax = nullptr;
+    }
+
     layer->d_input = nullptr;
-    layer->d_grad_weights = nullptr;
-    layer->d_grad_bias = nullptr;
 }
 float *layer_forward(Layer *layer, float *d_input) {
     layer->d_input = d_input;   // cache for the backward pass (Week 6)
@@ -96,8 +110,10 @@ float *layer_forward(Layer *layer, float *d_input) {
 
 void layer_free(Layer *layer) {
     if (layer->d_output)       cudaFree(layer->d_output);
+    if (layer->d_grad_input)   cudaFree(layer->d_grad_input);
     if (layer->d_weights)      cudaFree(layer->d_weights);
     if (layer->d_bias)         cudaFree(layer->d_bias);
     if (layer->d_grad_weights) cudaFree(layer->d_grad_weights);
     if (layer->d_grad_bias)    cudaFree(layer->d_grad_bias);
+    if (layer->argmax)         cudaFree(layer->argmax);
 }
