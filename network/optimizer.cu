@@ -1,6 +1,7 @@
 #include "optimizer.cuh"
 #include <cmath>
 #include <cstdio>
+
 #define CUDA_CHECK(call)                                                        \
     do {                                                                        \
         cudaError_t err = (call);                                               \
@@ -33,36 +34,35 @@ __global__ void momentum_kernel(float *weights, const float *grad, float *veloci
 void sgd(float *weights, const float *grad, float lr, int n){
     size_t bytes = n * sizeof(float);
     float *d_weights, *d_grad;
-    cudaMalloc(&d_weights, bytes);
-    cudaMalloc(&d_grad, bytes);
-    cudaMemcpy(d_weights, weights, bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_grad, grad, bytes, cudaMemcpyHostToDevice);
+    CUDA_CHECK(cudaMalloc(&d_weights, bytes));
+    CUDA_CHECK(cudaMalloc(&d_grad, bytes));
+    CUDA_CHECK(cudaMemcpy(d_weights, weights, bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_grad, grad, bytes, cudaMemcpyHostToDevice));
     dim3 block(256);
     dim3 grid ((n+block.x-1)/block.x);
     sgd_kernel<<<grid, block>>>(d_weights, d_grad, lr, n);
-    cudaMemcpy(weights, d_weights, bytes, cudaMemcpyDeviceToHost);
-    cudaFree(d_weights);
-    cudaFree(d_grad);
+    CUDA_CHECK(cudaMemcpy(weights, d_weights, bytes, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d_weights));
+    CUDA_CHECK(cudaFree(d_grad));
 }
 
 void momentum(float *weights, const float *grad, float *velocity, float lr, float beta, int n){
     size_t bytes = n * sizeof(float);
     float *d_weights, *d_grad, *d_velocity;
-    cudaMalloc(&d_weights, bytes);
-    cudaMalloc(&d_grad, bytes);
-    cudaMalloc(&d_velocity, bytes);
-    cudaMemcpy(d_weights, weights, bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_grad, grad, bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_velocity, velocity, bytes, cudaMemcpyHostToDevice);
+    CUDA_CHECK(cudaMalloc(&d_weights, bytes));
+    CUDA_CHECK(cudaMalloc(&d_grad, bytes));
+    CUDA_CHECK(cudaMalloc(&d_velocity, bytes));
+    CUDA_CHECK(cudaMemcpy(d_weights, weights, bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_grad, grad, bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_velocity, velocity, bytes, cudaMemcpyHostToDevice));
     dim3 block(256);
     dim3 grid ((n+block.x-1)/block.x);
     momentum_kernel<<<grid, block>>>(d_weights, d_grad, d_velocity, lr, beta, n);
-    cudaMemcpy(weights, d_weights, bytes, cudaMemcpyDeviceToHost);
-    cudaMemcpy(velocity, d_velocity, bytes, cudaMemcpyDeviceToHost);
-    cudaMemcpy(velocity, d_velocity, bytes, cudaMemcpyDeviceToHost);
-    cudaFree(d_weights);
-    cudaFree(d_grad);
-    cudaFree(d_velocity);
+    CUDA_CHECK(cudaMemcpy(weights, d_weights, bytes, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(velocity, d_velocity, bytes, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d_weights));
+    CUDA_CHECK(cudaFree(d_grad));
+    CUDA_CHECK(cudaFree(d_velocity));
 }
 
 int main(){
