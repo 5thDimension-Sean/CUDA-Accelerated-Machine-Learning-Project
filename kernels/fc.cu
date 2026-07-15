@@ -39,16 +39,41 @@ __global__ void fc_forward_kernel(const float* X, const float *W, const float *b
 }
 
 __global__ void fc_backward_weights_kernel(const float *dY, const float*X, float*dW, int batch, int in, int out){
+    int row = blockIdx.y * blockDim.y + threadIdx.y; // input index
+    int col = blockIdx.x * blockDim.x + threadIdx.x; // output index
 
+    if(row < out && col < in){
+        float sum = 0.0f;
+        for(int i = 0; i < batch; ++i){
+            sum += dY[i * out + row] * X[i * in + col];
+        }
+        dW[row * in + col] = sum;
+    }
 }
 
 __global__ void fc_backward_bias_kernel(const float *dY, float*dB, int batch, int out){
+    int row = blockIdx.y * blockDim.y + threadIdx.y; // output index
 
+    if(row < out){
+        float sum = 0.0f;
+        for(int i = 0; i < batch; ++i){
+            sum += dY[i * out + row];
+        }
+        dB[row] = sum;
+    }
 }
 
 
 __global__ void fc_backward_input_kernel(const float *dY, const float *W, float *dX, int batch, int in, int out){
-
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+    int col = blockIdx.y*blockDim.y + threadIdx.y;
+    if(row < batch && col < in){
+        float sum = 0;
+        for(int i = 0; i<out; ++i){
+            sum += dY[row*out+out] * W[out*in+row];
+        }
+        dX[row*in+col] = sum; 
+    }
 }
 
 void fc_forward(const float* X, const float *W, const float *b, float *Y, int batch, int in, int out){
