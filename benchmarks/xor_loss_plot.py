@@ -1,14 +1,3 @@
-#!/usr/bin/env python3
-"""
-Plot the XOR training loss curve produced by network/train_xor.cu.
-
-The C++ trainer writes `loss_curve.csv` (columns: epoch,loss). This script
-styles it into a portfolio-ready figure that highlights the characteristic
-"plateau then breakthrough" shape of learning XOR with a hidden layer.
-
-Usage:
-    python benchmarks/xor_loss_plot.py [path/to/loss_curve.csv]
-"""
 
 import sys
 import os
@@ -16,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 
-# ---- locate the CSV (arg, cwd, or build dir) --------------------------------
+
 CANDIDATES = [
     sys.argv[1] if len(sys.argv) > 1 else None,
     "loss_curve.csv",
@@ -30,12 +19,12 @@ if csv_path is None:
 data = np.loadtxt(csv_path, delimiter=",", skiprows=1)
 epochs, loss = data[:, 0], data[:, 1]
 
-# ---- find the "breakthrough": epoch of steepest descent ---------------------
+
 d_loss = np.gradient(loss)
 break_idx = int(np.argmin(d_loss))          # most negative slope
 break_epoch, break_loss = epochs[break_idx], loss[break_idx]
 
-# ---- palette ----------------------------------------------------------------
+
 INK      = "#1b1f24"   # near-black text
 ACCENT   = "#4c6ef5"   # indigo line
 ACCENT2  = "#f03e3e"   # red marker
