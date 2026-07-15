@@ -126,7 +126,7 @@ Run any of these from the project root after building. The notes below are infer
 | `& ".\build\bin\optimizer.exe"` | Stochastic Gradient Descent used as an optimization method in ML |
 | `& ".\build\bin\fc.exe"` | forward kernel for FC and XOR training loop | 
 | `& ".\build\bin\train_xor.exe"` | training loop via XOR calculating oovertime the loss | 
-
+| `python benchmarks/xor_loss_plot.py` | visualization of xor loss plot | 
 ---
 
 ## Data Flow
