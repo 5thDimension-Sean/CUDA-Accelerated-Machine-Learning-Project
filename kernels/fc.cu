@@ -25,7 +25,17 @@ __global__ void matmul_tiled(const float* A, const float* B, float* C, int N){
 */
 
 __global__ void fc_forward_kernel(const float* X, const float *W, const float *b, float *Y, int batch, int in, int out){
+    
+    int row = blockIdx.y * blockDim.y + threadIdx.y; // batch index
+    int col = blockIdx.x * blockDim.x + threadIdx.x; // output index
 
+    if(row < batch && col < out){
+        float sum = 0.0f;
+        for(int i = 0; i < in; ++i){
+            sum += X[row * in + i] * W[col*in + i];
+        }
+        Y[row * out + col] = sum + b[col];
+    }
 }
 
 void fc_forward(const float* X, const float *W, const float *b, float *Y, int batch, int in, int out){
@@ -41,10 +51,10 @@ void fc_forward(const float* X, const float *W, const float *b, float *Y, int ba
     CUDA_CHECK(cudaMemcpy(d_X, X, bytes_X, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_W, W, bytes_W, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_b, b, bytes_b, cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_Y, Y, bytes_Y, cudaMemcpyHostToDevice));
     dim3 block(16, 16);
     dim3 grid((out + block.x - 1) / block.x, (batch + block.y - 1) / block.y);
     fc_forward_kernel<<<grid, block>>>(d_X, d_W, d_b, d_Y, batch, in, out);
+    CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaMemcpy(Y, d_Y, bytes_Y, cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaFree(d_X));
     CUDA_CHECK(cudaFree(d_W));
