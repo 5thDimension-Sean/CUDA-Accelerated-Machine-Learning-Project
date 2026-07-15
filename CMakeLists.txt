@@ -61,5 +61,13 @@ add_executable(optimizer network/optimizer.cu)
 set_target_properties(optimizer PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 add_executable(fc kernels/fc.cu)
 set_target_properties(fc PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
+add_executable(train_xor
+    network/train_xor.cu
+    kernels/fc.cu
+    kernels/activations.cu
+    network/loss.cu
+    network/optimizer.cu)
+set_target_properties(train_xor PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+target_compile_definitions(train_xor PRIVATE BUILD_AS_LIBRARY)
+target_include_directories(train_xor PRIVATE network kernels)
 # Uncomment each block as you reach that week.
