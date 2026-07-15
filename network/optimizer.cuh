@@ -1,5 +1,5 @@
-#ifndef NETWORK_OPTIMER_CUH
-#define NETWORK_OPTIMZER_CUH
+#ifndef NETWORK_OPTIMIZER_CUH
+#define NETWORK_OPTIMIZER_CUH
 
 #include <cuda_runtime.h>
 
