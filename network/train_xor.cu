@@ -3,7 +3,6 @@
 #include "common.cuh"
 #include <cmath>
 #include <cstdio>
-
 static float sigmoid(float x) {
     return 1.0f / (1.0f + std::exp(-x));
 }
@@ -48,6 +47,10 @@ int main() {
     float db1[hidden] = {0.0f};
     float dX[batch * in] = {0.0f};
     float lr = 0.5f;
+    FILE *loss_file = std::fopen("loss_curve.csv", "w");
+    if (loss_file != nullptr) {
+        std::fprintf(loss_file, "epoch,loss\n");
+    }
 
     for (int epoch = 0; epoch < 10000; ++epoch) {
         fc_forward(X, W1, b1, z1, batch, in, hidden);
@@ -87,6 +90,13 @@ int main() {
         if ((epoch % 100) == 0) {
             std::printf("epoch %d loss = %.4f\n", epoch, loss);
         }
+        if (loss_file != nullptr) {
+            std::fprintf(loss_file, "%d,%.6f\n", epoch, loss);
+        }
+    }
+
+    if (loss_file != nullptr) {
+        std::fclose(loss_file);
     }
 
     std::printf("final predictions:\n");
