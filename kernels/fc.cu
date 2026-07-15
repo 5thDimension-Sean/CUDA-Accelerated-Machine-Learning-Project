@@ -29,5 +29,24 @@ __global__ void sgd_kernel(float *weights, const float *grad, float lr, int n){
 }
 
 void fc_forward(const float* X, const float *W, const float *b, float *Y, int batch, int in, int out){
-    
+
+
 }
+
+
+#ifndef BUILD_AS_LIBRARY
+int main(){
+    //n is num of weights
+    const int batch = 2, in = 2, out = 3;
+    float X[batch * in] = {1.0f, 2.0f, 3.0f, 4.0f};
+    float W[in * out] = {1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f};
+    float b[out] = {0.0f, 0.0f, 0.0f};
+    float Y[batch * out]; //filled by fc forward
+    fc_forward(X, W, b, Y, batch, in, out);
+    printf("Output after FC: ");
+    for(int i = 0; i < batch * out; ++i){
+        printf("%.4f ", Y[i]);
+    }
+    return 0;
+}
+#endif
