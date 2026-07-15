@@ -25,7 +25,7 @@ __global__ void sgd_kernel(float *weights, const float *grad, float lr, int n){
 __global__ void momentum_kernel(float *weights, const float *grad, float *velocity, float lr, float beta, int n){
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if(idx < n){
-        velocity[idx] = beta * velocity[idx] + (1.0f - beta) * grad[idx];
+        velocity[idx] = beta * velocity[idx] + grad[idx];
         weights[idx] -= lr * velocity[idx];
     }
 }
