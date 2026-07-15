@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
