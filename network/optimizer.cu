@@ -65,6 +65,7 @@ void momentum(float *weights, const float *grad, float *velocity, float lr, floa
     CUDA_CHECK(cudaFree(d_velocity));
 }
 
+#ifndef BUILD_AS_LIBRARY
 int main(){
     //n is num of weights
     const int n = 4;
@@ -95,3 +96,4 @@ int main(){
     
     return 0;
 }
+#endif
