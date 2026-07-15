@@ -37,7 +37,7 @@ int main() {
     float z2[batch * out] = {0.0f};
     float a2[batch * out] = {0.0f};
 
-    for (int epoch = 0; epoch < 100000; ++epoch) {
+    for (int epoch = 0; epoch < 10000; ++epoch) {
         fc_forward(X, W1, b1, z1, batch, in, hidden);
 
         for (int i = 0; i < batch * hidden; ++i) {
