@@ -666,4 +666,8 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     Completed loss.cu and step 2/4 for the training loop. Step 3 is backward and step 4 would be update weights. 
     Also YOLO loss is just htree of the stacekd localization loss. MSE + confidence loss + classification loss and cross-entropy. 
+
+7/15/26 @ 12:38 AM
+    Next up is the SGD optimizer which is different from calculating loss. Read more here: https://www.geeksforgeeks.org/machine-learning/ml-stochastic-gradient-descent-sgd/
+    
     
