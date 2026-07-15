@@ -26,8 +26,8 @@ __global__ void matmul_tiled(const float* A, const float* B, float* C, int N){
 
 __global__ void fc_forward_kernel(const float* X, const float *W, const float *b, float *Y, int batch, int in, int out){
     
-    int row = blockIdx.y * blockDim.y + threadIdx.y; // batch index
-    int col = blockIdx.x * blockDim.x + threadIdx.x; // output index
+    int row = blockIdx.x * blockDim.x + threadIdx.x; // batch index
+    int col = blockIdx.y * blockDim.y + threadIdx.y; // output index
 
     if(row < batch && col < out){
         float sum = 0.0f;
@@ -39,8 +39,8 @@ __global__ void fc_forward_kernel(const float* X, const float *W, const float *b
 }
 
 __global__ void fc_backward_weights_kernel(const float *dY, const float*X, float*dW, int batch, int in, int out){
-    int row = blockIdx.y * blockDim.y + threadIdx.y; // input index
-    int col = blockIdx.x * blockDim.x + threadIdx.x; // output index
+    int row = blockIdx.y * blockDim.y + threadIdx.y; // output index
+    int col = blockIdx.x * blockDim.x + threadIdx.x; // input index
 
     if(row < out && col < in){
         float sum = 0.0f;
@@ -52,7 +52,7 @@ __global__ void fc_backward_weights_kernel(const float *dY, const float*X, float
 }
 
 __global__ void fc_backward_bias_kernel(const float *dY, float*dB, int batch, int out){
-    int row = blockIdx.y * blockDim.y + threadIdx.y; // output index
+    int row = blockIdx.x * blockDim.x + threadIdx.x; // output index
 
     if(row < out){
         float sum = 0.0f;
@@ -66,13 +66,13 @@ __global__ void fc_backward_bias_kernel(const float *dY, float*dB, int batch, in
 
 __global__ void fc_backward_input_kernel(const float *dY, const float *W, float *dX, int batch, int in, int out){
     int row = blockIdx.x * blockDim.x + threadIdx.x;
-    int col = blockIdx.y*blockDim.y + threadIdx.y;
+    int col = blockIdx.y * blockDim.y + threadIdx.y;
     if(row < batch && col < in){
         float sum = 0;
-        for(int i = 0; i<out; ++i){
-            sum += dY[row*out+out] * W[out*in+row];
+        for(int i = 0; i < out; ++i){
+            sum += dY[row * out + i] * W[i * in + col];
         }
-        dX[row*in+col] = sum; 
+        dX[row * in + col] = sum; 
     }
 }
 
@@ -90,7 +90,7 @@ void fc_forward(const float* X, const float *W, const float *b, float *Y, int ba
     CUDA_CHECK(cudaMemcpy(d_W, W, bytes_W, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_b, b, bytes_b, cudaMemcpyHostToDevice));
     dim3 block(16, 16);
-    dim3 grid((out + block.x - 1) / block.x, (batch + block.y - 1) / block.y);
+    dim3 grid((batch + block.x - 1) / block.x, (out + block.y - 1) / block.y);
     fc_forward_kernel<<<grid, block>>>(d_X, d_W, d_b, d_Y, batch, in, out);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaMemcpy(Y, d_Y, bytes_Y, cudaMemcpyDeviceToHost));
@@ -118,7 +118,7 @@ void fc_backward(const float *dY, const float *X, const float *W, float *dW, flo
     CUDA_CHECK(cudaMemcpy(d_W, W, bytes_W, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(dd_Y, dY, d_bytes_Y, cudaMemcpyHostToDevice));
     dim3 block(16, 16);
-    dim3 weights_grid((out + 15) / 16, (in + 15) / 16);
+    dim3 weights_grid((in + 15) / 16, (out + 15) / 16);
     dim3 bias_grid((out + 15) / 16);
     dim3 input_grid((batch + 15) / 16, (in + 15) / 16);
 
