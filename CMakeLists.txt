@@ -59,5 +59,7 @@ target_compile_definitions(forward_pass PRIVATE BUILD_AS_LIBRARY)
 target_include_directories(forward_pass PRIVATE network kernels)
 add_executable(optimizer network/optimizer.cu)
 set_target_properties(optimizer PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+add_executable(fc kernels/fc.cu)
+set_target_properties(fc PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 # Uncomment each block as you reach that week.
