@@ -23,3 +23,11 @@ __global__ void matmul_tiled(const float* A, const float* B, float* C, int N){
 
 }
 */
+
+__global__ void sgd_kernel(float *weights, const float *grad, float lr, int n){
+
+}
+
+void fc_forward(const float* X, const float *W, const float *b, float *Y, int batch, int in, int out){
+    
+}
