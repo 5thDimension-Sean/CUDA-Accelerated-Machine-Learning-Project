@@ -671,5 +671,10 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Next up is the SGD optimizer which is different from calculating loss. Read more here: https://www.geeksforgeeks.org/machine-learning/ml-stochastic-gradient-descent-sgd/
     In optimizer.cuh you don't need enumerated types as you can just manually call. This makes the code more efficent and less redundent. 
 
-    Next: FC forward. XOR needs tiny non-square layers so we will write a plain direct kernel to compute that
+    Next: FC forward. XOR needs tiny non-square layers so we will write a plain direct kernel to compute that: 
+    Output after FC: 1.0000 2.0000 3.0000 3.0000 4.0000 7.0000 
+
+    Next up would be writing the three backward kernels
+
+
     
