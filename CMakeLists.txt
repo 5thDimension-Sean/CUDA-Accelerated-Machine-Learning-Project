@@ -57,7 +57,7 @@ add_executable(forward_pass
 set_target_properties(forward_pass PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_definitions(forward_pass PRIVATE BUILD_AS_LIBRARY)
 target_include_directories(forward_pass PRIVATE network kernels)
-add_executable(pooling network/optimzer.cu)
+add_executable(optimizer network/optimzer.cu)
 set_target_properties(optimizer PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 # Uncomment each block as yosu reach that week.
