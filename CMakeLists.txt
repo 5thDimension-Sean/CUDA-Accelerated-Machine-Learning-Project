@@ -64,7 +64,6 @@ set_target_properties(fc PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 add_executable(train_xor
     network/train_xor.cu
     kernels/fc.cu
-    kernels/activations.cu
     network/loss.cu
     network/optimizer.cu)
 set_target_properties(train_xor PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
