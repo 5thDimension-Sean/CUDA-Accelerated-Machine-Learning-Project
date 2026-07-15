@@ -29,8 +29,27 @@ __global__ void fc_forward_kernel(const float* X, const float *W, const float *b
 }
 
 void fc_forward(const float* X, const float *W, const float *b, float *Y, int batch, int in, int out){
-
-
+    size_t bytes_X = batch * in  * sizeof(float);
+    size_t bytes_W = out   * in  * sizeof(float);
+    size_t bytes_b = out * sizeof(float);
+    size_t bytes_Y = batch * out * sizeof(float);
+    float *d_X, *d_W, *d_b, *d_Y;
+    CUDA_CHECK(cudaMalloc(&d_X, bytes_X));
+    CUDA_CHECK(cudaMalloc(&d_W, bytes_W));
+    CUDA_CHECK(cudaMalloc(&d_b, bytes_b));
+    CUDA_CHECK(cudaMalloc(&d_Y, bytes_Y));
+    CUDA_CHECK(cudaMemcpy(d_X, X, bytes_X, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_W, W, bytes_W, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_b, b, bytes_b, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_Y, Y, bytes_Y, cudaMemcpyHostToDevice));
+    dim3 block(16, 16);
+    dim3 grid((out + block.x - 1) / block.x, (batch + block.y - 1) / block.y);
+    fc_forward_kernel<<<grid, block>>>(d_X, d_W, d_b, d_Y, batch, in, out);
+    CUDA_CHECK(cudaMemcpy(Y, d_Y, bytes_Y, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d_X));
+    CUDA_CHECK(cudaFree(d_W));
+    CUDA_CHECK(cudaFree(d_b));
+    CUDA_CHECK(cudaFree(d_Y));
 }
 
 
