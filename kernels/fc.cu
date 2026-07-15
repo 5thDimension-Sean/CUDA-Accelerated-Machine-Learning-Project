@@ -42,7 +42,7 @@ __global__ void fc_backward_weights_kernel(const float *dY, const float*X, float
 
 }
 
-__global__ void fc_backward_bias_kernel(const float *dY, float*db, int batch, int out){
+__global__ void fc_backward_bias_kernel(const float *dY, float*dB, int batch, int out){
 
 }
 
@@ -75,8 +75,8 @@ void fc_forward(const float* X, const float *W, const float *b, float *Y, int ba
     CUDA_CHECK(cudaFree(d_Y));
 }
 
-void fc_backward(const float *dY, const float *X, const float *W, float *dW, float *db, float *dX, int batch, int in, int out){
-    
+void fc_backward(const float *dY, const float *X, const float *W, float *dW, float *dB, float *dX, int batch, int in, int out){
+
 }
 
 #ifndef BUILD_AS_LIBRARY
@@ -87,10 +87,19 @@ int main(){
     float W[in * out] = {1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f};
     float b[out] = {0.0f, 0.0f, 0.0f};
     float Y[batch * out]; //filled by fc forward
+    float dW[out*in] = {13, 18, 17, 24, 21, 30};
+    float dB[out] = {5, 7, 9};
+    float dX[batch*in] = {4, 5, 10, 11};
+
     fc_forward(X, W, b, Y, batch, in, out);
     printf("Output after FC: ");
     for(int i = 0; i < batch * out; ++i){
         printf("%.4f ", Y[i]);
+    }
+    fc_backward(Y, X, W, dW, dB, dX, batch, in, out);
+    printf("Backwards FC: ");
+    for(int i = 0; i < batch*out; ++i){
+        printf("%.4f", Y[i]);
     }
     return 0;
 }
