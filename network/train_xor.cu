@@ -1,4 +1,5 @@
 #include "fc.cuh"
+#include "optimizer.cuh"
 #include "common.cuh"
 #include <cmath>
 #include <cstdio>
@@ -37,22 +38,24 @@ int main() {
     float z2[batch * out] = {0.0f};
     float a2[batch * out] = {0.0f};
 
-    //backward pass declaration: 
-    float dA2[batch*out]={0}, dZ2[batch*out]={0};
-    float dW2[out*hidden]={0}, db2[out]={0}, dA1[batch*hidden]={0};
-    float dZ1[batch*hidden]={0}, dW1[hidden*in]={0}, db1[hidden]={0};
-    float dX[batch*in]={0};      // unused, but fc_backward needs the buffer
+    float dA2[batch * out] = {0.0f};
+    float dZ2[batch * out] = {0.0f};
+    float dW2[out * hidden] = {0.0f};
+    float db2[out] = {0.0f};
+    float dA1[batch * hidden] = {0.0f};
+    float dZ1[batch * hidden] = {0.0f};
+    float dW1[hidden * in] = {0.0f};
+    float db1[hidden] = {0.0f};
+    float dX[batch * in] = {0.0f};
     float lr = 0.5f;
 
-    for (int epoch = 0; epoch < 10000 & 1000; ++epoch) {
+    for (int epoch = 0; epoch < 1000; ++epoch) {
         fc_forward(X, W1, b1, z1, batch, in, hidden);
-
         for (int i = 0; i < batch * hidden; ++i) {
             a1[i] = sigmoid(z1[i]);
         }
 
         fc_forward(a1, W2, b2, z2, batch, hidden, out);
-
         for (int i = 0; i < batch * out; ++i) {
             a2[i] = sigmoid(z2[i]);
         }
@@ -64,14 +67,31 @@ int main() {
         }
         loss /= static_cast<float>(batch * out);
 
-        if ((epoch % 10) == 0) {
+        for (int i = 0; i < batch * out; ++i) {
+            dA2[i] = (2.0f / static_cast<float>(batch * out)) * (a2[i] - targets[i]);
+            dZ2[i] = dA2[i] * a2[i] * (1.0f - a2[i]);
+        }
+
+        fc_backward(dZ2, a1, W2, dW2, db2, dA1, batch, hidden, out);
+
+        for (int i = 0; i < batch * hidden; ++i) {
+            dZ1[i] = dA1[i] * a1[i] * (1.0f - a1[i]);
+        }
+        fc_backward(dZ1, X, W1, dW1, db1, dX, batch, in, hidden);
+
+        sgd(W1, dW1, lr, hidden * in);
+        sgd(b1, db1, lr, hidden);
+        sgd(W2, dW2, lr, out * hidden);
+        sgd(b2, db2, lr, out);
+
+        if ((epoch % 100) == 0) {
             std::printf("epoch %d loss = %.4f\n", epoch, loss);
         }
     }
 
     std::printf("final predictions:\n");
     for (int i = 0; i < batch; ++i) {
-        std::printf("sample %d -> %.4f\n", i, a2[i]);
+        std::printf("sample %d :  %.4f\n", i, a2[i]);
     }
 
     return 0;
