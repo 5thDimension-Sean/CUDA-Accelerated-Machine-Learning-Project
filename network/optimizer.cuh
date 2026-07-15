@@ -1,12 +1,12 @@
-#ifndef NETWORK_LOSS_CUH
-#define NETWORK_LOSS_CUH
+#ifndef NETWORK_OPTIMZER_CUH
+#define NETWORK_OPTIMZER_CUH
 
 #include <cuda_runtime.h>
 
 enum class LossType
 {
-    MSE,
-    CrossEntropy
+    SGD, 
+    Momentum
 };
 
 __global__ void loss_forward_kernel(const float* predictions,
