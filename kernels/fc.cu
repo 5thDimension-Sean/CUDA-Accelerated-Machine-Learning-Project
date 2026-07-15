@@ -76,6 +76,40 @@ void fc_forward(const float* X, const float *W, const float *b, float *Y, int ba
 }
 
 void fc_backward(const float *dY, const float *X, const float *W, float *dW, float *dB, float *dX, int batch, int in, int out){
+    size_t bytes_X = batch * in  * sizeof(float);
+    size_t bytes_W = out   * in  * sizeof(float);
+    size_t d_bytes_W = out   * in  * sizeof(float);
+    size_t d_bytes_b = out * sizeof(float);
+    size_t d_bytes_Y = batch * out * sizeof(float);
+    size_t d_bytes_X = batch*in*sizeof(float);
+    float *d_X, *d_W, *dd_B, *dd_Y, *dd_W, *dd_X;
+    CUDA_CHECK(cudaMalloc(&d_X, bytes_X));
+    CUDA_CHECK(cudaMalloc(&d_W, bytes_W));
+    CUDA_CHECK(cudaMalloc(&dd_B, d_bytes_b));
+    CUDA_CHECK(cudaMalloc(&dd_Y, d_bytes_Y));
+    CUDA_CHECK(cudaMalloc(&dd_W, d_bytes_W));
+    CUDA_CHECK(cudaMalloc(&dd_X, d_bytes_X));
+    CUDA_CHECK(cudaMemcpy(d_X, X, bytes_X, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_W, W, bytes_W, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(dd_Y, dY, d_bytes_Y, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemset(dd_B, 0, d_bytes_b));
+    CUDA_CHECK(cudaMemset(dd_W, 0, d_bytes_W));
+    CUDA_CHECK(cudaMemset(dd_X, 0, d_bytes_X));
+    dim3 grid = ((out + 15) / 16, (in + 15) / 16);
+    dim3 block = dim3(16, 16);
+    fc_backward_weights_kernel<<<grid, block>>>(dd_Y, d_X, dd_W, batch, in, out);
+    fc_backward_bias_kernel<<<(out + 15) / 16, 16>>>(dd_Y, dd_B, batch, out);
+    fc_backward_input_kernel<<<(batch + 15) / 16, 16>>>(dd_Y, d_W, dd_X, batch, in, out);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaMemcpy(dW, dd_W, d_bytes_W, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(dB, dd_B, d_bytes_b, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(dX, dd_X, d_bytes_X, cudaMemcpyDeviceToHost));
+    cudaFree(d_X);
+    cudaFree(d_W);
+    cudaFree(dd_B);
+    cudaFree(dd_Y);
+    cudaFree(dd_W);
+    cudaFree(dd_X);
 
 }
 
