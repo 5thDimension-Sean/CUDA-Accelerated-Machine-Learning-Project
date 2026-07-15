@@ -1,36 +1,15 @@
-#ifndef NETWORK_LOSS_CUH
-#define NETWORK_LOSS_CUH
+#ifndef NETWORK_OPTIMER_CUH
+#define NETWORK_OPTIMZER_CUH
 
 #include <cuda_runtime.h>
 
-enum class LossType
-{
-    SGD, 
-    MOMENTUM
-};
 
-__global__ void sgd_kernel(const float* predictions,
-                                    const float* targets,
-                                    float* loss,
-                                    int numElements,
-                                    LossType lossType);
+__global__ void sgd_kernel(float *weights, const float *grad, float lr, int n);
 
-__global__ void momentum_kernel(const float* predictions,
-                                     const float* targets,
-                                     float* gradients,
-                                     int numElements,
-                                     LossType lossType);
+__global__ void momentum_kernel(float *weights, const float *grad, float *velocity, float lr, float beta, int n);
 
-void sgd(const float* predictions,
-                 const float* targets,
-                 float* loss,
-                 int numElements,
-                 LossType lossType);
+void sgd(float *weights, const float *grad, float lr, int n);
 
-void momentum(const float* predictions,
-                    const float* targets,
-                    float* gradients,
-                    int numElements,
-                    LossType lossType);
+void momentum(float *weights, const float *grad, float *velocity, float lr, float beta, int n);
 
 #endif 
