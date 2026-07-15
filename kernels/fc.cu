@@ -87,20 +87,30 @@ int main(){
     float W[in * out] = {1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f};
     float b[out] = {0.0f, 0.0f, 0.0f};
     float Y[batch * out]; //filled by fc forward
-    float dW[out*in] = {13, 18, 17, 24, 21, 30};
-    float dB[out] = {5, 7, 9};
-    float dX[batch*in] = {4, 5, 10, 11};
+    float dW[out*in] = {0};
+    float dB[out] = {0};
+    float dX[batch*in] = {0};
+    float dY[batch * out] = {1, 2, 3, 4, 5, 6};
 
     fc_forward(X, W, b, Y, batch, in, out);
     printf("Output after FC: ");
     for(int i = 0; i < batch * out; ++i){
         printf("%.4f ", Y[i]);
     }
-    fc_backward(Y, X, W, dW, dB, dX, batch, in, out);
+    fc_backward(dY, X, W, dW, dB, dX, batch, in, out);
     printf("Backwards FC: ");
-    for(int i = 0; i < batch*out; ++i){
-        printf("%.4f", Y[i]);
+    for(int i = 0; i < out*in; ++i){
+        printf("dW[%d]: %.4f ", i, dW[i]);
     }
+    printf("\n");
+    for(int i = 0; i < out; ++i){
+        printf("dB[%d]: %.4f ", i, dB[i]);
+    }
+    printf("\n");
+    for(int i = 0; i < batch*in; ++i){
+        printf("dX[%d]: %.4f ", i, dX[i]);
+    }
+    printf("\n");
     return 0;
 }
 #endif
