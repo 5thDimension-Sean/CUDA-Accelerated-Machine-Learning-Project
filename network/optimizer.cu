@@ -35,7 +35,10 @@ int main(){
     for(int i = 0; i < n; ++i){
         printf("%.4f ", weights[i]);
     }
-    float weights[n] = {1.0f, 2.0f, 3.0f, 4.0f}; // Reset weights for momentum test
+    // Reset weights for momentum test
+    for(int i = 0; i < n; ++i){
+        weights[i] = 1.0f;
+    }
     momentum(weights, grad, velocity, lr, beta, n);
     printf("\nWeights after Momentum: ");
     for(int i = 0; i < n; ++i){
