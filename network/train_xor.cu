@@ -49,7 +49,7 @@ int main() {
     float dX[batch * in] = {0.0f};
     float lr = 0.5f;
 
-    for (int epoch = 0; epoch < 1000; ++epoch) {
+    for (int epoch = 0; epoch < 10000; ++epoch) {
         fc_forward(X, W1, b1, z1, batch, in, hidden);
         for (int i = 0; i < batch * hidden; ++i) {
             a1[i] = sigmoid(z1[i]);

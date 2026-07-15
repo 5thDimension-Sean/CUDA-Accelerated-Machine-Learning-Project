@@ -691,6 +691,23 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     First test and the loss is just constant 0.2501 without any changes. 
     This indicates something is wrong like an XOR plateau/lr
     Also, Epoch does not end after 10 thousand iterations
+    epoch 0 loss = 0.2501
+    epoch 100 loss = 0.2498
+    epoch 200 loss = 0.2495
+    epoch 300 loss = 0.2492
+    epoch 400 loss = 0.2487
+    epoch 500 loss = 0.2478
+    epoch 600 loss = 0.2461
+    epoch 700 loss = 0.2428
+    epoch 800 loss = 0.2364
+    epoch 900 loss = 0.2249
+    final predictions:
+    sample 0 :  0.3811
+    sample 1 :  0.4698
+    sample 2 :  0.6337
+    sample 3 :  0.5176
+    as you can see, the loss is slightly going down showing that it is learning. This means the backprop pipeline is working
+    Next we will use 10k as our epoch. 
 
 
     
