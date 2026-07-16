@@ -139,3 +139,18 @@ __global__ void conv2d_filter(const float* input,
 
       output[out_z * outH * outW + out_y * outW + out_x] = sum;
   }
+
+
+__global__ void conv2d_backward_filter(const float *dOut, const float *input, float *dFilter, int H, int W, int FH, int FW){
+    int fx = blockIdx.x * blockDim.x * threadIdx.x;
+    int fy = blockIdx.y * blockDim.y * threadIdx.y;
+
+    if( && ){
+        
+    }
+}
+
+
+__global__ void conv2d_backward_input (const float *dOut, const float *filter, float *dInput, int H, int W, int FH, int FW){
+
+}
