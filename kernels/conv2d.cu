@@ -154,3 +154,7 @@ __global__ void conv2d_backward_filter(const float *dOut, const float *input, fl
 __global__ void conv2d_backward_input (const float *dOut, const float *filter, float *dInput, int H, int W, int FH, int FW){
 
 }
+
+__global__ void conv2d_wrapper(const float *dOut, const float *filter, float *dInput, int H, int W, int FH, int FW){
+    
+}
