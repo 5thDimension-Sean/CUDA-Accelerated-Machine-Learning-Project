@@ -160,9 +160,52 @@ __global__ void bn_backward_input (const float *dOut, const float *x, float mean
 
 void bn_backward(const float *dOut, const float *x, float mean, float var, float eps,
                  float gamma, int N, float *dInput, float *dGamma, float *dBeta){
+    size_t bytes_N      = N * sizeof(float);
+    size_t bytes_scalar = sizeof(float);
 
+    float *d_dOut, *d_x, *d_dInput, *d_sum_dout, *d_sum_dout_xhat;
+    CUDA_CHECK(cudaMalloc(&d_dOut,          bytes_N));
+    CUDA_CHECK(cudaMalloc(&d_x,             bytes_N));
+    CUDA_CHECK(cudaMalloc(&d_dInput,        bytes_N));         // output
+    CUDA_CHECK(cudaMalloc(&d_sum_dout,      bytes_scalar));
+    CUDA_CHECK(cudaMalloc(&d_sum_dout_xhat, bytes_scalar));
+
+    // inputs up (H2D)
+    CUDA_CHECK(cudaMemcpy(d_dOut, dOut, bytes_N, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_x,    x,    bytes_N, cudaMemcpyHostToDevice));
+    // zero the reduction accumulators
+    CUDA_CHECK(cudaMemset(d_sum_dout,      0, bytes_scalar));
+    CUDA_CHECK(cudaMemset(d_sum_dout_xhat, 0, bytes_scalar));
+
+    // kernel 1 — reduce: single block of N threads, tree reduction
+    bn_backward_reduce<<<1, N>>>(d_dOut, d_x, mean, var, eps, N,
+                                 d_sum_dout, d_sum_dout_xhat);
+    CUDA_CHECK(cudaGetLastError());
+
+    // bring the two sums back so we can pass them by value into kernel 2
+    float sum_dout = 0.0f, sum_dout_xhat = 0.0f;
+    CUDA_CHECK(cudaMemcpy(&sum_dout,      d_sum_dout,      bytes_scalar, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(&sum_dout_xhat, d_sum_dout_xhat, bytes_scalar, cudaMemcpyDeviceToHost));
+
+    // kernel 2 — element-wise dInput
+    dim3 block(256);
+    dim3 grid((N + block.x - 1) / block.x);
+    bn_backward_input<<<grid, block>>>(d_dOut, d_x, mean, var, eps, gamma, N,
+                                       sum_dout, sum_dout_xhat, d_dInput);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    // outputs down (D2H)
+    CUDA_CHECK(cudaMemcpy(dInput, d_dInput, bytes_N, cudaMemcpyDeviceToHost));
+    *dBeta  = sum_dout;
+    *dGamma = sum_dout_xhat;
+
+    CUDA_CHECK(cudaFree(d_dOut));
+    CUDA_CHECK(cudaFree(d_x));
+    CUDA_CHECK(cudaFree(d_dInput));
+    CUDA_CHECK(cudaFree(d_sum_dout));
+    CUDA_CHECK(cudaFree(d_sum_dout_xhat));
 }
-
 #ifndef BUILD_AS_LIBRARY
 int main() {
     float arrX[N] = {1, 2, 3, 4, 5, 6, 7, 8};
