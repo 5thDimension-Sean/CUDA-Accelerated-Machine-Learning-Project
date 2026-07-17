@@ -202,7 +202,6 @@ void conv2d_backward(const float *dOut, const float *input, const float *filter,
     CUDA_CHECK(cudaMalloc(&d_dFilter, bytes_filter));   // output
     CUDA_CHECK(cudaMalloc(&d_dInput,  bytes_input));    // output
 
-    // inputs go UP (H2D)
     CUDA_CHECK(cudaMemcpy(d_dOut,   dOut,   bytes_dOut,   cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_input,  input,  bytes_input,  cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_filter, filter, bytes_filter, cudaMemcpyHostToDevice));
@@ -216,7 +215,6 @@ void conv2d_backward(const float *dOut, const float *input, const float *filter,
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
 
-    // outputs come DOWN (D2H)
     CUDA_CHECK(cudaMemcpy(dFilter, d_dFilter, bytes_filter, cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaMemcpy(dInput,  d_dInput,  bytes_input,  cudaMemcpyDeviceToHost));
 
