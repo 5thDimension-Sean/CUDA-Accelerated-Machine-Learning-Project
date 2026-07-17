@@ -150,14 +150,50 @@ void batchNormWrapKernel(float *matrix, float *matriy, float mean, float varianc
 
 __global__ void bn_backward_reduce(const float *dOut, const float *x, float mean, float var,
                                    float eps, int N, float *sum_dout, float *sum_dout_xhat){
+    __shared__ float s_dout[1024];   
+    __shared__ float s_dout_xhat[1024];
 
+    int tid = threadIdx.x;
+    float rstd = 1.0f / sqrtf(var + eps);
+
+    // load: each thread contributes dOut_i and dOut_i * x_hat_i
+    if (tid < N) {
+        float d     = dOut[tid];
+        float x_hat = (x[tid] - mean) * rstd;
+        s_dout[tid]      = d;
+        s_dout_xhat[tid] = d * x_hat;
+    } else {
+        s_dout[tid]      = 0.0f;
+        s_dout_xhat[tid] = 0.0f;
+    }
+    __syncthreads();
+
+
+    for (int stride = blockDim.x / 2; stride > 0; stride /= 2) {
+        if (tid < stride) {
+            s_dout[tid]      += s_dout[tid + stride];
+            s_dout_xhat[tid] += s_dout_xhat[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0) {
+        *sum_dout      = s_dout[0];        // = dBeta
+        *sum_dout_xhat = s_dout_xhat[0];   // = dGamma
+    }
 }
+
 __global__ void bn_backward_input (const float *dOut, const float *x, float mean, float var,
                                    float eps, float gamma, int N,
                                    float sum_dout, float sum_dout_xhat, float *dInput){
-
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < N) {
+        float rstd  = 1.0f / sqrtf(var + eps);
+        float x_hat = (x[i] - mean) * rstd;
+        dInput[i] = (gamma * rstd / N) *
+                    (N * dOut[i] - sum_dout - x_hat * sum_dout_xhat);
+    }
 }
-
 void bn_backward(const float *dOut, const float *x, float mean, float var, float eps,
                  float gamma, int N, float *dInput, float *dGamma, float *dBeta){
     size_t bytes_N      = N * sizeof(float);
