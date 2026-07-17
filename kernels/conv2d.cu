@@ -144,18 +144,43 @@ __global__ void conv2d_filter(const float* input,
   }
 
 
-__global__ void conv2d_backward_filter(const float *dOut, const float *input, float *dFilter, int H, int W, int FH, int FW){
-    int fx = blockIdx.x * blockDim.x * threadIdx.x;
-    int fy = blockIdx.y * blockDim.y * threadIdx.y;
+__global__ void conv2d_backward_filter(const float *dOut, const float *input,
+                                       float *dFilter, int H, int W, int FH, int FW){
+    int outH = H - FH + 1;
+    int outW = W - FW + 1;
 
-    if( && ){
-        
+    // one thread per FILTER element, not per output pixel
+    int fx = blockIdx.x * blockDim.x + threadIdx.x;   // filter column
+    int fy = blockIdx.y * blockDim.y + threadIdx.y;   // filter row
+    if (fx >= FW || fy >= FH) return;
+
+    // sum over ALL output positions
+    float sum = 0.0f;
+    for (int oy = 0; oy < outH; ++oy) {
+        for (int ox = 0; ox < outW; ++ox) {
+            sum += dOut[oy * outW + ox] * input[(oy + fy) * W + (ox + fx)];
+        }
     }
+    dFilter[fy * FW + fx] = sum;
 }
 
-
 __global__ void conv2d_backward_input (const float *dOut, const float *filter, float *dInput, int H, int W, int FH, int FW){
+     int outH = H - FH + 1;
+      int outW = W - FW + 1;
+    //output height/width
+      int out_x = blockIdx.x * blockDim.x + threadIdx.x;
+      int out_y = blockIdx.y * blockDim.y + threadIdx.y;
 
+      if (out_x >= outW || out_y >= outH) return;
+
+      float sum = 0.0f;
+      for (int fy = 0; fy < FH; ++fy) {
+          for (int fx = 0; fx < FW; ++fx) {
+              sum += input[(out_y + fy) * W + (out_x + fx)] * filter[fy * FW + fx];
+          }
+      }
+
+      output[out_y * outW + out_x] = sum;
 }
 
 void conv2d_backward(const float *dOut, const float *input, const float *filter,
