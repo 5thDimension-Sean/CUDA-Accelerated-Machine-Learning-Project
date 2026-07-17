@@ -148,6 +148,21 @@ void batchNormWrapKernel(float *matrix, float *matriy, float mean, float varianc
     CUDA_CHECK(cudaFree(d_y));
 }
 
+__global__ void bn_backward_reduce(const float *dOut, const float *x, float mean, float var,
+                                   float eps, int N, float *sum_dout, float *sum_dout_xhat){
+
+}
+__global__ void bn_backward_input (const float *dOut, const float *x, float mean, float var,
+                                   float eps, float gamma, int N,
+                                   float sum_dout, float sum_dout_xhat, float *dInput){
+
+}
+
+void bn_backward(const float *dOut, const float *x, float mean, float var, float eps,
+                 float gamma, int N, float *dInput, float *dGamma, float *dBeta){
+
+}
+
 #ifndef BUILD_AS_LIBRARY
 int main() {
     float arrX[N] = {1, 2, 3, 4, 5, 6, 7, 8};

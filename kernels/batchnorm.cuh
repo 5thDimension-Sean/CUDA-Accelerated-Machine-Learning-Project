@@ -24,3 +24,12 @@ void meanWrapKernel(float *matrix, float *mean, int N);
 void varianceWrapKernel(float *matrix, float mean, float *variance, int N);
 void batchNormWrapKernel(float *matrix, float *matriy, float mean, float variance,
                          float gamma, float beta, float epsilon, int N);
+
+__global__ void bn_backward_reduce(const float *dOut, const float *x, float mean, float var,
+                                   float eps, int N, float *sum_dout, float *sum_dout_xhat);
+__global__ void bn_backward_input (const float *dOut, const float *x, float mean, float var,
+                                   float eps, float gamma, int N,
+                                   float sum_dout, float sum_dout_xhat, float *dInput);
+
+void bn_backward(const float *dOut, const float *x, float mean, float var, float eps,
+                 float gamma, int N, float *dInput, float *dGamma, float *dBeta);
