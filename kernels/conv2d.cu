@@ -19,6 +19,9 @@
 
 // TODO — Week 4: implement here
 //4 parameters k f s p 1 
+#include "common.cuh"
+#include <cmath>
+#include <cstdio>
 #define MAX_FILTER_SIZE 49
 __constant__ float c_filter[MAX_FILTER_SIZE];
   __global__ void conv2d_naive(
@@ -155,6 +158,43 @@ __global__ void conv2d_backward_input (const float *dOut, const float *filter, f
 
 }
 
-__global__ void conv2d_wrapper(const float *dOut, const float *filter, float *dInput, int H, int W, int FH, int FW){
-    
+void conv2d_backward(const float *dOut, const float *input, const float *filter,
+                     float *dFilter, float *dInput, int H, int W, int FH, int FW) {
+    int outH = H - FH + 1, outW = W - FW + 1;
+
+    size_t bytes_dOut   = outH * outW * sizeof(float);
+    size_t bytes_input  = H * W       * sizeof(float);   // also dInput's si
+    size_t bytes_input  = H * W       * sizeof(float);   // also dInput's size
+    size_t bytes_filter = FH * FW     * sizeof(float);   // also dFilter's size
+
+    float *d_dOut, *d_input, *d_filter, *d_dFilter, *d_dInput;
+    CUDA_CHECK(cudaMalloc(&d_dOut,    bytes_dOut));
+    CUDA_CHECK(cudaMalloc(&d_input,   bytes_input));
+    CUDA_CHECK(cudaMalloc(&d_filter,  bytes_filter));
+    CUDA_CHECK(cudaMalloc(&d_dFilter, bytes_filter));   // output
+    CUDA_CHECK(cudaMalloc(&d_dInput,  bytes_input));    // output
+
+    // inputs go UP (H2D)
+    CUDA_CHECK(cudaMemcpy(d_dOut,   dOut,   bytes_dOut,   cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_input,  input,  bytes_input,  cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_filter, filter, bytes_filter, cudaMemcpyHostToDevice));
+
+    dim3 block(16, 16);
+    dim3 filter_grid((FW + 15) / 16, (FH + 15) / 16);
+    dim3 input_grid ((W  + 15) / 16, (H  + 15) / 16);
+
+    conv2d_backward_filter<<<filter_grid, block>>>(d_dOut, d_input,  d_dFilter, H, W, FH, FW);
+    conv2d_backward_input <<<input_grid,  block>>>(d_dOut, d_filter, d_dInput,  H, W, FH, FW);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    // outputs come DOWN (D2H)
+    CUDA_CHECK(cudaMemcpy(dFilter, d_dFilter, bytes_filter, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(dInput,  d_dInput,  bytes_input,  cudaMemcpyDeviceToHost));
+
+    CUDA_CHECK(cudaFree(d_dOut));
+    CUDA_CHECK(cudaFree(d_input));
+    CUDA_CHECK(cudaFree(d_filter));
+    CUDA_CHECK(cudaFree(d_dFilter));
+    CUDA_CHECK(cudaFree(d_dInput));
 }
