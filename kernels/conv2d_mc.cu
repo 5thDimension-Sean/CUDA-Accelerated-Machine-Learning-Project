@@ -68,13 +68,6 @@ void conv2d_mc(const float *input, const float *filter, const float *bias, float
     CUDA_CHECK(cudaFree(d_out));
 }
 
-__global__ void conv2d_mc_backward(const float *dOut,               
-                        const float *input, const float *filter,
-                        float *dInput, float *dFilter, float *dBias, //3 output
-                        int C_in, int C_out, int H, int W, int FH, int FW){
-                               
-                            
-}
 
 
 
@@ -128,7 +121,7 @@ void conv2d_mc_backward(const float *dOut,
     CUDA_CHECK(cudaFree(d_dFilter));
     CUDA_CHECK(cudaFree(d_dBias));
 }
-}
+
 
 
 #ifndef BUILD_AS_LIBRARY
