@@ -867,3 +867,4 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Issue, after running & ".\build\bin\mnist_train.exe" it returns nothing so we have to debug. 
 
     After fixing all issues, the final accuracy just doesn't stop after 100 percent.
+    After moving the print outside and removing the loss changes, I found that epoch = 10000 was too much so I changed it to be only 1000 for now.
