@@ -112,10 +112,10 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 ### Foundations & profiling
 | Command | What it does |
 | ------- | ------------ |
-| `& ".\build\bin\vector_add.exe"` | Verification kernel — element-wise vector addition; confirms the CUDA setup and reports GPU-vs-CPU speedup. |
+| `& ".\build\bin\vector_add.exe"` | Verification kernel: element-wise vector addition; confirms the CUDA setup and reports GPU-vs-CPU speedup. |
 | `& ".\build\bin\benchmark.exe"` | Parallel reduction: naive → shared-memory → warp-level, timed against a CPU baseline. |
 | `& ".\build\bin\memory_benchmark.exe"` | Coalesced vs. uncoalesced global-memory access, showing the bandwidth cost of stride. |
-| `& ".\build\bin\streams_benchmark.exe"` | CUDA streams — overlapping compute with async host↔device transfers. |
+| `& ".\build\bin\streams_benchmark.exe"` | CUDA streams: overlapping compute with async host↔device transfers. |
 
 ### Core math
 | Command | What it does |
@@ -139,8 +139,8 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 | ------- | ------------ |
 | `& ".\build\bin\loss.exe"` | MSE and cross-entropy loss, forward and backward. |
 | `& ".\build\bin\optimizer.exe"` | SGD and momentum weight-update kernels. |
-| `& ".\build\bin\train_xor.exe"` | End-to-end training loop — a from-scratch network that learns XOR, loss driven to ~0. |
-| `python benchmarks\xor_loss_plot.py` | Plots the XOR training-loss curve (the plateau-then-breakthrough of learning). |
+| `& ".\build\bin\train_xor.exe"` | End-to-end training loop: a from-scratch network that learns XOR, loss driven to ~0. |
+| `python benchmarks\xor_loss_plot.py` | Plots the XOR training-loss curve. |
 
 ---
 
