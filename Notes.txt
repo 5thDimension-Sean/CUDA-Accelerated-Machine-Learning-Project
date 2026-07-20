@@ -865,3 +865,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     wrote 60000 samples This means it has read and loading everything into 2 bin folders which can be called by our .cu file. 
 
     Issue, after running & ".\build\bin\mnist_train.exe" it returns nothing so we have to debug. 
+
+    After fixing all issues, the final accuracy just doesn't stop after 100 percent.
