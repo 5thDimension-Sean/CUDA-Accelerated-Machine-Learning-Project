@@ -119,8 +119,14 @@ int main(){
     fc_forward(X, W1, b1, z1, N, IN, HIDDEN);
     for (int i=0;i<N*HIDDEN;++i) a1[i] = z1[i]>0?z1[i]:0;
     fc_forward(a1, W2, b2, z2, N, HIDDEN, OUT);
-    for (int n=0;n<N;++n){ /* softmax */ }
-    int correct = 0;
+    for (int n=0;n<N;++n){for (int n = 0; n < N; ++n) {
+    float m = z2[n*OUT];
+    for (int c = 1; c < OUT; ++c) if (z2[n*OUT+c] > m) m = z2[n*OUT+c];
+    float sum = 0.0f;
+    for (int c = 0; c < OUT; ++c) { a2[n*OUT+c] = expf(z2[n*OUT+c]-m); sum += a2[n*OUT+c]; }
+    for (int c = 0; c < OUT; ++c) a2[n*OUT+c] /= sum;
+    }}
+    correct = 0;
     for (int n = 0; n < N; ++n) {
       int pred = 0, truth = 0;
       for (int c = 1; c < OUT; ++c) {
