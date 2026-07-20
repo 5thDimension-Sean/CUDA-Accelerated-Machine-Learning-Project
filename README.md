@@ -144,6 +144,7 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 | `& ".\build\bin\train_xor.exe"` | End-to-end training loop: a from-scratch network that learns XOR, loss driven to ~0. |
 | `python benchmarks\xor_loss_plot.py` | Plots the XOR training-loss curve. |
 | `python data\prepare_mnist.py` | Preprocesses the MNIST CSV files into normalized `float32` binaries (train + test sets). |
+| `python data\prepare_mnist_test.py` | second MNIST testing dataset |
 | `& ".\build\bin\mnist_train.exe"` | Trains an MLP (784 → 128 → 10, ReLU + softmax, cross-entropy) on MNIST digits, then reports **train vs. test accuracy** on held-out data. |
 
 ---
