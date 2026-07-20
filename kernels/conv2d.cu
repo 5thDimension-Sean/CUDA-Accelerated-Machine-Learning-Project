@@ -191,7 +191,6 @@ void conv2d_backward(const float *dOut, const float *input, const float *filter,
     int outH = H - FH + 1, outW = W - FW + 1;
 
     size_t bytes_dOut   = outH * outW * sizeof(float);
-    size_t bytes_input  = H * W       * sizeof(float);   // also dInput's si
     size_t bytes_input  = H * W       * sizeof(float);   // also dInput's size
     size_t bytes_filter = FH * FW     * sizeof(float);   // also dFilter's size
 
