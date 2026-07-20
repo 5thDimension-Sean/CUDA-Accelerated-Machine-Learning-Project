@@ -77,7 +77,6 @@ int main(){
         for (int i = 0; i < N*OUT; ++i) {
             loss +=Y[i] * logf(a2[i] + 1e-8f); // Cross-entropy loss
         }
-        loss /= static_cast<float>(N * OUT);
         loss = -loss / N;
        for (int i = 0; i < N * OUT; ++i)
         dZ2[i] = (a2[i] - Y[i]) / N;
