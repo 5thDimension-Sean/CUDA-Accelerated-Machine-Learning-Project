@@ -922,3 +922,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     sample 9: predicted 9, actual 9
 
     Ths final accuracy on the test was only 85 percent, which shows some error
+
+    Let's change the N_train and N_test to higher so 10x more data.

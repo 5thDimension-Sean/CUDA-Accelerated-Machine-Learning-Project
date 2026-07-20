@@ -18,7 +18,7 @@ void load_bin(const char *path, float *dst, size_t count){
     }
 }
 int main(){
-    const int N = 1000, IN = 784, HIDDEN = 128, OUT = 10; //1000 can be changed / n size can be changed
+    const int N = 10000, IN = 784, HIDDEN = 128, OUT = 10; //1000 can be changed / n size can be changed
     float *X, *Y;
     float *W1, *b1, *W2, *b2;
     CUDA_CHECK(cudaMallocHost((void**)&W1, HIDDEN * IN  * sizeof(float)));
@@ -54,7 +54,7 @@ int main(){
     static float db1[HIDDEN] = {0.0f};
     static float dX[N * IN] = {0.0f};
     float lr = 0.5f;
-     for (int epoch = 0; epoch < 1000; ++epoch) {
+     for (int epoch = 0; epoch < 200; ++epoch) {
         fc_forward(X, W1, b1, z1, N, IN, HIDDEN);
         for (int i = 0; i < N * HIDDEN; ++i) {
             a1[i] = z1[i] > 0 ? z1[i] : 0; // ReLU activation
