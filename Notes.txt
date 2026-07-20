@@ -815,4 +815,8 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     sample 3 :  0.0306
     As you can see, the loss is really close to 0 in such a short time frame of about 1 minute.
 
+    Next up: implementing image detection. 
+    First: https://www.kaggle.com/code/gpreda/simple-introduction-to-cnn-for-mnist-99-37
+    MNIST CNN so we load MNIST into host arrays and then prove the stack on MNIST with an MLP first 
+
     
