@@ -114,5 +114,30 @@ int main(){
       }
       std::printf("sample %d: predicted %d, actual %d\n", n, pred, truth);
     }
+    load_bin("mnist_test_X.bin", X, N*IN);
+    load_bin("mnist_test_Y.bin", Y, N*OUT);
+    fc_forward(X, W1, b1, z1, N, IN, HIDDEN);
+    for (int i=0;i<N*HIDDEN;++i) a1[i] = z1[i]>0?z1[i]:0;
+    fc_forward(a1, W2, b2, z2, N, HIDDEN, OUT);
+    for (int n=0;n<N;++n){ /* softmax */ }
+    int correct = 0;
+    for (int n = 0; n < N; ++n) {
+      int pred = 0, truth = 0;
+      for (int c = 1; c < OUT; ++c) {
+          if (a2[n*OUT + c] > a2[n*OUT + pred]) pred = c;   // predicted digit
+          if (Y [n*OUT + c] > Y [n*OUT + truth]) truth = c; // true digit
+      }
+      if (pred == truth) correct++;
+    }
+     std::printf("final accuracy(test) = %.2f%% (%d/%d)\n", 100.0f * correct / N, correct, N);
+
+    for (int n = 0; n < 10; ++n) {
+      int pred = 0, truth = 0;
+      for (int c = 1; c < OUT; ++c) {
+          if (a2[n*OUT + c] > a2[n*OUT + pred]) pred = c;
+          if (Y [n*OUT + c] > Y [n*OUT + truth]) truth = c;
+      }
+      std::printf("sample %d: predicted %d, actual %d\n", n, pred, truth);
+    }
     return 0;
 }

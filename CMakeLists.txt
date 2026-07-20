@@ -77,7 +77,6 @@ set_target_properties(mnist_train PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_definitions(mnist_train PRIVATE BUILD_AS_LIBRARY)
 target_include_directories(mnist_train PRIVATE network kernels)
 add_executable(mnist_test
-    data/mnist_test.cu
     kernels/fc.cu
     network/optimizer.cu)
 set_target_properties(mnist_test PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
