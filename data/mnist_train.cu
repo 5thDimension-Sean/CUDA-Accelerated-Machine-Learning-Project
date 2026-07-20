@@ -94,26 +94,26 @@ int main(){
         sgd(W2, dW2, lr, OUT * HIDDEN);   // 10 * 128
         sgd(b2, db2, lr, OUT);            // 10
 
-       int correct = 0;
-  for (int n = 0; n < N; ++n) {
+    //100,352 weights
+    }
+    int correct = 0;
+    for (int n = 0; n < N; ++n) {
       int pred = 0, truth = 0;
       for (int c = 1; c < OUT; ++c) {
           if (a2[n*OUT + c] > a2[n*OUT + pred]) pred = c;   // predicted digit
           if (Y [n*OUT + c] > Y [n*OUT + truth]) truth = c; // true digit
       }
       if (pred == truth) correct++;
-  }
-  std::printf("final accuracy = %.2f%% (%d/%d)\n", 100.0f * correct / N, correct, N);
+    }
+     std::printf("final accuracy = %.2f%% (%d/%d)\n", 100.0f * correct / N, correct, N);
 
-  for (int n = 0; n < 10; ++n) {
+    for (int n = 0; n < 10; ++n) {
       int pred = 0, truth = 0;
       for (int c = 1; c < OUT; ++c) {
           if (a2[n*OUT + c] > a2[n*OUT + pred]) pred = c;
           if (Y [n*OUT + c] > Y [n*OUT + truth]) truth = c;
       }
       std::printf("sample %d: predicted %d, actual %d\n", n, pred, truth);
-  }
-    //100,352 weights
     }
     return 0;
 }
