@@ -21,6 +21,10 @@ int main(){
     const int N = 1000, IN = 784, HIDDEN = 128, OUT = 10; //1000 can be changed / n size can be changed
     float *X, *Y;
     float *W1, *b1, *W2, *b2;
+    CUDA_CHECK(cudaMallocHost((void**)&W1, HIDDEN * IN  * sizeof(float)));
+    CUDA_CHECK(cudaMallocHost((void**)&b1, HIDDEN       * sizeof(float)));
+    CUDA_CHECK(cudaMallocHost((void**)&W2, OUT * HIDDEN * sizeof(float)));
+    CUDA_CHECK(cudaMallocHost((void**)&b2, OUT          * sizeof(float)));
     CUDA_CHECK(cudaMallocHost((void**)&X,  N * IN * sizeof(float)));
     CUDA_CHECK(cudaMallocHost((void**)&Y,  N * OUT * sizeof(float)));
     load_bin("mnist_X.bin", X, N*IN);
