@@ -81,9 +81,11 @@ Press `F7`  ·  or  `Ctrl+Shift+P` → **CMake: Build**
 ```
 
 ### 6 · Confirm success
-A **speedup > 1×** and **`Correct: YES`** mean everything compiled and ran correctly. You're good to go. ✅
-
+A **speedup > 1×** and **`Correct: YES`** mean everything compiled and ran correctly.
 ---
+### 7 · Extra Datasets
+```https://www.kaggle.com/datasets/oddrationale/mnist-in-csv```
+
 
 ## Sample Results
 
