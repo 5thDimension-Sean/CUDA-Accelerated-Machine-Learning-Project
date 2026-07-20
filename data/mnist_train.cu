@@ -19,8 +19,8 @@ void load_bin(const char *path, float *dst, size_t count){
 }
 int main(){
     const int N = 1000, IN = 784, HIDDEN = 128, OUT = 10; //1000 can be changed / n size can be changed
-    float *X = (float*)malloc(N * IN * sizeof(float));
-    float *Y = (float*)malloc(N*OUT*sizeof(float));
+    float *X, *Y;
+    float *W1, *b1, *W2, *b2;
     CUDA_CHECK(cudaMallocHost((void**)&X,  N * IN * sizeof(float)));
     CUDA_CHECK(cudaMallocHost((void**)&Y,  N * OUT * sizeof(float)));
     load_bin("mnist_X.bin", X, N*IN);
@@ -42,7 +42,6 @@ int main(){
     static float a1[N * HIDDEN] = {0.0f};
     static float z2[N * OUT] = {0.0f};
     static float a2[N * OUT] = {0.0f};
-    static float dA2[N * OUT] = {0.0f};
     static float dZ2[N * OUT] = {0.0f};
     static float dW2[OUT * HIDDEN] = {0.0f};
     static float db2[OUT] = {0.0f};
@@ -76,7 +75,7 @@ int main(){
             loss +=Y[i] * logf(a2[i] + 1e-8f); // Cross-entropy loss
         }
         loss /= static_cast<float>(N * OUT);
-
+        loss = -loss / N;
        for (int i = 0; i < N * OUT; ++i)
         dZ2[i] = (a2[i] - Y[i]) / N;
 
@@ -111,7 +110,7 @@ int main(){
       }
       std::printf("sample %d: predicted %d, actual %d\n", n, pred, truth);
   }
-    return 0;
     //100,352 weights
-}
+    }
+    return 0;
 }
