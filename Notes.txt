@@ -947,3 +947,7 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     sample 7: predicted 9, actual 9
     sample 8: predicted 6, actual 5
     sample 9: predicted 9, actual 9
+
+
+    Next up is a trainable-CNN path as the mnist_train.cu uses cpu stuff.  basically it's a convolutional neural network. 
+    
