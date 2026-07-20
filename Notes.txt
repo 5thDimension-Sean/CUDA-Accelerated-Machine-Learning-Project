@@ -924,3 +924,26 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     Ths final accuracy on the test was only 85 percent, which shows some error
 
     Let's change the N_train and N_test to higher so 10x more data.
+
+    final accuracy = 94.83% (9483/10000)
+    sample 0: predicted 5, actual 5
+    sample 1: predicted 0, actual 0
+    sample 2: predicted 4, actual 4
+    sample 3: predicted 1, actual 1
+    sample 4: predicted 9, actual 9
+    sample 5: predicted 2, actual 2
+    sample 6: predicted 1, actual 1
+    sample 7: predicted 3, actual 3
+    sample 8: predicted 1, actual 1
+    sample 9: predicted 4, actual 4
+    final accuracy(test) = 92.77% (9277/10000)
+    sample 0: predicted 7, actual 7
+    sample 1: predicted 2, actual 2
+    sample 2: predicted 1, actual 1
+    sample 3: predicted 0, actual 0
+    sample 4: predicted 4, actual 4
+    sample 5: predicted 1, actual 1
+    sample 6: predicted 4, actual 4
+    sample 7: predicted 9, actual 9
+    sample 8: predicted 6, actual 5
+    sample 9: predicted 9, actual 9
