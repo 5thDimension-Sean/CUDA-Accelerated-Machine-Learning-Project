@@ -44,3 +44,5 @@ mnist_test.csv
 data/*.csv
 mnist_X.bin
 mnist_Y.bin
+mnist_test_X.bin
+mnist_test_y.bin
