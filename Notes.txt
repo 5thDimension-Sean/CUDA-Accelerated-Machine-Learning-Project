@@ -950,4 +950,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
 
     Next up is a trainable-CNN path as the mnist_train.cu uses cpu stuff.  basically it's a convolutional neural network. 
-    
+    1. backwards kernel for conv2d_mc.cu
+
