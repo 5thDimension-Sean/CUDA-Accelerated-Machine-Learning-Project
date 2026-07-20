@@ -883,3 +883,18 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     However, it could just be memorizing the data... No one knows
 
     We can test this via mnist test.cu which is basicaly the same thing except it is running from the already trained version on the test set to check if they memorized or if it actually learned.
+
+    final accuracy = 100.00% (1000/1000)
+    sample 0: predicted 5, actual 5
+    sample 1: predicted 0, actual 0
+    sample 2: predicted 4, actual 4
+    sample 3: predicted 1, actual 1
+    sample 4: predicted 9, actual 9
+    sample 5: predicted 2, actual 2
+    sample 6: predicted 1, actual 1
+    sample 7: predicted 3, actual 3
+    sample 8: predicted 1, actual 1
+    sample 9: predicted 4, actual 4
+    could not open mnist_test_X.bin
+
+    It most likely is some file path error
