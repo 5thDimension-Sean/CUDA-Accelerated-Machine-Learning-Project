@@ -1,6 +1,6 @@
 import numpy as np
 
-data = np.loadtxt("mnist_train.csv", delimiter=",", skiprows=1)
+data = np.loadtxt("mnist_train.csv/mnist_train.csv", delimiter=",", skiprows=1)
 labels = data[:, 0].astype(int)
 pixels = (data[:, 1:] / 255.0).astype(np.float32)  # Normalize pixel values to [0, 1]
 onehot = np.eye(10, dtype=np.float32)[labels]
