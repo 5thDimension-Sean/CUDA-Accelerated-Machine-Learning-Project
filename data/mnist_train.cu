@@ -3,6 +3,8 @@
 #include "activations.cuh"  // srs
 #include "loss.cuh"         // ce
 #include "optimizer.cuh"    // sgd
+#include <cmath>
+#include <cstdio>
 
 void load_bin(const char *path, float *dst, size_t count){
     FILE *f = fopen(path, "rb");
@@ -90,22 +92,25 @@ int main(){
         sgd(W2, dW2, lr, OUT * HIDDEN);   // 10 * 128
         sgd(b2, db2, lr, OUT);            // 10
 
-        if ((epoch % 100) == 0) {
-            std::printf("epoch %d loss = %.4f\n", epoch, loss);
-        }
-        if (loss_file != nullptr) {
-            std::fprintf(loss_file, "%d,%.6f\n", epoch, loss);
-        }
-    }
-
-    if (loss_file != nullptr) {
-        std::fclose(loss_file);
-    }
-
-    std::printf("final predictions:\n");
-    for (int i = 0; i < batch; ++i) {
-        std::printf("sample %d :  %.4f\n", i, a2[i]);
-    }
+       int correct = 0;
+  for (int n = 0; n < N; ++n) {
+      int pred = 0, truth = 0;
+      for (int c = 1; c < OUT; ++c) {
+          if (a2[n*OUT + c] > a2[n*OUT + pred]) pred = c;   // predicted digit
+          if (Y [n*OUT + c] > Y [n*OUT + truth]) truth = c; // true digit
+      }
+      if (pred == truth) correct++;
+  }
+  std::printf("final accuracy = %.2f%% (%d/%d)\n", 100.0f * correct / N, correct, N);
+-
+  for (int n = 0; n < 10; ++n) {
+      int pred = 0, truth = 0;
+      for (int c = 1; c < OUT; ++c) {
+          if (a2[n*OUT + c] > a2[n*OUT + pred]) pred = c;
+          if (Y [n*OUT + c] > Y [n*OUT + truth]) truth = c;
+      }
+      std::printf("sample %d: predicted %d, actual %d\n", n, pred, truth);
+  }
     return 0;
     //100,352 weights
 }
