@@ -72,9 +72,9 @@ __global__ void conv2d_mc_backward(const float *dOut,
                         const float *input, const float *filter,
                         float *dInput, float *dFilter, float *dBias, //3 output
                         int C_in, int C_out, int H, int W, int FH, int FW){
-
+                               
                             
-                        }
+}
 
 
 
@@ -83,7 +83,51 @@ void conv2d_mc_backward(const float *dOut,
                         float *dInput, float *dFilter, float *dBias, //3 output
                         int C_in, int C_out, int H, int W, int FH, int FW){
 
+    int outH = H - FH + 1, outW = W - FW + 1;
+    size_t bytes_in     = (size_t)C_in  * H * W          * sizeof(float);
+    size_t bytes_filter = (size_t)C_out * C_in * FH * FW * sizeof(float);
+    size_t bytes_bias   = (size_t)C_out                  * sizeof(float);
+    size_t bytes_out    = (size_t)C_out * outH * outW    * sizeof(float);
 
+    float *d_dOut, *d_input, *d_filter, *d_dInput, *d_dFilter, *d_dBias;
+    CUDA_CHECK(cudaMalloc(&d_dOut,    bytes_out));
+    CUDA_CHECK(cudaMalloc(&d_input,   bytes_in));
+    CUDA_CHECK(cudaMalloc(&d_filter,  bytes_filter));
+    CUDA_CHECK(cudaMalloc(&d_dInput,  bytes_in));
+    CUDA_CHECK(cudaMalloc(&d_dFilter, bytes_filter));
+    CUDA_CHECK(cudaMalloc(&d_dBias,   bytes_bias));
+
+    CUDA_CHECK(cudaMemcpy(d_dOut,   dOut,   bytes_out,    cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_input,  input,  bytes_in,     cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_filter, filter, bytes_filter, cudaMemcpyHostToDevice));
+
+
+    conv2d_mc_backward_bias<<<(C_out + 255) / 256, 256>>>(
+        d_dOut, d_dBias, C_out, outH, outW);
+
+    int nW = C_out * C_in * FH * FW;
+    conv2d_mc_backward_weights<<<(nW + 255) / 256, 256>>>(
+        d_dOut, d_input, d_dFilter, C_in, C_out, H, W, FH, FW);
+
+    dim3 inBlock(16, 16, 1);
+    dim3 inGrid((W + 15) / 16, (H + 15) / 16, C_in);
+    conv2d_mc_backward_input<<<inGrid, inBlock>>>(
+        d_dOut, d_filter, d_dInput, C_in, C_out, H, W, FH, FW);
+
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    CUDA_CHECK(cudaMemcpy(dInput,  d_dInput,  bytes_in,     cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(dFilter, d_dFilter, bytes_filter, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(dBias,   d_dBias,   bytes_bias,   cudaMemcpyDeviceToHost));
+
+    CUDA_CHECK(cudaFree(d_dOut));
+    CUDA_CHECK(cudaFree(d_input));
+    CUDA_CHECK(cudaFree(d_filter));
+    CUDA_CHECK(cudaFree(d_dInput));
+    CUDA_CHECK(cudaFree(d_dFilter));
+    CUDA_CHECK(cudaFree(d_dBias));
+}
 }
 
 
