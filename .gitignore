@@ -42,3 +42,5 @@ Thumbs.db
 mnist_train.csv
 mnist_test.csv
 data/*.csv
+mnist_X.bin
+mnist_Y.bin
