@@ -25,7 +25,6 @@ int main(){
     CUDA_CHECK(cudaMallocHost((void**)&Y,  N * OUT * sizeof(float)));
     load_bin("mnist_X.bin", X, N*IN);
     load_bin("mnist_Y.bin", Y, N*OUT);
-    float *W1, *b1, *W2, *b2;
     srand(42);  // fixed seed
 
     float scale1 = sqrtf(2.0f / IN); 
