@@ -836,5 +836,28 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     This would equal to 100 k param as it is 128 * 784 add W2 and b1 and b2 which totals 101,770 parameters!
     python data\prepare_mnist.py                                       
     C:\Users\Sean\AppData\Local\Python\pythoncore-3.14-64\python.exe: can't open file 'D:\\Projects\\Projects\\CUDA Accelerated Machine-Learning Project\\data\\prepare_mnist.py': [Errno 2] No such file or directory
-    No idea what the problem is as it is the correct fil path technically.
+    No idea what the problem is as it is the correct file path technically.
+
+    PS D:\Projects\Projects\CUDA Accelerated Machine-Learning Project> python data\prepare_mnist.py   
+    Traceback (most recent call last):
+    File "D:\Projects\Projects\CUDA Accelerated Machine-Learning Project\data\prepare_mnist.py", line 3, in <module>
+        data = np.loadtxt("mnist_train.csv", delimiter=",", skiprows=1)
+    File "C:\Users\Sean\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\numpy\lib\_npyio_impl.py", line 1381, in loadtxt
+        arr = _read(fname, dtype=dtype, comment=comment, delimiter=delimiter,
+                    converters=converters, skiplines=skiprows, usecols=usecols,
+                    unpack=unpack, ndmin=ndmin, encoding=encoding,
+                    max_rows=max_rows, quote=quotechar)
+    File "C:\Users\Sean\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\numpy\lib\_npyio_impl.py", line 1011, in _read
+        fh = np.lib._datasource.open(fname, 'rt', encoding=encoding)
+    File "C:\Users\Sean\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\numpy\lib\_datasource.py", line 192, in open
+        return ds.open(path, mode, encoding=encoding, newline=newline)
+            ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\Sean\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\numpy\lib\_datasource.py", line 526, in open
+        return _file_openers[ext](found, mode=mode,
+            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+                                encoding=encoding, newline=newline)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    PermissionError: [Errno 13] Permission denied: 'mnist_train.csv'
         
+
+    Closer... The issue found here is most likely because mnist train is a folder not a file so i will just change the file paths
