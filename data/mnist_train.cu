@@ -36,19 +36,19 @@ int main(){
         W2[i] = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * scale2;
     for (int i = 0; i < OUT; i++) b2[i] = 0.0f;
     //gradient buffers
-    float z1[N * HIDDEN] = {0.0f};
-    float a1[N * HIDDEN] = {0.0f};
-    float z2[N * OUT] = {0.0f};
-    float a2[N * OUT] = {0.0f};
-    float dA2[N * OUT] = {0.0f};
-    float dZ2[N * OUT] = {0.0f};
-    float dW2[OUT * HIDDEN] = {0.0f};
-    float db2[OUT] = {0.0f};
-    float dA1[N * HIDDEN] = {0.0f};
-    float dZ1[N * HIDDEN] = {0.0f};
-    float dW1[HIDDEN * IN] = {0.0f};
-    float db1[HIDDEN] = {0.0f};
-    float dX[N * IN] = {0.0f};
+    static float z1[N * HIDDEN] = {0.0f};
+    static float a1[N * HIDDEN] = {0.0f};
+    static float z2[N * OUT] = {0.0f};
+    static float a2[N * OUT] = {0.0f};
+    static float dA2[N * OUT] = {0.0f};
+    static float dZ2[N * OUT] = {0.0f};
+    static float dW2[OUT * HIDDEN] = {0.0f};
+    static float db2[OUT] = {0.0f};
+    static float dA1[N * HIDDEN] = {0.0f};
+    static float dZ1[N * HIDDEN] = {0.0f};
+    static float dW1[HIDDEN * IN] = {0.0f};
+    static float db1[HIDDEN] = {0.0f};
+    static float dX[N * IN] = {0.0f};
     float lr = 0.5f;
      for (int epoch = 0; epoch < 10000; ++epoch) {
         fc_forward(X, W1, b1, z1, N, IN, HIDDEN);
