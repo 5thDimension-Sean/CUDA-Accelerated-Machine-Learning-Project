@@ -54,7 +54,7 @@ int main(){
     static float db1[HIDDEN] = {0.0f};
     static float dX[N * IN] = {0.0f};
     float lr = 0.5f;
-     for (int epoch = 0; epoch < 10000; ++epoch) {
+     for (int epoch = 0; epoch < 1000; ++epoch) {
         fc_forward(X, W1, b1, z1, N, IN, HIDDEN);
         for (int i = 0; i < N * HIDDEN; ++i) {
             a1[i] = z1[i] > 0 ? z1[i] : 0; // ReLU activation
