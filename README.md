@@ -56,31 +56,32 @@ A three-layer GPU computing stack:
 
 ## Quick Start
 
-**1. Clone the repo**
+### 1 · Clone
 ```bash
 git clone https://github.com/5thDimension-Sean/CUDA-Accelerated-Machine-Learning-Project.git
 ```
 
-**2. Verify your CUDA install**
+### 2 · Verify CUDA
 ```bash
-nvcc --version
+nvcc --version      # should report CUDA 12.x
+nvidia-smi          # should list your GPU
 ```
 
-**3. Configure the build**
-> Open the project folder in VS Code. When prompted, select the **CUDA Release** configure preset. It targets Ninja and points directly at the CUDA and MSVC 2022 compilers.
->
-> If the prompt does not appear: `Ctrl+Shift+P`, then **CMake: Select Configure Preset**, then **CUDA Release**.
+### 3 · Configure
+Open the project folder in VS Code and select the **CUDA Release** configure preset when prompted — it targets Ninja and points at the CUDA + MSVC 2022 compilers.
 
-**4. Build**
-> Press `F7` (or `Ctrl+Shift+P`, then **CMake: Build**).
+> If the prompt doesn't appear: `Ctrl+Shift+P` → **CMake: Select Configure Preset** → **CUDA Release**.
 
-**5. Run the verification kernel**
+### 4 · Build
+Press `F7`  ·  or  `Ctrl+Shift+P` → **CMake: Build**
+
+### 5 · Run the verification kernel
 ```powershell
 & ".\build\bin\vector_add.exe"
 ```
 
-**6. Confirm success**
-> A speedup greater than 1x and `Correct: YES` indicate that everything compiled and ran successfully.
+### 6 · Confirm success
+A **speedup > 1×** and **`Correct: YES`** mean everything compiled and ran correctly. You're good to go. ✅
 
 ---
 
