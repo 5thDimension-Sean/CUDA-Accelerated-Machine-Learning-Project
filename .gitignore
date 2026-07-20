@@ -39,3 +39,6 @@ data/*.tar.gz
 # OS
 .DS_Store
 Thumbs.db
+mnist_train.csv
+mnist_test.csv
+data/*.csv
