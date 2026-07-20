@@ -76,10 +76,5 @@ add_executable(mnist_train
 set_target_properties(mnist_train PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_definitions(mnist_train PRIVATE BUILD_AS_LIBRARY)
 target_include_directories(mnist_train PRIVATE network kernels)
-add_executable(mnist_test
-    kernels/fc.cu
-    network/optimizer.cu)
-set_target_properties(mnist_test PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-target_compile_definitions(mnist_test PRIVATE BUILD_AS_LIBRARY)
-target_include_directories(mnist_test PRIVATE network kernels)
+
 # Uncomment each block as you reach that week.
