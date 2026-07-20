@@ -107,27 +107,41 @@ Memory bandwidth (GPU): 142.5 GB/s
 
 ## Executables
 
-Run any of these from the project root after building. The notes below are inferred from each target's name; provide your summer plan and they will be replaced with exact descriptions.
+Everything below builds from hand-written CUDA — no ML frameworks for the core math. Run any target from the project root after building.
 
-| Command | Description |
-| ------- | ----------- |
-| `& ".\build\bin\vector_add.exe"` | Verification kernel. Element-wise vector addition; confirms the CUDA setup works and reports GPU-vs-CPU speedup. |
-| `& ".\build\bin\benchmark.exe"` | General kernel performance benchmark suite. |
-| `& ".\build\bin\memory_benchmark.exe"` | Measures memory bandwidth and host-to-device transfer throughput. |
-| `&".\build\bin\streams_benchmark.exe"` | Tests CUDA streams, overlapping compute with memory transfers. |
-| `& ".\build\bin\matmul_benchmark.exe"` | Times matrix multiplication (GEMM) on the GPU. |
-| `python benchmarks\gemm_benchmark.py` | Python-driven GEMM benchmark. |
-| `& ".\build\bin\conv2d_benchmark.exe"` | Benchmarks the 2D convolution kernel. |
-| `& ".\build\bin\imageTest.exe"` | Image processing and inference demo test. |
-| `& ".\build\bin\activations.exe"` | Exercises activation-function kernels (ReLU, sigmoid, and others). |
-| `& ".\build\bin\batchnorm.exe"` | Batch Normalization forward pass on a 1D input array. |
-| `& ".\build\bin\pooling.exe"` | Finds the largest number and works like an object detector in the future.  |
-| `& ".\build\bin\forward_pass.exe"` | A start to neural networks |
-| `& ".\build\bin\loss.exe"` | Training loop by computing the loss |
-| `& ".\build\bin\optimizer.exe"` | Stochastic Gradient Descent used as an optimization method in ML |
-| `& ".\build\bin\fc.exe"` | forward kernel for FC and XOR training loop | 
-| `& ".\build\bin\train_xor.exe"` | training loop via XOR calculating oovertime the loss | 
-| `python benchmarks/xor_loss_plot.py` | visualization of xor loss plot | 
+### Foundations & profiling
+| Command | What it does |
+| ------- | ------------ |
+| `& ".\build\bin\vector_add.exe"` | Verification kernel — element-wise vector addition; confirms the CUDA setup and reports GPU-vs-CPU speedup. |
+| `& ".\build\bin\benchmark.exe"` | Parallel reduction: naive → shared-memory → warp-level, timed against a CPU baseline. |
+| `& ".\build\bin\memory_benchmark.exe"` | Coalesced vs. uncoalesced global-memory access, showing the bandwidth cost of stride. |
+| `& ".\build\bin\streams_benchmark.exe"` | CUDA streams — overlapping compute with async host↔device transfers. |
+
+### Core math
+| Command | What it does |
+| ------- | ------------ |
+| `& ".\build\bin\matmul_benchmark.exe"` | GEMM: naive → tiled → `float4`-vectorized → cuBLAS, across matrix sizes. |
+| `python benchmarks\gemm_benchmark.py` | Plots the GEMM benchmark results. |
+| `& ".\build\bin\conv2d_benchmark.exe"` | 2D convolution: naive → constant-memory → shared-memory tiled → depthwise. |
+| `& ".\build\bin\imageTest.exe"` | Applies the convolution kernels to a real image (Gaussian blur, Sobel edges). |
+
+### Neural-network layers
+| Command | What it does |
+| ------- | ------------ |
+| `& ".\build\bin\activations.exe"` | ReLU, Leaky ReLU, Sigmoid, Softmax — forward **and** backward. |
+| `& ".\build\bin\batchnorm.exe"` | Batch Normalization, forward and backward (parallel mean/variance reductions). |
+| `& ".\build\bin\pooling.exe"` | 2D max pooling, forward and backward (argmax gradient routing). |
+| `& ".\build\bin\fc.exe"` | Fully-connected layer, forward and backward. |
+| `& ".\build\bin\forward_pass.exe"` | Chains layers through the `Layer` abstraction (device-to-device forward pass). |
+
+### Training
+| Command | What it does |
+| ------- | ------------ |
+| `& ".\build\bin\loss.exe"` | MSE and cross-entropy loss, forward and backward. |
+| `& ".\build\bin\optimizer.exe"` | SGD and momentum weight-update kernels. |
+| `& ".\build\bin\train_xor.exe"` | End-to-end training loop — a from-scratch network that learns XOR, loss driven to ~0. |
+| `python benchmarks\xor_loss_plot.py` | Plots the XOR training-loss curve (the plateau-then-breakthrough of learning). |
+
 ---
 
 ## Data Flow
