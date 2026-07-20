@@ -69,11 +69,11 @@ add_executable(train_xor
 set_target_properties(train_xor PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_definitions(train_xor PRIVATE BUILD_AS_LIBRARY)
 target_include_directories(train_xor PRIVATE network kernels)
-add_executable(train_mnist
-    network/train_mnist.cu
+add_executable(mnist_train
+    data/mnist_train.cu
     kernels/fc.cu
     network/optimizer.cu)
-set_target_properties(train_mnist PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-target_compile_definitions(train_mnist PRIVATE BUILD_AS_LIBRARY)
-target_include_directories(train_mnist PRIVATE network kernels)
+set_target_properties(mnist_train PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+target_compile_definitions(mnist_train PRIVATE BUILD_AS_LIBRARY)
+target_include_directories(mnist_train PRIVATE network kernels)
 # Uncomment each block as you reach that week.
