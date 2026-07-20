@@ -102,7 +102,7 @@ int main(){
       if (pred == truth) correct++;
   }
   std::printf("final accuracy = %.2f%% (%d/%d)\n", 100.0f * correct / N, correct, N);
--
+
   for (int n = 0; n < 10; ++n) {
       int pred = 0, truth = 0;
       for (int c = 1; c < OUT; ++c) {
