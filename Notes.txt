@@ -881,3 +881,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     sample 9: predicted 4, actual 4
     This is perfection. It didn't miss a single one returning a final accuracy of 100 percent. It validates the entire pipeline end to end on image data
     However, it could just be memorizing the data... No one knows
+
+    We can test this via mnist test.cu which is basicaly the same thing except it is running from the already trained version on the test set to check if they memorized or if it actually learned.
