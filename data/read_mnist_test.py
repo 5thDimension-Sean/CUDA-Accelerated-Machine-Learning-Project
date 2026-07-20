@@ -8,6 +8,6 @@ print(data.shape)
 
 
 data1 = np.fromfile("mnist_test_Y.bin", dtype=np.float32)
-data1 = data1.reshape(-1, 784) 
+data1 = data1.reshape(-1, 10)   # one-hot labels: 10 columns
 
 print(data1.shape)

@@ -5,7 +5,7 @@ labels = data[:, 0].astype(int)
 pixels = (data[:, 1:] / 255.0).astype(np.float32)  # Normalize pixel values to [0, 1]
 onehot = np.eye(10, dtype=np.float32)[labels]
 
-pixels.tofile("mnist_X.bin")
-onehot.tofile("mnist_Y.bin")
+pixels.tofile("mnist_test_X.bin")
+onehot.tofile("mnist_test_Y.bin")
 print("wrote", pixels.shape[0], "samples")
 
