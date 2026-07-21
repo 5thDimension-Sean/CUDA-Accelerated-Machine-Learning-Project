@@ -40,6 +40,7 @@ struct Layer {
     int num_filters;           // CONV: number of filters
     float *d_grad_input;       // gradient w.r.t. input; produced by backward, handed to the previous layer
     int *argmax;               // POOL: winning input indices from forward, needed by backward
+    int *C;
 };
 void layer_setup(Layer *layer);
 float *layer_forward(Layer *layer, float *d_input);
