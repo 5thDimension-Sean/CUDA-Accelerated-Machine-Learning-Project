@@ -28,19 +28,16 @@ __global__ void maxPool2D(const float *input, float *output, int *argmax, int H,
         argmax[o] = max_idx;     
 }
 
-__global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInput, int out_H, int out_W) {
+__global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInput,
+                              int out_H, int out_W, int C) {
     int out_x = blockIdx.x * blockDim.x + threadIdx.x;
     int out_y = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (out_x < out_W && out_y < out_H) {
-        int out_offset = out_y * out_W + out_x;
-        int target_in_idx = argmax[out_offset];
-        if (target_in_idx != -1) {
-            dInput[target_in_idx] = dOut[out_offset];
-        }
-    }
+    int c = blockIdx.z;
+    if (out_x >= out_W || out_y >= out_H || c >= C) return;
+    int out_offset = c*(out_H*out_W) + out_y*out_W + out_x;
+    int target_in_idx = argmax[out_offset]; 
+    if (target_in_idx != -1) dInput[target_in_idx] = dOut[out_offset];
 }
-
 void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int W, int P, int S, int C) {
     float *d_input, *d_output;
     int *d_argmax;
@@ -69,36 +66,28 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
 }
 
 
-void backMaxPoolWrapKernel(float *h_dOut, float *h_dInput, int *h_argmax, int H, int W, int P, int S) {
-    float *d_dOut, *d_dInput;
-    int *d_argmax;
-    static int out_H = (H - P) / S + 1;
-    static int out_W = (W - P) / S + 1;
-    static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
-    size_t bytes_out = out_H * out_W * sizeof(float);
-    size_t bytes_in = H * W * sizeof(float);
-    size_t bytes_argmax = out_H * out_W * sizeof(int);
+void backMaxPoolWrapKernel(float *h_dOut, float *h_dInput, int *h_argmax,
+                           int H, int W, int P, int S, int C) {
+    float *d_dOut, *d_dInput; int *d_argmax;
+    int out_H = (H - P) / S + 1;
+    int out_W = (W - P) / S + 1;
+    dim3 grid((out_W + block.x - 1)/block.x, (out_H + block.y - 1)/block.y, C);
+    size_t bytes_out    = (size_t)C * out_H * out_W * sizeof(float);
+    size_t bytes_in     = (size_t)C * H * W * sizeof(float);
+    size_t bytes_argmax = (size_t)C * out_H * out_W * sizeof(int);
 
     CUDA_CHECK(cudaMalloc(&d_dOut, bytes_out));
     CUDA_CHECK(cudaMalloc(&d_dInput, bytes_in));
     CUDA_CHECK(cudaMalloc(&d_argmax, bytes_argmax));
-
-
     CUDA_CHECK(cudaMemcpy(d_dOut, h_dOut, bytes_out, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_argmax, h_argmax, bytes_argmax, cudaMemcpyHostToDevice));
-
     CUDA_CHECK(cudaMemset(d_dInput, 0, bytes_in));
 
-    backMaxPool2D<<<grid, block>>>(d_dOut, d_argmax, d_dInput, out_H, out_W);
+    backMaxPool2D<<<grid, block>>>(d_dOut, d_argmax, d_dInput, out_H, out_W, C);
     CUDA_CHECK(cudaGetLastError());
-
     CUDA_CHECK(cudaMemcpy(h_dInput, d_dInput, bytes_in, cudaMemcpyDeviceToHost));
-
-    CUDA_CHECK(cudaFree(d_dOut));
-    CUDA_CHECK(cudaFree(d_dInput));
-    CUDA_CHECK(cudaFree(d_argmax));
+    CUDA_CHECK(cudaFree(d_dOut)); CUDA_CHECK(cudaFree(d_dInput)); CUDA_CHECK(cudaFree(d_argmax));
 }
-
 #ifndef BUILD_AS_LIBRARY
     const int out_H=(H-P)/S+1, out_W=(W-P)/S+1;
 
