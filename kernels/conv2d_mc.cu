@@ -79,21 +79,21 @@ __global__ void conv2d_mc_backward_bias(const float *dOut, float *dBias,
 
 __global__ void conv2d_mc_backward_weights(const float *dOut, const float *input, float *dFilter,
                                            int C_in, int C_out, int H, int W, int FH, int FW){
-                                            int idx = blockIdx.x * blockDim.x + threadIdx.x;   // index in dFilter
-                                            int fx = idx % FW;
-                                            int fy = idx / FW % FH;
-                                            int ic = idx / (FW * FH) % C_in;
-                                            int oc = idx/(FW*FH*C_in);
-                                            if(idx >= C_out * C_in * FH * FW) return;
-                                            float g = 0.0f;
-                                            int outH = H-FH + 1, outW = W-FW + 1;
-                                            for (int j = 0; j < outW; ++j)
-                                                g += dOut[oc*(outH*outW) + j*outW + j] * input[ic*(H*W) + (j+fy)*W + (j+fx)];
-                                            dFilter[idx] = g;
-                                            
-                                        
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= C_out * C_in * FH * FW) return;
+    int fx = idx % FW;
+    int fy = idx / FW % FH;
+    int ic = idx / (FW * FH) % C_in;
+    int oc = idx / (FW * FH * C_in);
+    int outH = H-FH+1, outW = W-FW+1;
+    float g = 0.0f;
+    for (int i = 0; i < outH; ++i)         
+        for (int j = 0; j < outW; ++j)
+            g += dOut[oc*(outH*outW) + i*outW + j]      
+               * input[ic*(H*W) + (i+fy)*W + (j+fx)];     
+    dFilter[idx] = g;
+}
 
-}                             
 
 __global__ void conv2d_mc_backward_input(const float *dOut, const float *filter, float *dInput,
                                          int C_in, int C_out, int H, int W, int FH, int FW){
