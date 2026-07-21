@@ -59,7 +59,7 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
 
     CUDA_CHECK(cudaMemcpy(h_output, d_output, bytes_out,    cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaMemcpy(argmax,   d_argmax, bytes_argmax, cudaMemcpyDeviceToHost));
-    
+
     CUDA_CHECK(cudaFree(d_input));
     CUDA_CHECK(cudaFree(d_output));
     CUDA_CHECK(cudaFree(d_argmax));
@@ -89,6 +89,8 @@ void backMaxPoolWrapKernel(float *h_dOut, float *h_dInput, int *h_argmax,
     CUDA_CHECK(cudaFree(d_dOut)); CUDA_CHECK(cudaFree(d_dInput)); CUDA_CHECK(cudaFree(d_argmax));
 }
 #ifndef BUILD_AS_LIBRARY
+int main() {
+    const int C=2, H=4, W=4, P=2, S=2;
     const int out_H=(H-P)/S+1, out_W=(W-P)/S+1;
 
     float h_input[C*H*W] = {
