@@ -45,7 +45,7 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
 
     int out_H = (H - P) / S + 1;
     int out_W = (W - P) / S + 1;
-    dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
+    dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y, C);
     size_t bytes_in = H * W * sizeof(float);
     size_t bytes_out = out_H * out_W * sizeof(float);
 
