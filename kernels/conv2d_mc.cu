@@ -115,6 +115,7 @@ __global__ void conv2d_mc_backward_input(const float *dOut, const float *filter,
                                                     }
                                                 }
                                             }
+                                            dInput[iz*(H*W) + iy*W + ix] = sum;
 
 }
 
