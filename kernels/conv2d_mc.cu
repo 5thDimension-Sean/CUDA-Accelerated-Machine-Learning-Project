@@ -70,11 +70,16 @@ void conv2d_mc(const float *input, const float *filter, const float *bias, float
 
 __global__ void conv2d_mc_backward_bias(const float *dOut, float *dBias,
                                         int C_out, int outH, int outW){
-
+                                            int oc = blockIdx.x * blockDim.x + threadIdx.x;   // output channel
+                                            if (oc >= C_out) return;
+                                            for(int i = 0; i < outH*outW; ++i){
+                                                dBias[oc] += dOut[oc*(outH*outW) + i];
+                                            }
 }
 
 __global__ void conv2d_mc_backward_weights(const float *dOut, const float *input, float *dFilter,
                                            int C_in, int C_out, int H, int W, int FH, int FW){
+
 
 }                             
 
