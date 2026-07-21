@@ -12,10 +12,7 @@ static int H = 4; // input dim
 static int W = 4; // input dim
 
 static dim3 block(16, 16);
-static int out_H = (H - P) / S + 1;
-static int out_W = (W - P) / S + 1;
-static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
-
+//First out_H, out_w, and grid are static. Therefore, they need to be changed inside the wrapper from the arguments.
 __global__ void maxPool2D(const float *input, float *output, int *argmax, int H, int W, int out_H, int out_W, int P, int S) {
     int out_x = blockIdx.x * blockDim.x + threadIdx.x;
     int out_y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -55,6 +52,9 @@ __global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInpu
 void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int W, int P, int S) {
     float *d_input, *d_output;
     int *d_argmax;
+    static int out_H = (H - P) / S + 1;
+    static int out_W = (W - P) / S + 1;
+    static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
     size_t bytes_in = H * W * sizeof(float);
     size_t bytes_out = out_H * out_W * sizeof(float);
 
@@ -79,7 +79,9 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
 void backMaxPoolWrapKernel(float *h_dOut, float *h_dInput, int *h_argmax, int H, int W, int P, int S) {
     float *d_dOut, *d_dInput;
     int *d_argmax;
-    
+    static int out_H = (H - P) / S + 1;
+    static int out_W = (W - P) / S + 1;
+    static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
     size_t bytes_out = out_H * out_W * sizeof(float);
     size_t bytes_in = H * W * sizeof(float);
     size_t bytes_argmax = out_H * out_W * sizeof(int);
