@@ -51,9 +51,9 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
     size_t bytes_in = H * W * sizeof(float);
     size_t bytes_out = out_H * out_W * sizeof(float);
 
-    CUDA_CHECK(cudaMalloc(&d_input, bytes_in));
-    CUDA_CHECK(cudaMalloc(&d_output, bytes_out));
-    CUDA_CHECK(cudaMalloc(&d_argmax, out_H * out_W * sizeof(int)));
+    CUDA_CHECK(cudaMalloc(&d_input, C *bytes_in));
+    CUDA_CHECK(cudaMalloc(&d_output, C * bytes_out));
+    CUDA_CHECK(cudaMalloc(&d_argmax, C *out_H * out_W * sizeof(int)));
 
     CUDA_CHECK(cudaMemcpy(d_input, h_input, bytes_in, cudaMemcpyHostToDevice));
 
