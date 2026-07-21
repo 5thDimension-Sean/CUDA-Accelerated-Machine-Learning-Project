@@ -24,6 +24,8 @@ __global__ void maxPool2D(const float *input, float *output, int *argmax, int H,
             }
         }
         int o = c*(out_H*out_W) + out_y*out_W + out_x;
+        output[o] = max_val;  
+        argmax[o] = max_idx;     
 }
 
 __global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInput, int out_H, int out_W) {
