@@ -96,6 +96,24 @@ __global__ void conv2d_mc_backward_weights(const float *dOut, const float *input
 
 __global__ void conv2d_mc_backward_input(const float *dOut, const float *filter, float *dInput,
                                          int C_in, int C_out, int H, int W, int FH, int FW){
+                                            int ix = blockIdx.x * blockDim.x + threadIdx.x;   // input column
+                                            int iy = blockIdx.y * blockDim.y + threadIdx.y; // input row
+                                            int iz = blockIdx.z;                              // input channel    
+                                            if(ix >= W || iy >= H || iz >= C_in) return;
+                                            int outH = H-FH + 1, outW = W-FW + 1;
+                                            float sum = 0.0f;
+                                            for(int oc = 0; oc < C_out; ++oc){
+                                                for(int fy = 0; fy < FH; ++fy){
+                                                    for(int fx = 0; fx < FW; ++fx){
+                                                        int oy = iy - fy;
+                                                        int ox = ix - fx;
+                                                        if(oy >= 0 && oy < outH && ox >= 0 && ox < outW){
+                                                            sum += dOut[oc*(outH*outW) + oy*outW + ox] *
+                                                                   filter[oc*(C_in*FH*FW) + iz*(FH*FW) + fy*FW + fx];
+                                                        }
+                                                    }
+                                                }
+                                            }
 
 }
 
