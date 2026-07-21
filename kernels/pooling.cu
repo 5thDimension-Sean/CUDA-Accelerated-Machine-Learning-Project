@@ -9,7 +9,7 @@
 
 static dim3 block(16, 16);
 //First out_H, out_w, and grid are static. Therefore, they need to be changed inside the wrapper from the arguments.
-__global__ void maxPool2D(const float *input, float *output, int *argmax, int H, int W, int out_H, int out_W, int P, int S) {
+__global__ void maxPool2D(const float *input, float *output, int *argmax, int H, int W, int out_H, int out_W, int P, int S, int C) {
     int out_x = blockIdx.x * blockDim.x + threadIdx.x;
     int out_y = blockIdx.y * blockDim.y + threadIdx.y;
     int c = blockIdx.z;
@@ -39,7 +39,7 @@ __global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInpu
     }
 }
 
-void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int W, int P, int S) {
+void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int W, int P, int S, int C) {
     float *d_input, *d_output;
     int *d_argmax;
 
@@ -55,7 +55,7 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
 
     CUDA_CHECK(cudaMemcpy(d_input, h_input, bytes_in, cudaMemcpyHostToDevice));
 
-    maxPool2D<<<grid, block>>>(d_input, d_output, d_argmax, H, W, out_H, out_W, P, S);
+    maxPool2D<<<grid, block>>>(d_input, d_output, d_argmax, H, W, out_H, out_W, P, S, C);
     CUDA_CHECK(cudaGetLastError()); 
 
     CUDA_CHECK(cudaMemcpy(h_output, d_output, bytes_out, cudaMemcpyDeviceToHost));
@@ -108,9 +108,9 @@ int main() {
     };
     float h_output[4];
     int argmax[4];
-
+    int C = 2;
     std::cout << "--- FORWARD PASS ---" << std::endl;
-    maxPoolWrapKernel(h_input, h_output, argmax, H, W, P, S);
+    maxPoolWrapKernel(h_input, h_output, argmax, H, W, P, S, C);
     
     for (int i = 0; i < out_H; i++) {
         for (int j = 0; j < out_W; j++) {
