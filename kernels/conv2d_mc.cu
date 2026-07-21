@@ -180,26 +180,56 @@ void conv2d_mc_backward(const float *dOut,
     CUDA_CHECK(cudaFree(d_dBias));
 }
 
-
+static float forward_loss(const float *in, const float *filt, const float *b,
+                          int C_in, int C_out, int H, int W, int FH, int FW){
+    int outH = H-FH+1, outW = W-FW+1, nOut = C_out*outH*outW;
+    float *out = (float*)malloc(sizeof(float)*nOut);
+    conv2d_mc(in, filt, b, out, C_in, C_out, H, W, FH, FW);
+    float L = 0; for (int i = 0; i < nOut; ++i) L += out[i];
+    free(out);
+    return L;
+}
 
 #ifndef BUILD_AS_LIBRARY
 int main(){
-    const int C_in=2, C_out=2, H=2, W=2, FH=2, FW=2;
-    const int outH = H-FH+1, outW = W-FW+1;
+    const int C_in=2, C_out=3, H=5, W=5, FH=3, FW=3;
+    const int outH=H-FH+1, outW=W-FW+1;
+    int nIn=C_in*H*W, nF=C_out*C_in*FH*FW, nOut=C_out*outH*outW;
 
-    float input[C_in*H*W] = { 1,2,3,4,   5,6,7,8 };            // ch0, ch1
-    float filter[C_out*C_in*FH*FW] = {
-        1,0,0,1,  1,1,1,1,     // oc0: ic0=[1,0,0,1], ic1=[1,1,1,1]
-        0,0,0,0,  1,0,0,0      // oc1: ic0=[0,0,0,0], ic1=[1,0,0,0]
-    };
-    float bias[C_out] = {0, 0};
-    float output[C_out*outH*outW] = {0};
+    float *in=(float*)malloc(sizeof(float)*nIn);
+    float *filt=(float*)malloc(sizeof(float)*nF);
+    float *b=(float*)malloc(sizeof(float)*C_out);
+    for (int i=0;i<nIn;++i) in[i]   = (float)((i*7)%13)/13.0f - 0.5f;  // arbitrary spread
+    for (int i=0;i<nF; ++i) filt[i] = (float)((i*5)%11)/11.0f - 0.5f;
+    for (int i=0;i<C_out;++i) b[i] = 0.1f*i;
 
-    conv2d_mc(input, filter, bias, output, C_in, C_out, H, W, FH, FW);
+    // analytic gradients, with dOut = ones 
+    float *dOut=(float*)malloc(sizeof(float)*nOut); for(int i=0;i<nOut;++i)dOut[i]=1.0f;
+    float *dIn=(float*)malloc(sizeof(float)*nIn);
+    float *dF =(float*)malloc(sizeof(float)*nF);
+    float *dB =(float*)malloc(sizeof(float)*C_out);
+    conv2d_mc_backward(dOut, in, filt, dIn, dF, dB, C_in, C_out, H, W, FH, FW);
 
-    printf("multi-channel conv output: ");
-    for (int i = 0; i < C_out*outH*outW; ++i) printf("%.4f ", output[i]);
-    printf("\n");   // expect: 31.0000 5.0000
+    const float eps=1e-3f;
+    float maxF=0, maxI=0;
+    for (int k=0;k<nF;++k){                              // check dFilter
+        float s=filt[k];
+        filt[k]=s+eps; float Lp=forward_loss(in,filt,b,C_in,C_out,H,W,FH,FW);
+        filt[k]=s-eps; float Lm=forward_loss(in,filt,b,C_in,C_out,H,W,FH,FW);
+        filt[k]=s;
+        maxF=fmaxf(maxF, fabsf((Lp-Lm)/(2*eps) - dF[k]));
+    }
+    for (int k=0;k<nIn;++k){                             // check dInput
+        float s=in[k];
+        in[k]=s+eps; float Lp=forward_loss(in,filt,b,C_in,C_out,H,W,FH,FW);
+        in[k]=s-eps; float Lm=forward_loss(in,filt,b,C_in,C_out,H,W,FH,FW);
+        in[k]=s;
+        maxI=fmaxf(maxI, fabsf((Lp-Lm)/(2*eps) - dIn[k]));
+    }
+    printf("dFilter max |analytic - numeric| = %.6f\n", maxF);
+    printf("dInput  max |analytic - numeric| = %.6f\n", maxI);
+    printf("dBias = "); for(int i=0;i<C_out;++i) printf("%.1f ", dB[i]);
+    printf(" (expect %d each)\n", outH*outW);
     return 0;
 }
 #endif
