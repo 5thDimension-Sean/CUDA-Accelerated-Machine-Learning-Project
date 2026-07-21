@@ -961,5 +961,15 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
         dInput  max |analytic - numeric| = 1.499891
         dBias = 0.0 0.0 0.0  (expect 9 each)
 
-    This is wrong as some buggy code wasn't removed most likely.Therefore, conv has to
+    This is wrong as some buggy code wasn't removed most likely.
+
+    dFilter max |analytic - numeric| = 0.000341
+    dInput  max |analytic - numeric| = 0.000287
+    dBias = 9.0 9.0 9.0  (expect 9 each)
+
+    Now it looks a lot better as the code had some duplicate loops and also sometimes never wrote the sum, and there was a leftover double count. 
+
+
+    The next step is to work on the pooling part, which is to generalize the pooling.
+
 
