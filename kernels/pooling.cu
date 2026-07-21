@@ -100,42 +100,34 @@ void backMaxPoolWrapKernel(float *h_dOut, float *h_dInput, int *h_argmax, int H,
 }
 
 #ifndef BUILD_AS_LIBRARY
-int main() {
-    // Forward Pass Elements
-    float h_input[16] = { 
-         1,  3,  2,  9, 
-         8,  4,  7,  5, 
-        -1, -3,  6,  0, 
-        -5, -2, -4,  1 
+    const int out_H=(H-P)/S+1, out_W=(W-P)/S+1;
+
+    float h_input[C*H*W] = {
+         1, 3, 2, 9,   8, 4, 7, 5,  -1,-3, 6, 0,  -5,-2,-4, 1,   // ch0
+         0, 5, 1, 2,   4, 6, 3, 7,   9, 8, 2, 1,   0, 1, 5, 4    // ch1
     };
-    float h_output[4];
-    int argmax[4];
-    int C = 2;
-    std::cout << "--- FORWARD PASS ---" << std::endl;
+    float h_output[C*out_H*out_W];
+    int   argmax[C*out_H*out_W];
+
+    std::cout << "--- FORWARD PASS ---\n";
     maxPoolWrapKernel(h_input, h_output, argmax, H, W, P, S, C);
-    
-    for (int i = 0; i < out_H; i++) {
-        for (int j = 0; j < out_W; j++) {
-            int offset = i * out_W + j;
-            printf("Val: %.1f (Argmax Idx: %d) | ", h_output[offset], argmax[offset]);
+    for (int c=0;c<C;++c){
+        printf("channel %d: ", c);
+        for (int i=0;i<out_H*out_W;++i){
+            int o=c*out_H*out_W+i;
+            printf("%.1f (idx %d)  ", h_output[o], argmax[o]);
         }
         printf("\n");
     }
 
-    float h_dOut[4] = {1.0f, 2.0f, 3.0f, 4.0f}; 
-    float h_dInput[16];                       
-
-    std::cout << "\n--- BACKWARD PASS (VJP) ---" << std::endl;
-    backMaxPoolWrapKernel(h_dOut, h_dInput, argmax, H, W, P, S);
-
-    std::cout << "Resulting h_dInput Grid:" << std::endl;
-    for (int i = 0; i < H; i++) {
-        for (int j = 0; j < W; j++) {
-            printf("%4.1f ", h_dInput[i * W + j]);
-        }
-        printf("\n");
+    float h_dOut[C*out_H*out_W] = {1,2,3,4, 5,6,7,8};
+    float h_dInput[C*H*W];
+    std::cout << "\n--- BACKWARD PASS ---\n";
+    backMaxPoolWrapKernel(h_dOut, h_dInput, argmax, H, W, P, S, C);
+    for (int c=0;c<C;++c){
+        printf("channel %d:\n", c);
+        for (int i=0;i<H;++i){ for(int j=0;j<W;++j) printf("%4.1f ", h_dInput[c*H*W+i*W+j]); printf("\n"); }
     }
-
     return 0;
 }
 #endif
