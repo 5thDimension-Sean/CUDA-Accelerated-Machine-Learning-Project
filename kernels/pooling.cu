@@ -44,22 +44,22 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
 
     int out_H = (H - P) / S + 1;
     int out_W = (W - P) / S + 1;
-    dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y, C);
-    size_t bytes_in = H * W * sizeof(float);
-    size_t bytes_out = out_H * out_W * sizeof(float);
+    dim3 grid((out_W + block.x - 1)/block.x, (out_H + block.y - 1)/block.y, C);
+    size_t bytes_in     = (size_t)C * H * W * sizeof(float);
+    size_t bytes_out    = (size_t)C * out_H * out_W * sizeof(float);
+    size_t bytes_argmax = (size_t)C * out_H * out_W * sizeof(int);
 
-    CUDA_CHECK(cudaMalloc(&d_input, C *bytes_in));
-    CUDA_CHECK(cudaMalloc(&d_output, C * bytes_out));
-    CUDA_CHECK(cudaMalloc(&d_argmax, C *out_H * out_W * sizeof(int)));
-
+    CUDA_CHECK(cudaMalloc(&d_input,  bytes_in));
+    CUDA_CHECK(cudaMalloc(&d_output, bytes_out));
+    CUDA_CHECK(cudaMalloc(&d_argmax, bytes_argmax));
     CUDA_CHECK(cudaMemcpy(d_input, h_input, bytes_in, cudaMemcpyHostToDevice));
 
     maxPool2D<<<grid, block>>>(d_input, d_output, d_argmax, H, W, out_H, out_W, P, S, C);
-    CUDA_CHECK(cudaGetLastError()); 
+    CUDA_CHECK(cudaGetLastError());
 
-    CUDA_CHECK(cudaMemcpy(h_output, d_output, bytes_out, cudaMemcpyDeviceToHost));
-    CUDA_CHECK(cudaMemcpy(argmax, d_argmax, out_H * out_W * sizeof(int), cudaMemcpyDeviceToHost));
-
+    CUDA_CHECK(cudaMemcpy(h_output, d_output, bytes_out,    cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(argmax,   d_argmax, bytes_argmax, cudaMemcpyDeviceToHost));
+    
     CUDA_CHECK(cudaFree(d_input));
     CUDA_CHECK(cudaFree(d_output));
     CUDA_CHECK(cudaFree(d_argmax));
