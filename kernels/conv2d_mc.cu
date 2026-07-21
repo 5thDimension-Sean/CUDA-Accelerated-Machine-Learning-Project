@@ -79,7 +79,18 @@ __global__ void conv2d_mc_backward_bias(const float *dOut, float *dBias,
 
 __global__ void conv2d_mc_backward_weights(const float *dOut, const float *input, float *dFilter,
                                            int C_in, int C_out, int H, int W, int FH, int FW){
-
+                                                                                        int idx = blockIdx.x * blockDim.x + threadIdx.x;   // index in dFilter
+                                            if(idx >= C_out * C_in * FH * FW) return;
+                                            int fx = idx % FW;
+                                            int fy = idx / FW % FH;
+                                            int ic = idx / (FW * FH) % C_in;
+                                            int oc = idx/(FW*FH*C_in);
+                                            for(int i = 0; i < H-FH+1; ++i){
+                                                for(int j = 0; j < W-FW+1; ++j){
+                                                    dFilter[idx] += dOut[oc*((H-FH+1)*(W-FW+1)) + i*(W-FW+1) + j] *
+                                                                    input[ic*(H*W) + (i+fy)*W + (j+fx)];
+                                                }
+                                            }
 
 }                             
 
