@@ -6,10 +6,6 @@
 #include <cmath>
 #include <iostream>
 
-static int P = 2; // pool window size
-static int S = 2; // stride
-static int H = 4; // input dim
-static int W = 4; // input dim
 
 static dim3 block(16, 16);
 //First out_H, out_w, and grid are static. Therefore, they need to be changed inside the wrapper from the arguments.
@@ -52,6 +48,7 @@ __global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInpu
 void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int W, int P, int S) {
     float *d_input, *d_output;
     int *d_argmax;
+
     static int out_H = (H - P) / S + 1;
     static int out_W = (W - P) / S + 1;
     static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
