@@ -971,5 +971,29 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
 
     The next step is to work on the pooling part, which is to generalize the pooling.
+    --- FORWARD PASS ---
+    channel 0: 8.0 (idx 4)  9.0 (idx 3)  -1.0 (idx 8)  6.0 (idx 10)  
+    channel 1: 6.0 (idx 21)  7.0 (idx 23)  9.0 (idx 24)  5.0 (idx 30)  
 
+    --- BACKWARD PASS ---
+    channel 0:
+    0.0  0.0  0.0  2.0 
+    1.0  0.0  0.0  0.0 
+    3.0  0.0  4.0  0.0 
+    0.0  0.0  0.0  0.0 
+    channel 1:
+    0.0  0.0  0.0  0.0 
+    0.0  5.0  0.0  6.0 
+    7.0  0.0  0.0  0.0 
+    0.0  0.0  8.0  0.0 
 
+    This proves I have every layer a CNN needs
+    Next is to assemble the CNN
+
+    Basically: 
+        1x28x28
+        Conv 1 -> 8 -> ReLU -> MaxPool 2x2 - > 8x13x13
+        -> conv 8-16 3x3 -> ReLU -> MaxPool 2x2 -> 16x5x5 
+        -> Flatten (400) -> FC 400 -> 10 -> Softmax -> Cross-entropy
+
+        THis will be documented in mnist_cnn.cu
