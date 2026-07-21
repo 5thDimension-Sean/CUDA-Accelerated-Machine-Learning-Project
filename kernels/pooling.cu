@@ -12,24 +12,18 @@ static dim3 block(16, 16);
 __global__ void maxPool2D(const float *input, float *output, int *argmax, int H, int W, int out_H, int out_W, int P, int S) {
     int out_x = blockIdx.x * blockDim.x + threadIdx.x;
     int out_y = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (out_x < out_W && out_y < out_H) {
-        float max_val = -INFINITY;
-        for (int i = 0; i < P; ++i) {
-            for (int j = 0; j < P; ++j) {
-                int in_x = out_x * S + j;
-                int in_y = out_y * S + i;
-                if (in_x < W && in_y < H) {
-                    float val = input[in_y * W + in_x];
-                    if (val > max_val) {
-                        max_val = val;
-                        argmax[out_y * out_W + out_x] = in_y * W + in_x; // store the index of max
-                    }
-                }
+    int c = blockIdx.z;
+    if (out_x >= out_W || out_y >= out_H || c >= C) return;
+        const float *in_c = input + c*(H*W);
+        float max_val = -INFINITY; int max_idx = -1;
+        for (int i=0;i<P;++i) for (int j=0;j<P;++j){
+            int in_y = out_y*S+i, in_x = out_x*S+j;
+            if (in_y<H && in_x<W){
+                float v = in_c[in_y*W + in_x];
+                if (v>max_val){ max_val=v; max_idx = c*(H*W) + in_y*W + in_x; }  // GLOBAL
             }
         }
-        output[out_y * out_W + out_x] = max_val;
-    }
+        int o = c*(out_H*out_W) + out_y*out_W + out_x;
 }
 
 __global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInput, int out_H, int out_W) {
@@ -49,9 +43,9 @@ void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int 
     float *d_input, *d_output;
     int *d_argmax;
 
-    static int out_H = (H - P) / S + 1;
-    static int out_W = (W - P) / S + 1;
-    static dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
+    int out_H = (H - P) / S + 1;
+    int out_W = (W - P) / S + 1;
+    dim3 grid((out_W + block.x - 1) / block.x, (out_H + block.y - 1) / block.y);
     size_t bytes_in = H * W * sizeof(float);
     size_t bytes_out = out_H * out_W * sizeof(float);
 
