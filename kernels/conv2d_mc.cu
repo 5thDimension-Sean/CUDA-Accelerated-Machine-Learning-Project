@@ -71,6 +71,9 @@ void conv2d_mc(const float *input, const float *filter, const float *bias, float
 __global__ void conv2d_mc_backward_bias(const float *dOut, float *dBias,
                                         int C_out, int outH, int outW){
                                             int oc = blockIdx.x * blockDim.x + threadIdx.x;   // output channel
+                                            float g = 0.0f;
+                                            for (int i = 0; i < outH*outW; ++i) g += dOut[oc*(outH*outW) + i];
+                                            dBias[oc] = g;
                                             if (oc >= C_out) return;
                                             for(int i = 0; i < outH*outW; ++i){
                                                 dBias[oc] += dOut[oc*(outH*outW) + i];
@@ -79,12 +82,19 @@ __global__ void conv2d_mc_backward_bias(const float *dOut, float *dBias,
 
 __global__ void conv2d_mc_backward_weights(const float *dOut, const float *input, float *dFilter,
                                            int C_in, int C_out, int H, int W, int FH, int FW){
-                                                                                        int idx = blockIdx.x * blockDim.x + threadIdx.x;   // index in dFilter
-                                            if(idx >= C_out * C_in * FH * FW) return;
                                             int fx = idx % FW;
                                             int fy = idx / FW % FH;
                                             int ic = idx / (FW * FH) % C_in;
                                             int oc = idx/(FW*FH*C_in);
+                                            int idx = blockIdx.x * blockDim.x + threadIdx.x;   // index in dFilter
+                                            float g = 0.0f;
+                                            int outH = H-FH + 1, outW = W-FW + 1;
+                                            for (int i = 0; i < outH; ++i)
+                                            for (int j = 0; j < outW; ++j)
+                                                g += dOut[oc*(outH*outW) + i*outW + j] * input[ic*(H*W) + (i+fy)*W + (j+fx)];
+                                            dFilter[idx] = g;
+                                            if(idx >= C_out * C_in * FH * FW) return;
+                                            
                                             for(int i = 0; i < H-FH+1; ++i){
                                                 for(int j = 0; j < W-FW+1; ++j){
                                                     dFilter[idx] += dOut[oc*((H-FH+1)*(W-FW+1)) + i*(W-FW+1) + j] *
