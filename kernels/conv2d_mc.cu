@@ -82,11 +82,12 @@ __global__ void conv2d_mc_backward_bias(const float *dOut, float *dBias,
 
 __global__ void conv2d_mc_backward_weights(const float *dOut, const float *input, float *dFilter,
                                            int C_in, int C_out, int H, int W, int FH, int FW){
+                                            int idx = blockIdx.x * blockDim.x + threadIdx.x;   // index in dFilter
                                             int fx = idx % FW;
                                             int fy = idx / FW % FH;
                                             int ic = idx / (FW * FH) % C_in;
                                             int oc = idx/(FW*FH*C_in);
-                                            int idx = blockIdx.x * blockDim.x + threadIdx.x;   // index in dFilter
+                                            
                                             float g = 0.0f;
                                             int outH = H-FH + 1, outW = W-FW + 1;
                                             for (int i = 0; i < outH; ++i)
