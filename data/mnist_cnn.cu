@@ -33,6 +33,8 @@ struct Acts {
 void forward(const float *image, const Net *net, Acts *a){
     int C_in=1,  C_out=8,  H=28, W=28, FH=3, FW=3;
     conv2d_mc(image, net->conv1_f, net->conv1_b, a->conv1_out, C_in,  C_out,  H, W, FH, FW);
+    //reLu called from wrapper kernel
+    wrapperKernel(a->relu1_out[i], host_activations, host_dout_values, arrSize, 1, true, ActivationType::ReLU);
 
 }
 
@@ -43,7 +45,12 @@ void backward(const float *image, int label, const Net *net, const Acts *a, Grad
 
 
 void update(Net *net, const Grads *g, float lr){
-
+    sgd(net->conv1_f, g->conv1_f, lr, 72);
+    sgd(net->conv1_b, g->conv1_b, lr, 8);
+    sgd(net->conv2_f, g->conv2_f, lr, 1152);
+    sgd(net->conv2_b, g->conv2_b, lr, 16);
+    sgd(net->fc_W,    g->fc_W,    lr, 4000);
+    sgd(net->fc_b,    g->fc_b,    lr, 10);
 }
 
 int main(){
