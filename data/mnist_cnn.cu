@@ -74,9 +74,40 @@ int main(){
     a.pool2_out = (float*)malloc(400  * sizeof(float));
     a.argmax2   = (int*)  malloc(400  * sizeof(int));       // ints!
     a.logits    = (float*)malloc(10   * sizeof(float));
-    a.probs     = (float*)malloc(10   * sizeof(float));          
+    a.probs     = (float*)malloc(10   * sizeof(float));  
+    const int N = 60000;
+    int label[N] = {0.0f};
+    int lr = 0.5;
+    int X[N*784] = {0.0f}; 
 
-    forward(image, net, act);
-    backward(image, label, net, a, g);
-    update(net, g, lr);
+    for (int epoch = 0; epoch < 1000; ++epoch)
+      for (int s = 0; s < N; ++s) {
+          const float *img = &X[s*784];
+          forward(img, &net, &a);          // pass structs by pointer
+          backward(img, label[s], &net, &a, &g);
+          update(&net, &g, lr);
+      }
+    
+    free(net.conv1_f);
+    free(net.conv1_b);
+    free(net.conv2_f);
+    free(net.conv2_b);
+    free(net.fc_W);
+    free(net.fc_b);
+    free(g.conv1_f);
+    free(g.conv1_b);
+    free(g.conv2_f);
+    free(g.conv2_b);
+    free(g.fc_W);
+    free(g.fc_b);
+    free(a.conv1_out);
+    free(a.relu1_out);
+    free(a.pool1_out);
+    free(a.argmax1);
+    free(a.conv2_out);
+    free(a.relu2_out);
+    free(a.pool2_out);
+    free(a.argmax2);
+    free(a.logits);
+    free(a.probs);
 }
