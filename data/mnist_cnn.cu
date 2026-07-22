@@ -33,11 +33,44 @@ struct Acts {
 void forward(const float *image, const Net *net, Acts *a){
     int C_in=1,  C_out=8,  H=28, W=28, FH=3, FW=3;
     conv2d_mc(image, net->conv1_f, net->conv1_b, a->conv1_out, C_in,  C_out,  H, W, FH, FW);
-    //reLu called from wrapper kernel
-    wrapperKernel(a->relu1_out[i], host_activations, host_dout_values, arrSize, 1, true, ActivationType::ReLU);
+    for (int i = 0; i < 8*26*26; ++i)
+        a->relu1_out[i] = a->conv1_out[i] > 0.0f ? a->conv1_out[i] : 0.0f;
+    H=26, W=26;
+    int P=2, int S=2, int C=8;
+    maxPoolWrapKernel(a->relu1_out, a->pool1_out, a->argmax1, H, W, P, S, C);
+    conv2d_mc(a->pool1_out, net->conv2_f, net->conv2_b, a->conv2_out, C_in=8, C_out=16, H=13, W=13, FH=3, FW=3);
+    for (int i = 0; i < 16*11*11; ++i)
+        a->relu2_out[i] = a->conv2_out[i] > 0.0f ? a->conv2_out[i] : 0.0f;
+    maxPoolWrapKernel(a->relu2_out, a->pool2_out, a->argmax2,H=11, W=11, P=2, S=2, C=16);
+    int batch=1, in=400, out=10;
+    fc_forward(a->pool2_out, net->fc_W, net->fc_b, a->logits, batch, in, out);
+    for(int i = 0; i < 10; ++i){
+         a->probs = softmax(a->logits);
+    }
+
+
 
 }
+/*
+backward — 8 steps (exact reverse of forward)
 
+1. dY = probs - onehot(label):   dY[c] = a->probs[c] - (c==label ? 1 : 0)     // combined softmax+CE grad, size 10
+2. fc_backward(dY, a->pool2_out, net->fc_W,  g->fc_W, g->fc_b, d_pool2,   batch=1, in=400, out=10)
+3. backMaxPoolWrapKernel(d_pool2, d_relu2, a->argmax2,   H=11, W=11, P=2, S=2, C=16)          // 400 → 1936
+4. ReLU2 back (host): d_conv2_out[i] = d_relu2[i] * (a->conv2_out[i] > 0 ? 1 : 0)             // 16*11*11
+5. conv2d_mc_backward(d_conv2_out, a->pool1_out, net->conv2_f,  d_pool1, g->conv2_f, g->conv2_b,  C_in=8, C_out=16, H=13, W=13, FH=3, FW=3)
+6. backMaxPoolWrapKernel(d_pool1, d_relu1, a->argmax1,   H=26, W=26, P=2, S=2, C=8)           // 1352 → 5408
+7. ReLU1 back (host): d_conv1_out[i] = d_relu1[i] * (a->conv1_out[i] > 0 ? 1 : 0)             // 8*26*26
+8. conv2d_mc_backward(d_conv1_out, image, net->conv1_f,  d_image, g->conv1_f, g->conv1_b,  C_in=1, C_out=8, H=28, W=28, FH=3, FW=3)
+
+update — 6 steps (one sgd per parameter)
+
+1. sgd(net->conv1_f, g->conv1_f, lr, 72)
+2. sgd(net->conv1_b, g->conv1_b, lr, 8)
+3. sgd(net->conv2_f, g->conv2_f, lr, 1152)
+4. sgd(net->conv2_b, g->conv2_b, lr, 16)
+5. sgd(net->fc_W,    g->fc_W,    lr, 4000)
+*/
 
 void backward(const float *image, int label, const Net *net, const Acts *a, Grads *g){
 
