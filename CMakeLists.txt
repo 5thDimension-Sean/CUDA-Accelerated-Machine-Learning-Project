@@ -85,6 +85,7 @@ add_executable(mnist_cnn
       kernels/conv2d_mc.cu
       kernels/pooling.cu
       kernels/activations.cu
+      data/mnist_train.cu
       kernels/fc.cu
       network/loss.cu
       network/optimizer.cu)
