@@ -2,7 +2,7 @@
 
 **Train and run neural networks on the GPU instead of the CPU.**
 
-Hand-written CUDA kernels for data-intensive deep-learning workloads, built for speed on modern NVIDIA hardware. Massive parallelism delivers substantially shorter training times and the ability to work with large datasets.
+CUDA kernels for data-intensive deep-learning workloads, built for speed on modern NVIDIA hardware. Parallelism delivers substantially shorter training times and the ability to work with large datasets.
 
 ![CUDA](https://img.shields.io/badge/CUDA-12.x-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C++-17-00599C?logo=cplusplus&logoColor=white)
@@ -147,6 +147,7 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 | `python data\prepare_mnist_test.py` | second MNIST testing dataset |
 | `& ".\build\bin\mnist_train.exe"` | Trains an MLP (784 → 128 → 10, ReLU + softmax, cross-entropy) on MNIST digits, then reports **train vs. test accuracy** on held-out data. |
 | `& ".\build\bin\conv2d_mc.exe" ` | Convolutional neural network with multiple channels via backwards kernels |
+| `& ".\build\bin\mnist_cnn.exe" ` | convolutional neural network |
 
 ---
 
