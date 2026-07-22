@@ -49,6 +49,19 @@ int main(){
     Net net;
     Grads g;
     Acts a;
+    srand(42); 
+    // conv1: fan_in = 1*3*3 = 9
+    float s1 = sqrtf(2.0f / 9.0f);
+    for (int i = 0; i < 72; ++i) net.conv1_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s1;
+    for (int i = 0; i < 8;  ++i) net.conv1_b[i] = 0.0f;
+    // conv2: fan_in = 8*3*3 = 72
+    float s2 = sqrtf(2.0f / 72.0f);
+    for (int i = 0; i < 1152; ++i) net.conv2_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s2;
+    for (int i = 0; i < 16;   ++i) net.conv2_b[i] = 0.0f;
+    // fc: fan_in = 400
+    float s3 = sqrtf(2.0f / 400.0f);
+    for (int i = 0; i < 4000; ++i) net.fc_W[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s3;
+    for (int i = 0; i < 10;   ++i) net.fc_b[i] = 0.0f;
     // weights
     net.conv1_f = (float*)malloc(72   * sizeof(float));
     net.conv1_b = (float*)malloc(8    * sizeof(float));
@@ -84,7 +97,7 @@ int main(){
     int   *label = (int*)  malloc(N * sizeof(int));
     load_bin("mnist_X.bin", X, (size_t)N*784);
     load_bin("mnist_Y.bin", Y, (size_t)N*10);
-    for (int s = 0; s < N; ++s) {                 // one-hot → int label (argmax)
+    for (int s = 0; s < N; ++s) {            
         int t = 0;
         for (int c = 1; c < 10; ++c) if (Y[s*10+c] > Y[s*10+t]) t = c;
         label[s] = t;
