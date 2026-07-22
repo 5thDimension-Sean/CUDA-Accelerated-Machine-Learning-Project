@@ -85,6 +85,8 @@ void backward(const float *image, int label, const Net *net, const Acts *a, Grad
         d_conv1_out[i] = d_relu1[i] * (a->conv1_out[i] > 0 ? 1 : 0);
     }
     conv2d_mc_backward(d_conv1_out, image, net->conv1_f,  d_image, g->conv1_f, g->conv1_b,  C_in=1, C_out=8, H=28, W=28, FH=3, FW=3);
+    free(dY); free(d_pool2); free(d_relu2); free(d_conv2_out);
+    free(d_pool1); free(d_relu1); free(d_conv1_out); free(d_image);
 }
 
 
