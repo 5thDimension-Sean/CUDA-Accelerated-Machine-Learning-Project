@@ -130,7 +130,7 @@ int main(){
     a.probs     = (float*)malloc(10   * sizeof(float));  
     const int N = 1000;     
     const int EPOCHS = 3;
-    float lr = 0.01f;
+    float lr = 0.0001f;
     float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
     float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));   
     int   *label = (int*)  malloc(N * sizeof(int));
@@ -160,6 +160,12 @@ int main(){
       for (int s = 0; s < N; ++s) {
           const float *img = &X[s*784];
           forward(img, &net, &a);          // pass structs by pointer
+          if (epoch == 0 && s == 0) {
+                printf("logits: "); for (int c=0;c<10;++c) printf("%.3f ", a.logits[c]); printf("\n");
+                printf("probs:  "); for (int c=0;c<10;++c) printf("%.3f ", a.probs[c]); printf("\n");
+                printf("sample0 loss = %.4f\n", -logf(a.probs[label[0]] + 1e-8f));
+            }
+
           loss += -logf(a.probs[label[s]] + 1e-8f);   
           backward(img, label[s], &net, &a, &g);
           update(&net, &g, lr);
