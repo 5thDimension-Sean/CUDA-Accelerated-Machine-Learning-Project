@@ -1006,3 +1006,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     3. update
 
     For organization reasons, i kept all the paramteres in a struct 
+
+    Note that you cannot use GPU for this as the math doesn't allow for it right now. It would require a restructure
