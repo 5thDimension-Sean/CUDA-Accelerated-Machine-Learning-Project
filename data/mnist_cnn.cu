@@ -33,7 +33,6 @@ struct Acts {
 void forward(const float *image, const Net *net, Acts *a){
     int C_in=1,  C_out=8,  H=28, W=28, FH=3, FW=3;
     conv2d_mc(image, net->conv1_f, net->conv1_b, a->conv1_out, C_in,  C_out,  H, W, FH, FW);
-    ReLu(a->conv1_out, a->relu1_out);
 
 }
 
