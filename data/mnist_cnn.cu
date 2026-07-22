@@ -129,8 +129,8 @@ int main(){
     a.logits    = (float*)malloc(10   * sizeof(float));
     a.probs     = (float*)malloc(10   * sizeof(float));  
     const int N = 1000;     
-    const int EPOCHS = 3;
-    float lr = 0.0001f;
+    const int EPOCHS = 50;
+    float lr = 0.001f;
     float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
     float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));   
     int   *label = (int*)  malloc(N * sizeof(int));
@@ -172,6 +172,14 @@ int main(){
       }
       printf("epoch %d  loss = %.4f\n", epoch, loss / N);
     }
+    int correct = 0;
+    for (int s = 0; s < N; ++s) {
+        forward(&X[s*784], &net, &a);
+        int pred = 0;
+        for (int c = 1; c < 10; ++c) if (a.probs[c] > a.probs[pred]) pred = c;
+        if (pred == label[s]) correct++;
+    }
+    printf("train accuracy = %.2f%% (%d/%d)\n", 100.0f*correct/N, correct, N);
     free(net.conv1_f);
     free(net.conv1_b);
     free(net.conv2_f);
