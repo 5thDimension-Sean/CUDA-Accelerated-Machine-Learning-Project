@@ -5,9 +5,16 @@
 #include "fc.cu"
 #include "loss.cu"
 #include "optimizer.cu"
-#include "mnist_train.cu"
 #include <cmath>
 #include <cstdlib>
+
+void load_bin(const char *path, float *dst, size_t count){
+    FILE *f = fopen(path, "rb");
+    if (!f) { printf("could not open %s\n", path); exit(1); }
+    size_t got = fread(dst, sizeof(float), count, f);
+    if (got != count) { printf("short read on %s\n", path); exit(1); }
+    fclose(f);
+}
 
 struct Net {
     float *conv1_f, *conv1_b;  
@@ -65,13 +72,13 @@ void backward(const float *image, int label, const Net *net, const Acts *a, Grad
         dY[c] = a->probs[c] - (c==label ? 1 : 0);
     }
     int batch=1, in=400, out=10;
-    fc_backward(dY, d_pool2, net->fc_W,  g->fc_W, g->fc_b, d_pool2,   batch, in, out);
+    fc_backward(dY, a->pool2_out, net->fc_W,  g->fc_W, g->fc_b, d_pool2,   batch, in, out);
     int H=11, W=11, P=2, S=2, C=16;
     backMaxPoolWrapKernel(d_pool2, d_relu2, a->argmax2,   H, W, P, S, C);
     for (int i = 0; i < 16*11*11; ++i)
         d_conv2_out[i] = d_relu2[i] * (a->conv2_out[i] > 0.0f ? 1.0f : 0.0f);
     int C_in=8, C_out=16, H=13, W=13, FH=3, FW=3;
-    conv2d_mc_backward(d_conv2_out, a->pool1_out, net->conv2_f,  d_pool2, g->conv2_f, g->conv2_b,  C_in, C_out, H, W, FH, FW);
+    conv2d_mc_backward(d_conv2_out, a->pool1_out, net->conv2_f,  d_pool1, g->conv2_f, g->conv2_b,  C_in, C_out, H, W, FH, FW);
     backMaxPoolWrapKernel(d_pool1, d_relu1, a->argmax1,   H=26, W=26, P=2, S=2, C=8);
     for (int i = 0; i < 5408; ++i) {
         d_conv1_out[i] = d_relu1[i] * (a->conv1_out[i] > 0 ? 1 : 0);
@@ -93,20 +100,7 @@ int main(){
     Net net;
     Grads g;
     Acts a;
-    srand(42); 
-    // conv1: fan_in = 1*3*3 = 9
-    float s1 = sqrtf(2.0f / 9.0f);
-    for (int i = 0; i < 72; ++i) net.conv1_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s1;
-    for (int i = 0; i < 8;  ++i) net.conv1_b[i] = 0.0f;
-    // conv2: fan_in = 8*3*3 = 72
-    float s2 = sqrtf(2.0f / 72.0f);
-    for (int i = 0; i < 1152; ++i) net.conv2_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s2;
-    for (int i = 0; i < 16;   ++i) net.conv2_b[i] = 0.0f;
-    // fc: fan_in = 400
-    float s3 = sqrtf(2.0f / 400.0f);
-    for (int i = 0; i < 4000; ++i) net.fc_W[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s3;
-    for (int i = 0; i < 10;   ++i) net.fc_b[i] = 0.0f;
-    // weights
+        // weights
     net.conv1_f = (float*)malloc(72   * sizeof(float));
     net.conv1_b = (float*)malloc(8    * sizeof(float));
     net.conv2_f = (float*)malloc(1152 * sizeof(float));
@@ -139,6 +133,20 @@ int main(){
     float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
     float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));   
     int   *label = (int*)  malloc(N * sizeof(int));
+    srand(42); 
+    // conv1: fan_in = 1*3*3 = 9
+    float s1 = sqrtf(2.0f / 9.0f);
+    for (int i = 0; i < 72; ++i) net.conv1_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s1;
+    for (int i = 0; i < 8;  ++i) net.conv1_b[i] = 0.0f;
+    // conv2: fan_in = 8*3*3 = 72
+    float s2 = sqrtf(2.0f / 72.0f);
+    for (int i = 0; i < 1152; ++i) net.conv2_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s2;
+    for (int i = 0; i < 16;   ++i) net.conv2_b[i] = 0.0f;
+    // fc: fan_in = 400
+    float s3 = sqrtf(2.0f / 400.0f);
+    for (int i = 0; i < 4000; ++i) net.fc_W[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s3;
+    for (int i = 0; i < 10;   ++i) net.fc_b[i] = 0.0f;
+
     load_bin("mnist_X.bin", X, (size_t)N*784);
     load_bin("mnist_Y.bin", Y, (size_t)N*10);
     for (int s = 0; s < N; ++s) {            
@@ -147,7 +155,7 @@ int main(){
         label[s] = t;
     }
     float loss = 0.0f;
-    for (int epoch = 0; epoch < EPOCHS; ++epoch)
+    for (int epoch = 0; epoch < EPOCHS; ++epoch){
       for (int s = 0; s < N; ++s) {
           const float *img = &X[s*784];
           forward(img, &net, &a);          // pass structs by pointer
@@ -155,7 +163,8 @@ int main(){
           backward(img, label[s], &net, &a, &g);
           update(&net, &g, lr);
       }
-
+      printf("epoch %d  loss = %.4f\n", epoch, loss / N);
+    }
     free(net.conv1_f);
     free(net.conv1_b);
     free(net.conv2_f);
