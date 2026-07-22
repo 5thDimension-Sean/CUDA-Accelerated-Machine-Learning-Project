@@ -7,9 +7,9 @@
 // --- kernel (device) ---
 __global__ void maxPool2D(const float *input, float *output, int *argmax,
                           int H, int W, int out_H, int out_W, int P, int S, int C);
-__global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInput, int out_H, int out_W);
+__global__ void backMaxPool2D(const float *dOut, const int *argmax, float *dInput, int out_H, int out_W, int C);
 
 // --- host wrapper (malloc + copy + launch + copy-back + free) ---
 void maxPoolWrapKernel(float *h_input, float *h_output, int *argmax, int H, int W, int P, int S, int C);
 
-void backMaxPoolWrapKernel(float *h_dOut, float *h_dInput, int *h_argmax, int H, int W, int P, int S);
+void backMaxPoolWrapKernel(float *h_dOut, float *h_dInput, int *h_argmax, int H, int W, int P, int S, int C);
