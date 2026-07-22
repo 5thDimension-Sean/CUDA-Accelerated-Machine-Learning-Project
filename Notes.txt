@@ -997,3 +997,12 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
         -> Flatten (400) -> FC 400 -> 10 -> Softmax -> Cross-entropy
 
         THis will be documented in mnist_cnn.cu
+
+
+    There will be 3 functions. 
+
+    1. forward
+    2. backward
+    3. update
+
+    For organization reasons, i kept all the paramteres in a struct 
