@@ -36,7 +36,7 @@ void forward(const float *image, const Net *net, Acts *a){
     for (int i = 0; i < 8*26*26; ++i)
         a->relu1_out[i] = a->conv1_out[i] > 0.0f ? a->conv1_out[i] : 0.0f;
     H=26, W=26;
-    int P=2, int S=2, int C=8;
+    int P=2, S=2,C=8;
     maxPoolWrapKernel(a->relu1_out, a->pool1_out, a->argmax1, H, W, P, S, C);
     conv2d_mc(a->pool1_out, net->conv2_f, net->conv2_b, a->conv2_out, C_in=8, C_out=16, H=13, W=13, FH=3, FW=3);
     for (int i = 0; i < 16*11*11; ++i)
@@ -44,12 +44,11 @@ void forward(const float *image, const Net *net, Acts *a){
     maxPoolWrapKernel(a->relu2_out, a->pool2_out, a->argmax2,H=11, W=11, P=2, S=2, C=16);
     int batch=1, in=400, out=10;
     fc_forward(a->pool2_out, net->fc_W, net->fc_b, a->logits, batch, in, out);
-    for(int i = 0; i < 10; ++i){
-         a->probs = softmax(a->logits);
-    }
-
-
-
+    float m = a->logits[0];
+    for (int c = 1; c < 10; ++c) if (a->logits[c] > m) m = a->logits[c];
+    float sum = 0.0f;
+    for (int c = 0; c < 10; ++c) { a->probs[c] = expf(a->logits[c] - m); sum += a->probs[c]; }
+    for (int c = 0; c < 10; ++c) a->probs[c] /= sum;
 }
 /*
 backward — 8 steps (exact reverse of forward)
