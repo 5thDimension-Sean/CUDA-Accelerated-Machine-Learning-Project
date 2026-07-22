@@ -26,7 +26,7 @@ struct Grads {
 struct Acts {
     float *conv1_out, *relu1_out, *pool1_out; int *argmax1;  
     float *conv2_out, *relu2_out, *pool2_out; int *argmax2;  
-    float *logits, *probs;                    
+    float *logits, *probs;                  
 };
 
 
@@ -50,21 +50,33 @@ void forward(const float *image, const Net *net, Acts *a){
     for (int c = 0; c < 10; ++c) { a->probs[c] = expf(a->logits[c] - m); sum += a->probs[c]; }
     for (int c = 0; c < 10; ++c) a->probs[c] /= sum;
 }
-/*
-backward — 8 steps (exact reverse of forward)
 
-1. dY = probs - onehot(label):   dY[c] = a->probs[c] - (c==label ? 1 : 0)     // combined softmax+CE grad, size 10
-2. fc_backward(dY, a->pool2_out, net->fc_W,  g->fc_W, g->fc_b, d_pool2,   batch=1, in=400, out=10)
-3. backMaxPoolWrapKernel(d_pool2, d_relu2, a->argmax2,   H=11, W=11, P=2, S=2, C=16)          // 400 → 1936
-4. ReLU2 back (host): d_conv2_out[i] = d_relu2[i] * (a->conv2_out[i] > 0 ? 1 : 0)             // 16*11*11
-5. conv2d_mc_backward(d_conv2_out, a->pool1_out, net->conv2_f,  d_pool1, g->conv2_f, g->conv2_b,  C_in=8, C_out=16, H=13, W=13, FH=3, FW=3)
-6. backMaxPoolWrapKernel(d_pool1, d_relu1, a->argmax1,   H=26, W=26, P=2, S=2, C=8)           // 1352 → 5408
-7. ReLU1 back (host): d_conv1_out[i] = d_relu1[i] * (a->conv1_out[i] > 0 ? 1 : 0)             // 8*26*26
-8. conv2d_mc_backward(d_conv1_out, image, net->conv1_f,  d_image, g->conv1_f, g->conv1_b,  C_in=1, C_out=8, H=28, W=28, FH=3, FW=3)
-*/
 
 void backward(const float *image, int label, const Net *net, const Acts *a, Grads *g){
-
+    float *dY          = (float*)malloc(10   * sizeof(float));
+    float *d_pool2     = (float*)malloc(400  * sizeof(float));
+    float *d_relu2     = (float*)malloc(1936 * sizeof(float));
+    float *d_conv2_out = (float*)malloc(1936 * sizeof(float));
+    float *d_pool1     = (float*)malloc(1352 * sizeof(float));
+    float *d_relu1     = (float*)malloc(5408 * sizeof(float));
+    float *d_conv1_out = (float*)malloc(5408 * sizeof(float));
+    float *d_image     = (float*)malloc(784  * sizeof(float));
+    for (int c = 0; c < 10; ++c) {
+        dY[c] = a->probs[c] - (c==label ? 1 : 0);
+    }
+    int batch=1, in=400, out=10;
+    fc_backward(dY, d_pool2, net->fc_W,  g->fc_W, g->fc_b, d_pool2,   batch, in, out);
+    int H=11, W=11, P=2, S=2, C=16;
+    backMaxPoolWrapKernel(d_pool2, d_relu2, a->argmax2,   H, W, P, S, C);
+    for (int i = 0; i < 16*11*11; ++i)
+        d_conv2_out[i] = d_relu2[i] * (a->conv2_out[i] > 0.0f ? 1.0f : 0.0f);
+    int C_in=8, C_out=16, H=13, W=13, FH=3, FW=3;
+    conv2d_mc_backward(d_conv2_out, a->pool1_out, net->conv2_f,  d_pool2, g->conv2_f, g->conv2_b,  C_in, C_out, H, W, FH, FW);
+    backMaxPoolWrapKernel(d_pool1, d_relu1, a->argmax1,   H=26, W=26, P=2, S=2, C=8);
+    for (int i = 0; i < 5408; ++i) {
+        d_conv1_out[i] = d_relu1[i] * (a->conv1_out[i] > 0 ? 1 : 0);
+    }
+    conv2d_mc_backward(d_conv1_out, image, net->conv1_f,  d_image, g->conv1_f, g->conv1_b,  C_in=1, C_out=8, H=28, W=28, FH=3, FW=3);
 }
 
 
