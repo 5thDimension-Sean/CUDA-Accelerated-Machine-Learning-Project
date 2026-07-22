@@ -6,6 +6,8 @@
 #include "loss.cu"
 #include "optimizer.cu"
 #include "mnist_train.cu"
+#include <cmath>
+#include <cstdlib>
 
 struct Net {
     float *conv1_f, *conv1_b;  
