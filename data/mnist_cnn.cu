@@ -104,15 +104,16 @@ int main(){
         for (int c = 1; c < 10; ++c) if (Y[s*10+c] > Y[s*10+t]) t = c;
         label[s] = t;
     }
-
+    float loss = 0.0f;
     for (int epoch = 0; epoch < EPOCHS; ++epoch)
       for (int s = 0; s < N; ++s) {
           const float *img = &X[s*784];
           forward(img, &net, &a);          // pass structs by pointer
+          loss += -logf(a.probs[label[s]] + 1e-8f);   
           backward(img, label[s], &net, &a, &g);
           update(&net, &g, lr);
       }
-    
+
     free(net.conv1_f);
     free(net.conv1_b);
     free(net.conv2_f);
