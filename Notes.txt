@@ -1040,3 +1040,12 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     epoch 0  loss = -nan(ind)
     epoch 1  loss = -nan(ind)
     epoch 2  loss = -nan(ind)
+
+
+    logits: -0.172 0.179 0.088 0.050 0.088 0.326 0.371 -0.158 -0.082 0.173 
+    probs:  0.076 0.108 0.099 0.095 0.099 0.125 0.131 0.077 0.083 0.107 
+    sample0 loss = 2.0784
+    epoch 0  loss = 2.3313
+    epoch 1  loss = 2.3149
+    epoch 2  loss = 2.3003
+    Shows how the error is going down so we can turn up the lr and more epoch. Then we add a train accuracy. 
