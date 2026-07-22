@@ -1020,3 +1020,14 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     [build] nvlink error   : Multiple definition of '_Z23conv2d_mc_backward_biasPKfPfiii' in 'CMakeFiles/mnist_cnn.dir/kernels/conv2d_mc.cu.obj', first defined in 'CMakeFiles/mnist_cnn.dir/data/mnist_cnn.cu.obj' (target: sm_75)
     [build] nvlink error   : Multiple definition of '_Z17conv2d_mc_forwardPKfS0_S0_Pfiiiiii' in 'CMakeFiles/mnist_cnn.dir/kernels/conv2d_mc.cu.obj', first defined in 'CMakeFiles/mnist_cnn.dir/data/mnist_cnn.cu.obj' (target: sm_75)
     [build] nvlink fatal   : merge_elf failed (target: sm_75)
+
+
+    epoch 0  loss = -nan(ind)
+    epoch 1  loss = -nan(ind)
+    epoch 2  loss = -nan(ind)
+    //is the forward healthy at init or does it start NaN ? 
+    if (epoch == 0 && s == 0) {
+    printf("logits: "); for (int c=0;c<10;++c) printf("%.3f ", a.logits[c]); printf("\n");
+    printf("probs:  "); for (int c=0;c<10;++c) printf("%.3f ", a.probs[c]); printf("\n");
+    printf("sample0 loss = %.4f\n", -logf(a.probs[label[0]] + 1e-8f));
+    }
