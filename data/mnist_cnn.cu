@@ -1,10 +1,10 @@
 #include "common.cuh"
-#include "conv2d_mc.cu"
-#include "pooling.cu"
-#include "activations.cu"
-#include "fc.cu"
-#include "loss.cu"
-#include "optimizer.cu"
+#include "conv2d_mc.cuh"
+#include "pooling.cuh"
+#include "activations.cuh"
+#include "fc.cuh"
+#include "loss.cuh"
+#include "optimizer.cuh"
 #include <cmath>
 #include <cstdlib>
 
@@ -77,7 +77,8 @@ void backward(const float *image, int label, const Net *net, const Acts *a, Grad
     backMaxPoolWrapKernel(d_pool2, d_relu2, a->argmax2,   H, W, P, S, C);
     for (int i = 0; i < 16*11*11; ++i)
         d_conv2_out[i] = d_relu2[i] * (a->conv2_out[i] > 0.0f ? 1.0f : 0.0f);
-    int C_in=8, C_out=16, H=13, W=13, FH=3, FW=3;
+    int C_in=8, C_out=16, FH=3, FW=3;
+    H = 13;
     conv2d_mc_backward(d_conv2_out, a->pool1_out, net->conv2_f,  d_pool1, g->conv2_f, g->conv2_b,  C_in, C_out, H, W, FH, FW);
     backMaxPoolWrapKernel(d_pool1, d_relu1, a->argmax1,   H=26, W=26, P=2, S=2, C=8);
     for (int i = 0; i < 5408; ++i) {

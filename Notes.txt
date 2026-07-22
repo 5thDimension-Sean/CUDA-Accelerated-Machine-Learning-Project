@@ -1008,3 +1008,15 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     For organization reasons, i kept all the paramteres in a struct 
 
     Note that you cannot use GPU for this as the math doesn't allow for it right now. It would require a restructure
+
+    [main] Building folder: D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build 
+    [build] Starting build
+    [proc] Executing command: "C:\Program Files\CMake\bin\cmake.EXE" --build "D:/Projects/Projects/CUDA Accelerated Machine-Learning Project/build" --
+    [build] [1/2] Linking CUDA executable CMakeFiles\mnist_cnn.dir\cmake_device_link.obj
+    [build] FAILED: [code=1] CMakeFiles/mnist_cnn.dir/cmake_device_link.obj 
+    [build] C:\PROGRA~1\NVIDIA~2\CUDA\v13.1\bin\nvcc.exe -forward-unknown-to-host-compiler -D_WINDOWS -Xcompiler=" /GR /EHsc" -O3 -Xcompiler -Wall -Xcompiler="-O2 -Ob2" -DNDEBUG "--generate-code=arch=compute_75,code=[compute_75,sm_75]" "--generate-code=arch=compute_86,code=[compute_86,sm_86]" "--generate-code=arch=compute_89,code=[compute_89,sm_89]" -Xcompiler=-MD  -Wno-deprecated-gpu-targets -shared -dlink CMakeFiles\mnist_cnn.dir\data\mnist_cnn.cu.obj CMakeFiles\mnist_cnn.dir\kernels\conv2d_mc.cu.obj CMakeFiles\mnist_cnn.dir\kernels\pooling.cu.obj CMakeFiles\mnist_cnn.dir\kernels\activations.cu.obj CMakeFiles\mnist_cnn.dir\kernels\fc.cu.obj CMakeFiles\mnist_cnn.dir\network\loss.cu.obj CMakeFiles\mnist_cnn.dir\network\optimizer.cu.obj -o CMakeFiles\mnist_cnn.dir\cmake_device_link.obj  cudadevrt.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib -Xcompiler=-FdCMakeFiles\mnist_cnn.dir\,-FS
+    [build] nvlink error   : Multiple definition of '_Z24conv2d_mc_backward_inputPKfS0_Pfiiiiii' in 'CMakeFiles/mnist_cnn.dir/kernels/conv2d_mc.cu.obj', first defined in 'CMakeFiles/mnist_cnn.dir/data/mnist_cnn.cu.obj' (target: sm_75)
+    [build] nvlink error   : Multiple definition of '_Z26conv2d_mc_backward_weightsPKfS0_Pfiiiiii' in 'CMakeFiles/mnist_cnn.dir/kernels/conv2d_mc.cu.obj', first defined in 'CMakeFiles/mnist_cnn.dir/data/mnist_cnn.cu.obj' (target: sm_75)
+    [build] nvlink error   : Multiple definition of '_Z23conv2d_mc_backward_biasPKfPfiii' in 'CMakeFiles/mnist_cnn.dir/kernels/conv2d_mc.cu.obj', first defined in 'CMakeFiles/mnist_cnn.dir/data/mnist_cnn.cu.obj' (target: sm_75)
+    [build] nvlink error   : Multiple definition of '_Z17conv2d_mc_forwardPKfS0_S0_Pfiiiiii' in 'CMakeFiles/mnist_cnn.dir/kernels/conv2d_mc.cu.obj', first defined in 'CMakeFiles/mnist_cnn.dir/data/mnist_cnn.cu.obj' (target: sm_75)
+    [build] nvlink fatal   : merge_elf failed (target: sm_75)
