@@ -182,6 +182,23 @@ int main(){
         if (pred == label[s]) correct++;
     }
     printf("train accuracy = %.2f%% (%d/%d)\n", 100.0f*correct/N, correct, N);
+
+     const int NT = 1000;
+    float *Xt = (float*)malloc((size_t)NT*784 * sizeof(float));
+    float *Yt = (float*)malloc((size_t)NT*10  * sizeof(float));
+    int   *labelt = (int*)malloc(NT * sizeof(int));
+    load_bin("mnist_test_X.bin", Xt, (size_t)NT*784);
+    load_bin("mnist_test_Y.bin", Yt, (size_t)NT*10);
+    for (int s = 0; s < NT; ++s) { int t=0; for(int c=1;c<10;++c) if(Yt[s*10+c]>Yt[s*10+t]) t=c; labelt[s]=t; }
+
+    int tc = 0;
+    for (int s = 0; s < NT; ++s) {
+        forward(&Xt[s*784], &net, &a);
+        int pred = 0; for (int c = 1; c < 10; ++c) if (a.probs[c] > a.probs[pred]) pred = c;
+        if (pred == labelt[s]) tc++;
+    }
+    printf("TEST accuracy = %.2f%% (%d/%d)\n", 100.0f*tc/NT, tc, NT);
+    free(Xt); free(Yt); free(labelt);
     free(net.conv1_f);
     free(net.conv1_b);
     free(net.conv2_f);
