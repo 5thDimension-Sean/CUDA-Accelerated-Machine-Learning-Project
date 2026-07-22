@@ -135,4 +135,7 @@ int main(){
     free(a.argmax2);
     free(a.logits);
     free(a.probs);
+    free(X);
+    free(Y);
+    free(label);
 }
