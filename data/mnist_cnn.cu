@@ -130,7 +130,7 @@ int main(){
     a.argmax2   = (int*)  malloc(400  * sizeof(int));       // ints!
     a.logits    = (float*)malloc(10   * sizeof(float));
     a.probs     = (float*)malloc(10   * sizeof(float));  
-    const int N = 10000;     
+    const int N = 1000;     
     const int EPOCHS = 20;
     float lr = 0.001f;
     float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
@@ -183,7 +183,7 @@ int main(){
     }
     printf("train accuracy = %.2f%% (%d/%d)\n", 100.0f*correct/N, correct, N);
 
-    const int NT = 10000;
+    const int NT = 1000;
     float *Xt = (float*)malloc((size_t)NT*784 * sizeof(float));
     float *Yt = (float*)malloc((size_t)NT*10  * sizeof(float));
     int   *labelt = (int*)malloc(NT * sizeof(int));
