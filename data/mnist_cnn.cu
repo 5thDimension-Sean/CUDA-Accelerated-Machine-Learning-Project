@@ -61,14 +61,6 @@ backward — 8 steps (exact reverse of forward)
 6. backMaxPoolWrapKernel(d_pool1, d_relu1, a->argmax1,   H=26, W=26, P=2, S=2, C=8)           // 1352 → 5408
 7. ReLU1 back (host): d_conv1_out[i] = d_relu1[i] * (a->conv1_out[i] > 0 ? 1 : 0)             // 8*26*26
 8. conv2d_mc_backward(d_conv1_out, image, net->conv1_f,  d_image, g->conv1_f, g->conv1_b,  C_in=1, C_out=8, H=28, W=28, FH=3, FW=3)
-
-update — 6 steps (one sgd per parameter)
-
-1. sgd(net->conv1_f, g->conv1_f, lr, 72)
-2. sgd(net->conv1_b, g->conv1_b, lr, 8)
-3. sgd(net->conv2_f, g->conv2_f, lr, 1152)
-4. sgd(net->conv2_b, g->conv2_b, lr, 16)
-5. sgd(net->fc_W,    g->fc_W,    lr, 4000)
 */
 
 void backward(const float *image, int label, const Net *net, const Acts *a, Grads *g){
