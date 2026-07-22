@@ -78,7 +78,7 @@ void backward(const float *image, int label, const Net *net, const Acts *a, Grad
     for (int i = 0; i < 16*11*11; ++i)
         d_conv2_out[i] = d_relu2[i] * (a->conv2_out[i] > 0.0f ? 1.0f : 0.0f);
     int C_in=8, C_out=16, FH=3, FW=3;
-    H = 13;
+    H = 13, W = 13;
     conv2d_mc_backward(d_conv2_out, a->pool1_out, net->conv2_f,  d_pool1, g->conv2_f, g->conv2_b,  C_in, C_out, H, W, FH, FW);
     backMaxPoolWrapKernel(d_pool1, d_relu1, a->argmax1,   H=26, W=26, P=2, S=2, C=8);
     for (int i = 0; i < 5408; ++i) {
@@ -155,8 +155,8 @@ int main(){
         for (int c = 1; c < 10; ++c) if (Y[s*10+c] > Y[s*10+t]) t = c;
         label[s] = t;
     }
-    float loss = 0.0f;
     for (int epoch = 0; epoch < EPOCHS; ++epoch){
+        float loss = 0.0f;
       for (int s = 0; s < N; ++s) {
           const float *img = &X[s*784];
           forward(img, &net, &a);          // pass structs by pointer
