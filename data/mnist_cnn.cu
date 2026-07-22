@@ -75,12 +75,21 @@ int main(){
     a.argmax2   = (int*)  malloc(400  * sizeof(int));       // ints!
     a.logits    = (float*)malloc(10   * sizeof(float));
     a.probs     = (float*)malloc(10   * sizeof(float));  
-    const int N = 60000;
-    int label[N] = {0.0f};
-    int lr = 0.5;
-    int X[N*784] = {0.0f}; 
+    const int N = 1000;     
+    const int EPOCHS = 3;
+    float lr = 0.01f;
+    float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
+    float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));   
+    int   *label = (int*)  malloc(N * sizeof(int));
+    load_bin("mnist_X.bin", X, (size_t)N*784);
+    load_bin("mnist_Y.bin", Y, (size_t)N*10);
+    for (int s = 0; s < N; ++s) {                 // one-hot → int label (argmax)
+        int t = 0;
+        for (int c = 1; c < 10; ++c) if (Y[s*10+c] > Y[s*10+t]) t = c;
+        label[s] = t;
+    }
 
-    for (int epoch = 0; epoch < 1000; ++epoch)
+    for (int epoch = 0; epoch < EPOCHS; ++epoch)
       for (int s = 0; s < N; ++s) {
           const float *img = &X[s*784];
           forward(img, &net, &a);          // pass structs by pointer
