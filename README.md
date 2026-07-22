@@ -107,6 +107,31 @@ Memory bandwidth (GPU): 142.5 GB/s
 
 ---
 
+## Results — MNIST Classification
+
+Two networks trained from scratch on MNIST and evaluated on the full **10,000-image held-out test set**. Every layer — convolution, max-pooling, fully-connected, softmax — runs as a hand-written CUDA kernel with hand-derived backpropagation. No autograd, no ML frameworks for the core math. The convolution and pooling gradients were verified against finite-difference numerical gradients before training.
+
+| Model   | Architecture                                    | Parameters | Train acc | **Test acc** |
+| ------- | ----------------------------------------------- | ---------- | --------- | ------------ |
+| MLP     | 784 → 128 → 10  (ReLU, softmax)                 | 101,770    | 94.83%    | 92.77%       |
+| **CNN** | 1→8 conv → pool → 8→16 conv → pool → FC → 10     | **5,258**  | 99.09%    | **97.44%**   |
+
+The CNN beats the dense baseline by **+4.67 points on held-out data while using ~19× fewer parameters.** Convolution's weight-sharing captures spatial structure the MLP can't, and it generalizes better — a 1.6-point train/test gap versus the MLP's 2.1.
+
+**CNN training** — SGD, learning rate 0.001, He initialization, 20 epochs over 10,000 images:
+
+```
+epoch  0  loss = 0.9107
+epoch  5  loss = 0.1068
+epoch 10  loss = 0.0641
+epoch 15  loss = 0.0431
+epoch 19  loss = 0.0320
+train accuracy = 99.09% (9909/10000)
+TEST  accuracy = 97.44% (9744/10000)
+```
+
+---
+
 ## Executables
 
 Everything below builds from hand-written CUDA — no ML frameworks for the core math. Run any target from the project root after building.
@@ -146,8 +171,8 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 | `python data\prepare_mnist.py` | Preprocesses the MNIST CSV files into normalized `float32` binaries (train + test sets). |
 | `python data\prepare_mnist_test.py` | second MNIST testing dataset |
 | `& ".\build\bin\mnist_train.exe"` | Trains an MLP (784 → 128 → 10, ReLU + softmax, cross-entropy) on MNIST digits, then reports **train vs. test accuracy** on held-out data. |
-| `& ".\build\bin\conv2d_mc.exe" ` | Convolutional neural network with multiple channels via backwards kernels |
-| `& ".\build\bin\mnist_cnn.exe" ` | convolutional neural network |
+| `& ".\build\bin\conv2d_mc.exe"` | Multi-channel 2D convolution, forward **and** backward — the CNN building block. Gradients verified against finite differences. |
+| `& ".\build\bin\mnist_cnn.exe"` | End-to-end CNN on MNIST (conv → pool → conv → pool → FC), fully hand-written forward + backprop. Reports train vs. test accuracy — **97.44% test**, beating the MLP baseline. |
 
 ---
 
