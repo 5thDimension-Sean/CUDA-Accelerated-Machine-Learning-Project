@@ -133,156 +133,160 @@ void update(Net *net, const Grads *g, float lr){
     sgd_kernel<<<(10+255)/256,256>>>  (net->fc_b,    g->fc_b,    lr, 10);
 }
 
-int main(){
-    Net net;
-    Grads g;
-    Acts a;
-    Back bp;
-        // weights
-    bp.dY = (float*)malloc(10* sizeof(float));
-    bp.d_pool2 = (float*)malloc(400* sizeof(float));
-    bp.d_relu2 = (float*)malloc(1936 * sizeof(float));
-    bp.d_conv2_out = (float*)malloc(1936 * sizeof(float));
-    bp.d_pool1 = (float*)malloc(1352 * sizeof(float));
-    bp.d_relu1 = (float*)malloc(5408 * sizeof(float));
-    bp.d_conv1_out = (float*)malloc(5408 * sizeof(float));
-    bp.d_image_grad =(float*)malloc(784 * sizeof(float));
+ Net net; Grads g; Acts a; Back bp;
 
-    net.conv1_f = (float*)malloc(72   * sizeof(float));
-    net.conv1_b = (float*)malloc(8    * sizeof(float));
-    net.conv2_f = (float*)malloc(1152 * sizeof(float));
-    net.conv2_b = (float*)malloc(16   * sizeof(float));
-    net.fc_W    = (float*)malloc(4000 * sizeof(float));
-    net.fc_b    = (float*)malloc(10   * sizeof(float));
+    cudaMalloc(&bp.dY,          10   * sizeof(float));
+      (cudaMalloc(&bp.d_pool2,     400  * sizeof(float)));
+      (cudaMalloc(&bp.d_relu2,     1936 * sizeof(float)));
+      (cudaMalloc(&bp.d_conv2_out, 1936 * sizeof(float)));
+      (cudaMalloc(&bp.d_pool1,     1352 * sizeof(float)));
+      (cudaMalloc(&bp.d_relu1,     5408 * sizeof(float)));
+      (cudaMalloc(&bp.d_conv1_out, 5408 * sizeof(float)));
+      (cudaMalloc(&bp.d_image_grad, 784 * sizeof(float)));
 
+      (cudaMalloc(&net.conv1_f, 72   * sizeof(float)));
+      (cudaMalloc(&net.conv1_b, 8    * sizeof(float)));
+      (cudaMalloc(&net.conv2_f, 1152 * sizeof(float)));
+      (cudaMalloc(&net.conv2_b, 16   * sizeof(float)));
+      (cudaMalloc(&net.fc_W,    4000 * sizeof(float)));
+      (cudaMalloc(&net.fc_b,    10   * sizeof(float)));
 
-    g.conv1_f = (float*)malloc(72   * sizeof(float));
-    g.conv1_b = (float*)malloc(8    * sizeof(float));
-    g.conv2_f = (float*)malloc(1152 * sizeof(float));
-    g.conv2_b = (float*)malloc(16   * sizeof(float));
-    g.fc_W    = (float*)malloc(4000 * sizeof(float));
-    g.fc_b    = (float*)malloc(10   * sizeof(float));
+      (cudaMalloc(&g.conv1_f, 72   * sizeof(float)));
+      (cudaMalloc(&g.conv1_b, 8    * sizeof(float)));
+      (cudaMalloc(&g.conv2_f, 1152 * sizeof(float)));
+      (cudaMalloc(&g.conv2_b, 16   * sizeof(float)));
+      (cudaMalloc(&g.fc_W,    4000 * sizeof(float)));
+      (cudaMalloc(&g.fc_b,    10   * sizeof(float)));
 
+      (cudaMalloc(&a.conv1_out, 5408 * sizeof(float)));
+      (cudaMalloc(&a.relu1_out, 5408 * sizeof(float)));
+      (cudaMalloc(&a.pool1_out, 1352 * sizeof(float)));
+      (cudaMalloc(&a.argmax1,   1352 * sizeof(int)));
+      (cudaMalloc(&a.conv2_out, 1936 * sizeof(float)));
+      (cudaMalloc(&a.relu2_out, 1936 * sizeof(float)));
+      (cudaMalloc(&a.pool2_out, 400  * sizeof(float)));
+      (cudaMalloc(&a.argmax2,   400  * sizeof(int)));
+      (cudaMalloc(&a.logits,    10   * sizeof(float)));
+      (cudaMalloc(&a.probs,     10   * sizeof(float)));
 
-    a.conv1_out = (float*)malloc(5408 * sizeof(float));
-    a.relu1_out = (float*)malloc(5408 * sizeof(float));
-    a.pool1_out = (float*)malloc(1352 * sizeof(float));
-    a.argmax1   = (int*)  malloc(1352 * sizeof(int));      // ints!
-    a.conv2_out = (float*)malloc(1936 * sizeof(float));
-    a.relu2_out = (float*)malloc(1936 * sizeof(float));
-    a.pool2_out = (float*)malloc(400  * sizeof(float));
-    a.argmax2   = (int*)  malloc(400  * sizeof(int));       // ints!
-    a.logits    = (float*)malloc(10   * sizeof(float));
-    a.probs     = (float*)malloc(10   * sizeof(float));  
-    const int N = 10000;     
+    float *d_loss;
+      (cudaMalloc(&d_loss, sizeof(float)));
+
+    const int N = 10000;
     const int EPOCHS = 10;
     float lr = 0.001f;
-    float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
-    float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));   
-    int   *label = (int*)  malloc(N * sizeof(int));
-    float *d_loss;
-    cudaMalloc(&d_loss, sizeof(float));
-    srand(42); 
-    // conv1: fan_in = 1*3*3 = 9
-    float s1 = sqrtf(2.0f / 9.0f);
-    for (int i = 0; i < 72; ++i) net.conv1_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s1;
-    for (int i = 0; i < 8;  ++i) net.conv1_b[i] = 0.0f;
-    // conv2: fan_in = 8*3*3 = 72
-    float s2 = sqrtf(2.0f / 72.0f);
-    for (int i = 0; i < 1152; ++i) net.conv2_f[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s2;
-    for (int i = 0; i < 16;   ++i) net.conv2_b[i] = 0.0f;
-    // fc: fan_in = 400
-    float s3 = sqrtf(2.0f / 400.0f);
-    for (int i = 0; i < 4000; ++i) net.fc_W[i] = ((float)rand()/RAND_MAX*2.0f - 1.0f) * s3;
-    for (int i = 0; i < 10;   ++i) net.fc_b[i] = 0.0f;
 
+    // ---- host staging: dataset + labels + weight init ----
+    float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
+    float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));
+    int   *label = (int*)  malloc(N * sizeof(int));
+
+    float *h_c1f=(float*)malloc(72*sizeof(float)),   *h_c1b=(float*)malloc(8*s
+    float *h_c2f=(float*)malloc(1152*sizeof(float)), *h_c2b=(float*)malloc(16*sizeof(float));
+    float *h_fW =(float*)malloc(4000*sizeof(float)), *h_fb =(float*)malloc(10*
+
+    srand(42);
+    float s1 = sqrtf(2.0f/9.0f);
+    for (int i=0;i<72;++i) h_c1f[i]=((float)rand()/RAND_MAX*2.0f-1.0f)*s1;
+    for (int i=0;i<8; ++i) h_c1b[i]=0.0f;
+    float s2 = sqrtf(2.0f/72.0f);
+    for (int i=0;i<1152;++i) h_c2f[i]=((float)rand()/RAND_MAX*2.0f-1.0f)*s2;
+    for (int i=0;i<16;  ++i) h_c2b[i]=0.0f;
+    float s3 = sqrtf(2.0f/400.0f);
+    for (int i=0;i<4000;++i) h_fW[i]=((float)rand()/RAND_MAX*2.0f-1.0f)*s3;
+    for (int i=0;i<10;  ++i) h_fb[i]=0.0f;
+
+    // ---- upload weights ONCE ----
+      (cudaMemcpy(net.conv1_f, h_c1f, 72*sizeof(float),   cudaMemcpyHostToDevice));
+      (cudaMemcpy(net.conv1_b, h_c1b, 8*sizeof(float),    cudaMemcpyHo
+      (cudaMemcpy(net.conv2_f, h_c2f, 1152*sizeof(float), cudaMemcpyHostToDevice));
+      (cudaMemcpy(net.conv2_b, h_c2b, 16*sizeof(float),   cudaMemcpyHo
+      (cudaMemcpy(net.fc_W,    h_fW,  4000*sizeof(float), cudaMemcpyHostToDevice));
+      (cudaMemcpy(net.fc_b,    h_fb,  10*sizeof(float),   cudaMemcpyHo
+
+    // ---- load dataset, derive labels, upload X ONCE ----
     load_bin("mnist_X.bin", X, (size_t)N*784);
     load_bin("mnist_Y.bin", Y, (size_t)N*10);
-    for (int s = 0; s < N; ++s) {            
-        int t = 0;
-        for (int c = 1; c < 10; ++c) if (Y[s*10+c] > Y[s*10+t]) t = c;
-        label[s] = t;
-    }
-    auto t0 = std::chrono::high_resolution_clock::now();
-    for (int epoch = 0; epoch < EPOCHS; ++epoch){
-        float loss = 0.0f;
-      for (int s = 0; s < N; ++s) {
-          const float *img = &X[s*784];
-          forward(img, &net, &a);          // pass structs by pointer
-          if (epoch == 0 && s == 0) {
-                printf("logits: "); for (int c=0;c<10;++c) printf("%.3f ", a.logits[c]); printf("\n");
-                printf("probs:  "); for (int c=0;c<10;++c) printf("%.3f ", a.probs[c]); printf("\n");
-                printf("sample0 loss = %.4f\n", -logf(a.probs[label[0]] + 1e-8f));
-            }
+    for (int s=0;s<N;++s){ int t=0; for(int c=1;c<10;++c) if(Y[s*10+c]>Y[s*10+
 
-          loss += -logf(a.probs[label[s]] + 1e-8f);   
-          backward(img, label[s], &net, &a, &g, & bp, d_loss);
-          update(&net, &g, lr);
-      }
-      printf("epoch %d  loss = %.4f\n", epoch, loss / N);
+    float *d_X;
+      (cudaMalloc(&d_X, (size_t)N*784*sizeof(float)));
+      (cudaMemcpy(d_X, X, (size_t)N*784*sizeof(float), cudaMemcpyHostToDevice));
+
+    float h_logits[10], h_probs[10];   // small host scratch for prints/eval
+
+    // ---- training ----
+    auto t0 = std::chrono::high_resolution_clock::now();
+    for (int epoch=0; epoch<EPOCHS; ++epoch){
+          (cudaMemset(d_loss, 0, sizeof(float)));    // reset accumula
+        for (int s=0; s<N; ++s){
+            const float *d_img = d_X + (size_t)s*784;
+            forward(d_img, &net, &a);
+            backward(d_img, label[s], &net, &a, &g, &bp, d_loss);   // softmax+loss inside
+            update(&net, &g, lr);
+
+            if (epoch==0 && s==0){                            // debug: copy DOWN first
+                  (cudaMemcpy(h_logits, a.logits, 10*sizeof(float), cu
+                  (cudaMemcpy(h_probs,  a.probs,  10*sizeof(float), cudaMemcpyDeviceToHost));
+                printf("logits: "); for(int c=0;c<10;++c) printf("%.3f ", h_logits[c]); printf("\n");
+                printf("probs:  "); for(int c=0;c<10;++c) printf("%.3f ", h_probs[c]);  printf("\n");
+                printf("sample0 loss = %.4f\n", -logf(h_probs[label[0]] + 1e-8
+            }
+        }
+        float h_loss = 0.0f;
+          (cudaMemcpy(&h_loss, d_loss, sizeof(float), cudaMemcpyDevice
+        printf("epoch %d  loss = %.4f\n", epoch, h_loss / N);
     }
+      (cudaDeviceSynchronize());
     auto t1 = std::chrono::high_resolution_clock::now();
     printf("training time: %.2f s  (%.2f ms/sample)\n",
-           std::chrono::duration<double>(t1 - t0).count(),
-           std::chrono::duration<double, std::milli>(t1 - t0).count() / (EPOCHS * N));
+           std::chrono::duration<double>(t1-t0).count(),
+           std::chrono::duration<double,std::milli>(t1-t0).count()/(EPOCHS*N))
+
+    // ---- train accuracy (argmax of logits == argmax of probs) ----
     int correct = 0;
-    for (int s = 0; s < N; ++s) {
-        forward(&X[s*784], &net, &a);
-        int pred = 0;
-        for (int c = 1; c < 10; ++c) if (a.probs[c] > a.probs[pred]) pred = c;
-        if (pred == label[s]) correct++;
+    for (int s=0;s<N;++s){
+        forward(d_X + (size_t)s*784, &net, &a);
+          (cudaMemcpy(h_logits, a.logits, 10*sizeof(float), cudaMemcpy
+        int pred=0; for(int c=1;c<10;++c) if(h_logits[c]>h_logits[pred]) pred=c;
+        if (pred==label[s]) correct++;
     }
     printf("train accuracy = %.2f%% (%d/%d)\n", 100.0f*correct/N, correct, N);
 
+    // ---- test set ----
     const int NT = 10000;
-    float *Xt = (float*)malloc((size_t)NT*784 * sizeof(float));
-    float *Yt = (float*)malloc((size_t)NT*10  * sizeof(float));
-    int   *labelt = (int*)malloc(NT * sizeof(int));
+    float *Xt=(float*)malloc((size_t)NT*784*sizeof(float));
+    float *Yt=(float*)malloc((size_t)NT*10*sizeof(float));
+    int   *labelt=(int*)malloc(NT*sizeof(int));
     load_bin("mnist_test_X.bin", Xt, (size_t)NT*784);
     load_bin("mnist_test_Y.bin", Yt, (size_t)NT*10);
-    for (int s = 0; s < NT; ++s) { int t=0; for(int c=1;c<10;++c) if(Yt[s*10+c]>Yt[s*10+t]) t=c; labelt[s]=t; }
+    for (int s=0;s<NT;++s){ int t=0; for(int c=1;c<10;++c) if(Yt[s*10+c]>Yt[s*10+t]) t=c; labelt[s]=t; }
+
+    float *d_Xt;
+      (cudaMalloc(&d_Xt, (size_t)NT*784*sizeof(float)));
+      (cudaMemcpy(d_Xt, Xt, (size_t)NT*784*sizeof(float), cudaMemcpyHo
 
     int tc = 0;
-    for (int s = 0; s < NT; ++s) {
-        forward(&Xt[s*784], &net, &a);
-        int pred = 0; for (int c = 1; c < 10; ++c) if (a.probs[c] > a.probs[pred]) pred = c;
-        if (pred == labelt[s]) tc++;
+    for (int s=0;s<NT;++s){
+        forward(d_Xt + (size_t)s*784, &net, &a);
+          (cudaMemcpy(h_logits, a.logits, 10*sizeof(float), cudaMemcpyDeviceToHost));
+        int pred=0; for(int c=1;c<10;++c) if(h_logits[c]>h_logits[pred]) pred=
+        if (pred==labelt[s]) tc++;
     }
     printf("TEST accuracy = %.2f%% (%d/%d)\n", 100.0f*tc/NT, tc, NT);
-    free(Xt); free(Yt); free(labelt);
-    free(net.conv1_f);
-    free(net.conv1_b);
-    free(net.conv2_f);
-    free(net.conv2_b);
-    free(net.fc_W);
-    free(net.fc_b);
-    free(g.conv1_f);
-    free(g.conv1_b);
-    free(g.conv2_f);
-    free(g.conv2_b);
-    free(g.fc_W);
-    free(g.fc_b);
-    free(a.conv1_out);
-    free(a.relu1_out);
-    free(a.pool1_out);
-    free(a.argmax1);
-    free(a.conv2_out);
-    free(a.relu2_out);
-    free(a.pool2_out);
-    free(a.argmax2);
-    free(a.logits);
-    free(a.probs);
-    free(X);
-    free(Y);
-    free(label);
-    free(d_loss);
-    free(bp.dY);
-    free(bp.d_pool2);
-    free(bp.d_relu2);
-    free(bp.d_conv2_out);
-    free(bp.d_pool1);
-    free(bp.d_relu1);
-    free(bp.d_conv1_out);
-    free(bp.d_image_grad);
- 
+
+    // ---- cleanup ----
+    cudaFree(d_X); cudaFree(d_Xt); cudaFree(d_loss);
+    cudaFree(net.conv1_f); cudaFree(net.conv1_b); cudaFree(net.conv2_f);
+    cudaFree(net.conv2_b); cudaFree(net.fc_W);    cudaFree(net.fc_b);
+    cudaFree(g.conv1_f);   cudaFree(g.conv1_b);   cudaFree(g.conv2_f);
+    cudaFree(g.conv2_b);   cudaFree(g.fc_W);      cudaFree(g.fc_b);
+    cudaFree(a.conv1_out); cudaFree(a.relu1_out); cudaFree(a.pool1_out); cudaF
+    cudaFree(a.conv2_out); cudaFree(a.relu2_out); cudaFree(a.pool2_out); cudaFree(a.argmax2);
+    cudaFree(a.logits);    cudaFree(a.probs);
+    cudaFree(bp.dY); cudaFree(bp.d_pool2); cudaFree(bp.d_relu2); cudaFree(bp.d
+    cudaFree(bp.d_pool1); cudaFree(bp.d_relu1); cudaFree(bp.d_conv1_out); cuda
+
+    free(X); free(Y); free(label); free(Xt); free(Yt); free(labelt);
+    free(h_c1f); free(h_c1b); free(h_c2f); free(h_c2b); free(h_fW); free(h_fb);
 }
