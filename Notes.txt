@@ -1194,3 +1194,6 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     TEST accuracy = 97.44% (9744/10000)
 
     The cnn had amazing results with 97.5 percent accuracy!
+
+
+    To finish offf, we need to implement an optimization pass and object detections via yolo.
