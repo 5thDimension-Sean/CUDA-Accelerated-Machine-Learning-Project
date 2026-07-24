@@ -94,12 +94,7 @@ add_executable(mnist_cnn
 
 add_executable(cnn_optimization
       data/cnn_optimization.cu
-      kernels/conv2d_mc.cu
-      kernels/pooling.cu
-      kernels/activations.cu
-      kernels/fc.cu 
-      network/loss.cu
-      network/optimizer.cu)
+      )
   set_target_properties(cnn_optimization PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
   target_compile_definitions(cnn_optimization PRIVATE BUILD_AS_LIBRARY)
   target_include_directories(cnn_optimization PRIVATE network kernels)
