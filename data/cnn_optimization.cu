@@ -98,7 +98,7 @@ void forward(const float *d_image, const Net *net, Acts *a){
 
 
 void backward(const float *image, int label, const Net *net, const Acts *a, Grads *g){
-    softmax_ce_grad<<<1,1>>>(a->logits, a->probs, bp->dY, label, loss);
+    softmax_ce_grad<<<1,1>>>(a->logits, a->probs, bp->dY, label, bp->d_loss);
     fc_backward_weights_kernel<<<400,10,(16,16)>>>(bp.dY, a->pool2_out, g->fc_W, 1,400,10);
     fc_backward_bias_kernel   <<<(10+15)/16,16>>>(bp.dY, g->fc_b, 1,10);
     fc_backward_input_kernel  <<<(1,400),(16,16)>>>(bp.dY, net->fc_W, bp.d_pool2, 1,400,10);
@@ -130,7 +130,17 @@ int main(){
     Net net;
     Grads g;
     Acts a;
+    Back bp;
         // weights
+    bp.dY = (float*)malloc(10* sizeof(float));
+    bp.d_pool2 = (float*)malloc(400* sizeof(float));
+    bp.d_relu2 = (float*)malloc(1936 * sizeof(float));
+    bp.d_conv2_out = (float*)malloc(1936 * sizeof(float));
+    bp.d_pool1 = (float*)malloc(1352 * sizeof(float));
+    bp.d_relu1 = (float*)malloc(5408 * sizeof(float));
+    bp.d_conv1_out = (float*)malloc(5408 * sizeof(float));
+    bp.d_image_grad =(float*)malloc(784 * sizeof(float));
+
     net.conv1_f = (float*)malloc(72   * sizeof(float));
     net.conv1_b = (float*)malloc(8    * sizeof(float));
     net.conv2_f = (float*)malloc(1152 * sizeof(float));
@@ -163,6 +173,8 @@ int main(){
     float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
     float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));   
     int   *label = (int*)  malloc(N * sizeof(int));
+    float *d_loss;
+    cudaMalloc(&d_loss, sizeof(float));
     srand(42); 
     // conv1: fan_in = 1*3*3 = 9
     float s1 = sqrtf(2.0f / 9.0f);
