@@ -275,4 +275,14 @@ int main(){
     free(X);
     free(Y);
     free(label);
+    free(d_loss);
+    free(bp.dY);
+    free(bp.d_pool2);
+    free(bp.d_relu2);
+    free(bp.d_conv2_out);
+    free(bp.d_pool1);
+    free(bp.d_relu1);
+    free(bp.d_conv1_out);
+    free(bp.d_image_grad);
+ 
 }
