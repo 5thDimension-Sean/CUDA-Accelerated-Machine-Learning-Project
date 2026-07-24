@@ -1217,4 +1217,4 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     With a training time this long, we can shorten it through optimization.
 
-    Now that the cnn optimization is written we can test
+    Now that the cnn optimization is written we can test. The new one should be a lot faster wit the training time.
