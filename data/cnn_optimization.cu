@@ -216,7 +216,7 @@ int main(){
             }
 
           loss += -logf(a.probs[label[s]] + 1e-8f);   
-          backward(img, label[s], &net, &a, &g);
+          backward(img, label[s], &net, &a, &g, & bp, d_loss);
           update(&net, &g, lr);
       }
       printf("epoch %d  loss = %.4f\n", epoch, loss / N);
