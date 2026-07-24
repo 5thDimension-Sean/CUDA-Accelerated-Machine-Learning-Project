@@ -31,7 +31,7 @@ A three-layer GPU computing stack:
 ├───────────────────────────────────────────────────────────┤
 │  CUDA KERNEL LIBRARY  (.cu files)                           │
 │  Neural-net operations as parallel GPU kernels:             │
-│  GEMM, Convolution, Activations, Pooling, BatchNorm         │
+│  GEMM, Convolution, Activations, Pooling, BatchNorm, FC     │
 ├───────────────────────────────────────────────────────────┤
 │  HARDWARE                                                   │
 │  GPU Streaming Multiprocessors executing warps of           │
