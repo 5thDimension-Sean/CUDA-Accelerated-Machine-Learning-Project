@@ -92,16 +92,16 @@ add_executable(mnist_cnn
   target_compile_definitions(mnist_cnn PRIVATE BUILD_AS_LIBRARY)
   target_include_directories(mnist_cnn PRIVATE network kernels)
 
-add_executable(mnist_cnn copy
-      data/mnist_cnn copy.cu
+add_executable(cnn_optimization
+      data/cnn_optimization.cu
       kernels/conv2d_mc.cu
       kernels/pooling.cu
       kernels/activations.cu
-      kernels/fc.cu
+      kernels/fc.cu 
       network/loss.cu
       network/optimizer.cu)
-  set_target_properties(mnist_cnn PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-  target_compile_definitions(mnist_cnn copy PRIVATE BUILD_AS_LIBRARY)
-  target_include_directories(mnist_cnn copy PRIVATE network kernels)
+  set_target_properties(cnn_optimization PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(cnn_optimization PRIVATE BUILD_AS_LIBRARY)
+  target_include_directories(cnn_optimization PRIVATE network kernels)
 
 # Uncomment each block as you reach that week.
