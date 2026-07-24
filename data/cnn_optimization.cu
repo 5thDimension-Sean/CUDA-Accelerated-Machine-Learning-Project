@@ -64,23 +64,37 @@ struct Acts {
 };
 
 
-void forward(const float *image, const Net *net, Acts *a){
-    dim3 grid(26,26,8);
-    int C_in=1,  C_out=8,  H=28, W=28, FH=3, FW=3;
-    conv2d_mc_forward<<<grid, (16,16,1)>>>(image, net->conv1_f, net->conv1_b, a->conv1_out, 1,8,28,28,3,3);
+struct Back {                      
+    float *dY;                         
+    float *d_pool2;                    
+    float *d_relu2, *d_conv2_out;      
+    float *d_pool1;                   
+    float *d_relu1, *d_conv1_out;    
+    float *d_image_grad;       
+};
+
+
+void forward(const float *d_image, const Net *net, Acts *a){
+    dim3 b2(16,16), b3(16,16,1);          // reusable block shapes
+
+    dim3 g_conv1((26+15)/16, (26+15)/16, 8);
+    conv2d_mc_forward<<<g_conv1, b3>>>(d_image, net->conv1_f, net->conv1_b, a->conv1_out, 1,8,28,28,3,3);
     relu_forward<<<(5408+255)/256, 256>>>(a->conv1_out, a->relu1_out, 5408);
-    maxPool2D<<<(13, 13, 8), (16, 16)>>>(a->relu1_out, a->pool1_out, a->argmax1, 26,26, 13,13, 2,2, 8);
-    conv2d_mc_forward(a->pool1_out, net->conv2_f, net->conv2_b, a->conv2_out, C_in=8, C_out=16, H=13, W=13, FH=3, FW=3);
-    relu_forward<<<(16*11*11+255)/256, 256>>>(a->conv2_out, a->relu2_out, 16*11*11);
-    maxPool2D<<<(1936+255)/256, 256>>>(a->relu2_out, a->pool2_out, a->argmax2, 11,11, 5,5, 2,2, 16);
-    int batch=1, in=400, out=10;
-    fc_forward_kernel<<<(1, 10), (16, 16)>>>(a->pool2_out, net->fc_W, net->fc_b, a->logits, batch, in, out);
-    float m = a->logits[0];
-    for (int c = 1; c < 10; ++c) if (a->logits[c] > m) m = a->logits[c];
-    float sum = 0.0f;
-    for (int c = 0; c < 10; ++c) { a->probs[c] = expf(a->logits[c] - m); sum += a->probs[c]; }
-    for (int c = 0; c < 10; ++c) a->probs[c] /= sum;
+
+    dim3 g_pool1((13+15)/16, (13+15)/16, 8);
+    maxPool2D<<<g_pool1, b2>>>(a->relu1_out, a->pool1_out, a->argmax1, 26,26, 13,13, 2,2, 8);
+
+    dim3 g_conv2((11+15)/16, (11+15)/16, 16);
+    conv2d_mc_forward<<<g_conv2, b3>>>(a->pool1_out, net->conv2_f, net->conv2_b, a->conv2_out, 8,16,13,13,3,3);
+    relu_forward<<<(1936+255)/256, 256>>>(a->conv2_out, a->relu2_out, 1936);
+
+    dim3 g_pool2((5+15)/16, (5+15)/16, 16);
+    maxPool2D<<<g_pool2, b2>>>(a->relu2_out, a->pool2_out, a->argmax2, 11,11, 5,5, 2,2, 16);
+
+    dim3 g_fc((1+15)/16, (10+15)/16);
+    fc_forward_kernel<<<g_fc, b2>>>(a->pool2_out, net->fc_W, net->fc_b, a->logits, 1,400,10);
 }
+
 
 
 void backward(const float *image, int label, const Net *net, const Acts *a, Grads *g){
