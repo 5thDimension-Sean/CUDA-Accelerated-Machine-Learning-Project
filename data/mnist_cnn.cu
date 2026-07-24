@@ -1,4 +1,10 @@
 #include "common.cuh"
+#include "conv2d_mc.cuh"
+#include "pooling.cuh"
+#include "activations.cuh"
+#include "fc.cuh"
+#include "loss.cuh"
+#include "optimizer.cuh"
 #include <cmath>
 #include <cstdlib>
 #include <chrono> 
