@@ -3,6 +3,38 @@
 #include <cstdlib>
 #include <chrono> 
 
+__global__ void conv2d_mc_forward(const float*, const float*, const float*, float*, int,int,int,int,int,int);
+__global__ void maxPool2D(const float*, float*, int*, int,int,int,int,int,int,int);
+__global__ void backMaxPool2D(const float*, const int*, float*, int,int,int);
+__global__ void conv2d_mc_backward_bias   (const float*, float*, int,int,int);
+__global__ void conv2d_mc_backward_weights (const float*, const float*, float*, int,int,int,int,int,int);
+__global__ void conv2d_mc_backward_input   (const float*, const float*, float*, int,int,int,int,int,int);
+__global__ void fc_forward_kernel         (const float*, const float*, const float*, float*, int,int,int);
+__global__ void fc_backward_weights_kernel(const float*, const float*, float*, int,int,int);
+__global__ void fc_backward_bias_kernel   (const float*, float*, int,int);
+__global__ void fc_backward_input_kernel  (const float*, const float*, float*, int,int,int);
+__global__ void sgd_kernel(float*, const float*, float, int);
+
+
+__global__ void relu_forward(const float* in, float* out, int n){
+    int i = blockIdx.x*blockDim.x + threadIdx.x;
+    if (i < n) out[i] = in[i] > 0.f ? in[i] : 0.f;
+}
+__global__ void relu_backward(const float* dOut, const float* preact, float* dIn, int n){
+    int i = blockIdx.x*blockDim.x + threadIdx.x;
+    if (i < n) dIn[i] = preact[i] > 0.f ? dOut[i] : 0.f;   // mask by pre-activation
+}
+
+__global__ void softmax_ce_grad(const float* logits, float* probs, float* dY, int label, float* loss){
+    float m = logits[0];
+    for (int c=1;c<10;++c) if (logits[c] > m) m = logits[c];
+    float sum = 0.f;
+    for (int c=0;c<10;++c){ probs[c] = expf(logits[c]-m); sum += probs[c]; }
+    for (int c=0;c<10;++c) probs[c] /= sum;
+    for (int c=0;c<10;++c) dY[c] = probs[c] - (c==label ? 1.f : 0.f);
+    atomicAdd(loss, -logf(probs[label] + 1e-8f));
+}
+
 void load_bin(const char *path, float *dst, size_t count){
     FILE *f = fopen(path, "rb");
     if (!f) { printf("could not open %s\n", path); exit(1); }
