@@ -7,6 +7,7 @@
 #include "optimizer.cuh"
 #include <cmath>
 #include <cstdlib>
+#include <chrono> 
 
 void load_bin(const char *path, float *dst, size_t count){
     FILE *f = fopen(path, "rb");
@@ -130,8 +131,8 @@ int main(){
     a.argmax2   = (int*)  malloc(400  * sizeof(int));       // ints!
     a.logits    = (float*)malloc(10   * sizeof(float));
     a.probs     = (float*)malloc(10   * sizeof(float));  
-    const int N = 1000;     
-    const int EPOCHS = 20;
+    const int N = 10000;     
+    const int EPOCHS = 10;
     float lr = 0.001f;
     float *X     = (float*)malloc((size_t)N*784 * sizeof(float));
     float *Y     = (float*)malloc((size_t)N*10  * sizeof(float));   
@@ -157,6 +158,7 @@ int main(){
         for (int c = 1; c < 10; ++c) if (Y[s*10+c] > Y[s*10+t]) t = c;
         label[s] = t;
     }
+    auto t0 = std::chrono::high_resolution_clock::now();
     for (int epoch = 0; epoch < EPOCHS; ++epoch){
         float loss = 0.0f;
       for (int s = 0; s < N; ++s) {
@@ -174,6 +176,10 @@ int main(){
       }
       printf("epoch %d  loss = %.4f\n", epoch, loss / N);
     }
+    auto t1 = std::chrono::high_resolution_clock::now();
+    printf("training time: %.2f s  (%.2f ms/sample)\n",
+           std::chrono::duration<double>(t1 - t0).count(),
+           std::chrono::duration<double, std::milli>(t1 - t0).count() / (EPOCHS * N));
     int correct = 0;
     for (int s = 0; s < N; ++s) {
         forward(&X[s*784], &net, &a);
@@ -183,7 +189,7 @@ int main(){
     }
     printf("train accuracy = %.2f%% (%d/%d)\n", 100.0f*correct/N, correct, N);
 
-    const int NT = 1000;
+    const int NT = 10000;
     float *Xt = (float*)malloc((size_t)NT*784 * sizeof(float));
     float *Yt = (float*)malloc((size_t)NT*10  * sizeof(float));
     int   *labelt = (int*)malloc(NT * sizeof(int));
