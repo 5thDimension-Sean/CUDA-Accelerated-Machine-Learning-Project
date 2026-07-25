@@ -102,4 +102,14 @@ set_target_properties(cnn_optimization PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_definitions(cnn_optimization PRIVATE BUILD_AS_LIBRARY)
 target_include_directories(cnn_optimization PRIVATE network kernels)
 
+add_executable(mnist_detect
+    detection/mnist_detect.cu
+    kernels/conv2d_mc.cu
+    kernels/pooling.cu
+    kernels/fc.cu
+    network/optimizer.cu)
+set_target_properties(mnist_detect PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+target_compile_definitions(mnist_detect PRIVATE BUILD_AS_LIBRARY)
+target_include_directories(mnist_detect PRIVATE network kernels)
+
 # Uncomment each block as you reach that week.
