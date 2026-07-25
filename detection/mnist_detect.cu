@@ -162,10 +162,16 @@ int main(){
     CUDA_CHECK(cudaMemcpy(net.fc_W,    h_fW,  276480*sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(net.fc_b,    h_fb,  240*sizeof(float),    cudaMemcpyHostToDevice));
 
-
-
     const int N = 10000;
     const int EPOCHS = 10;
     float lr = 0.001f;
+    float *X = (float*)malloc((size_t)N*4096 * sizeof(float)); 
+    float *T = (float*)malloc((size_t)N*240  * sizeof(float));  
+
+    load_bin("det_X.bin", X, (size_t)N*4096);
+    load_bin("det_Y.bin", T, (size_t)N*240);
+    
+    CUDA_CHECK(cudaMemcpy(d_X, X, (size_t)N*4096 * sizeof(float), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_T, T, (size_t)N*240  * sizeof(float), cudaMemcpyHostToDevice));
     return 0;
 }
