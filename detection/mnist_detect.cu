@@ -3,7 +3,13 @@
 #include <cstdlib>
 #include <cstdio>
 #include <chrono>
-
+void load_bin(const char *path, float *dst, size_t count){
+    FILE *f = fopen(path, "rb");
+    if (!f) { printf("could not open %s\n", path); exit(1); }
+    size_t got = fread(dst, sizeof(float), count, f);
+    if (got != count) { printf("short read on %s\n", path); exit(1); }
+    fclose(f);
+}
 __global__ void conv2d_mc_forward(const float*, const float*, const float*, float*, int,int,int,int,int,int);
 __global__ void maxPool2D(const float*, float*, int*, int,int,int,int,int,int,int);
 __global__ void backMaxPool2D(const float*, const int*, float*, int,int,int);
@@ -88,7 +94,6 @@ int main(){
     CUDA_CHECK(cudaMalloc(&bp.d_relu1,     30752 * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&bp.d_conv1_out, 30752 * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&bp.d_image_grad, 4096 * sizeof(float)));
-
     CUDA_CHECK(cudaMalloc(&net.conv1_f, 72     * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&net.conv1_b, 8      * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&net.conv2_f, 1152   * sizeof(float)));
@@ -99,8 +104,6 @@ int main(){
     CUDA_CHECK(cudaMalloc(&net.conv3_b, 32     * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&net.fc_W,    276480 * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&net.fc_b,    240    * sizeof(float)));
-
-    // ---- grads (Grads g) — same sizes as weights ----
     CUDA_CHECK(cudaMalloc(&g.conv1_f, 72     * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&g.conv1_b, 8      * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&g.conv2_f, 1152   * sizeof(float)));
@@ -109,8 +112,6 @@ int main(){
     CUDA_CHECK(cudaMalloc(&g.conv3_b, 32     * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&g.fc_W,    276480 * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&g.fc_b,    240    * sizeof(float)));
-
-    // ---- activations (Acts a) ----
     CUDA_CHECK(cudaMalloc(&a.conv1_out, 30752 * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&a.relu1_out, 30752 * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&a.pool1_out, 7688  * sizeof(float)));
@@ -125,7 +126,6 @@ int main(){
     CUDA_CHECK(cudaMalloc(&a.argmax3,   1152  * sizeof(int)));
     CUDA_CHECK(cudaMalloc(&a.preds,     240   * sizeof(float)));
 
-    // ---- loss + dataset (uploaded once) ----
     int N = 10000;
     int EPOCHS = 20;
     float lr = 0.001f;
