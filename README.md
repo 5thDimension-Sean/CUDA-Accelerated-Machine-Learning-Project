@@ -172,7 +172,8 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 | `python data\prepare_mnist_test.py` | second MNIST testing dataset |
 | `& ".\build\bin\mnist_train.exe"` | Trains an MLP (784 → 128 → 10, ReLU + softmax, cross-entropy) on MNIST digits, then reports **train vs. test accuracy** on held-out data. |
 | `& ".\build\bin\conv2d_mc.exe"` | Multi-channel 2D convolution, forward **and** backward — the CNN building block. Gradients verified against finite differences. |
-| `& ".\build\bin\mnist_cnn.exe"` | End-to-end CNN on MNIST (conv → pool → conv → pool → FC), fully hand-written forward + backprop. Reports train vs. test accuracy — **97.44% test**, beating the MLP baseline. |
+| `& ".\build\bin\mnist_cnn.exe"` | End-to-end CNN on MNIST (conv → pool → conv → pool → FC), fully hand-written forward + backprop. Reports train vs. test accuracy: **97.44% test**, beating the MLP baseline. |
+| `& ".\build\bin\cnn_optimization.exe"` | Better CNN on Mnist with faster training times |
 
 ---
 
