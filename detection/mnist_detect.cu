@@ -134,6 +134,35 @@ int main(){
     float *d_T;    CUDA_CHECK(cudaMalloc(&d_T, (size_t)N*240  * sizeof(float)));
     float *d_loss;
     CUDA_CHECK(cudaMalloc(&d_loss, sizeof(float)));
+    float *h_c1f=(float*)malloc(72*sizeof(float)),     *h_c1b=(float*)malloc(8*sizeof(float));
+    float *h_c2f=(float*)malloc(1152*sizeof(float)),   *h_c2b=(float*)malloc(16*sizeof(float));
+    float *h_c3f=(float*)malloc(4608*sizeof(float)),   *h_c3b=(float*)malloc(32*sizeof(float));
+    float *h_fW =(float*)malloc(276480*sizeof(float)), *h_fb =(float*)malloc(240*sizeof(float));
+    //init
+    srand(42);
+    float s1 = sqrtf(2.0f/9.0f);      // conv1: fan_in = 1*3*3 = 9
+    for (int i=0;i<72;  ++i) h_c1f[i]=((float)rand()/RAND_MAX*2.0f-1.0f)*s1;
+    for (int i=0;i<8;   ++i) h_c1b[i]=0.0f;
+    float s2 = sqrtf(2.0f/72.0f);     // conv2: fan_in = 8*3*3 = 72
+    for (int i=0;i<1152;++i) h_c2f[i]=((float)rand()/RAND_MAX*2.0f-1.0f)*s2;
+    for (int i=0;i<16;  ++i) h_c2b[i]=0.0f;
+    float s3 = sqrtf(2.0f/144.0f);    // conv3: fan_in = 16*3*3 = 144
+    for (int i=0;i<4608;++i) h_c3f[i]=((float)rand()/RAND_MAX*2.0f-1.0f)*s3;
+    for (int i=0;i<32;  ++i) h_c3b[i]=0.0f;
+    float s4 = sqrtf(2.0f/1152.0f);   // fc: fan_in = 1152
+    for (int i=0;i<276480;++i) h_fW[i]=((float)rand()/RAND_MAX*2.0f-1.0f)*s4;
+    for (int i=0;i<240; ++i) h_fb[i]=0.0f; 
+    //upload
+    CUDA_CHECK(cudaMemcpy(net.conv1_f, h_c1f, 72*sizeof(float),     cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(net.conv1_b, h_c1b, 8*sizeof(float),      cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(net.conv2_f, h_c2f, 1152*sizeof(float),   cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(net.conv2_b, h_c2b, 16*sizeof(float),     cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(net.conv3_f, h_c3f, 4608*sizeof(float),   cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(net.conv3_b, h_c3b, 32*sizeof(float),     cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(net.fc_W,    h_fW,  276480*sizeof(float), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(net.fc_b,    h_fb,  240*sizeof(float),    cudaMemcpyHostToDevice));
+
+
 
     const int N = 10000;
     const int EPOCHS = 10;
