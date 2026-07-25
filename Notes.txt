@@ -1236,3 +1236,8 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     train accuracy = 98.03% (9803/10000)
     TEST accuracy = 96.99% (9699/10000)
     Same results with 97.52% decrease in training time.
+
+
+    Next: detection via Yolo loss + gradient. Then, we implment NMS in cuda and continue from there. 
+
+    The mnist detect will be the backbone + head + YOLO loss forward/backward.
