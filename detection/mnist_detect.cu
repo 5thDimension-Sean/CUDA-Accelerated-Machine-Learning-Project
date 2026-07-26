@@ -86,11 +86,29 @@ struct Back {
 };
 
 void forward(const float* d_image, const Net * net, const Acts * a){
+    //conv, relu, max...3 iterations forward fc
 
+    conv2d_mc_forward<<<>>>();
+    relu_forward<<<>>>();
+    maxPool2D<<<>>>();
+    //2
+    conv2d_mc_forward<<<>>>();
+    relu_forward<<<>>>();
+    maxPool2D<<<>>>();
+    //3
+    conv2d_mc_forward<<<>>>();
+    relu_forward<<<>>>();
+    maxPool2D<<<>>>();
 }
 
 void backward(const float* d_image, const float* d_target, const Net * net, const Acts * a, const Grads * g, const Back * bp, float* d_loss){
-
+     detection_loss_grad<<<1,1>>>(a->preds, d_target, bp->dY, d_loss, 4, 10, 5.0f, 0.5f);
+     //weight bias input... backamx relu 4x 3, 2, 1
+    dim3 g_fcw((1152+15)/16,(240+15)/16);   // grid.x=in(1152), grid.y=out(240)
+    dim3 g_fcx((1+15)/16,   (1152+15)/16);  // grid.x=batch(1), grid.y=in(1152)
+    fc_backward_weights_kernel<<<g_fcw,b2>>>(bp->dY, a->pool3_out, g->fc_W, 1,1152,240);
+    fc_backward_bias_kernel   <<<(240+15)/16,16>>>(bp->dY, g->fc_b, 1,240);
+    fc_backward_input_kernel  <<<g_fcx,b2>>>(bp->dY, net->fc_W, bp->d_pool3, 1,1152,240);
 }
 
 void update(Net *net, const Grads *g, float lr){
