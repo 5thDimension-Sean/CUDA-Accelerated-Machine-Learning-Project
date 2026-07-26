@@ -34,7 +34,23 @@ __global__ void relu_backward(const float* dOut, const float* preact, float* dIn
 
 
 __global__ void detection_loss_grad(const float* pred, const float* target, float* dY, float* loss, int S, int C, float lam_coord, float lam_noobj){
-
+    int vals = 5+ C; //should be 15
+    int cells = S*S; //16
+    float total = 0.0f;
+    for(int cell = 0; cell <cells; ++cells){
+        int base = cell * vals;
+        bool has = target[base+0] > 0.5f;
+        for(int k = 0; k < vals; ++k){
+            float w; 
+            if(k==0) w = has ? 1.0f : lam_noobj; //confidence
+            else if(k>=1 && k<=4) w = has ? lam_coord : 0.0f; //bbox
+            else w = has ? 1.0f : 0.0f; //class
+            float diff = pred[base+k] - target[base+k];
+            total += w * diff * diff;
+            dY[base+k] = w * diff;
+        }
+    }
+    atomicAdd(loss, total);
 }
 
 struct Net {
