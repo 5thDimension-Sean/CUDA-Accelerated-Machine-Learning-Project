@@ -172,6 +172,9 @@ int main(){
 
     CUDA_CHECK(cudaMemcpy(d_X, X, (size_t)N*4096 * sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_T, T, (size_t)N*240  * sizeof(float), cudaMemcpyHostToDevice));
+
+    float *META = (float*)malloc((size_t)N*5 * sizeof(float));   
+    load_bin("det_meta.bin", META, (size_t)N*5);
     for(int s = 0; s<N; ++s){
         const float *d_img    = d_X + (size_t)s*4096;
         const float *d_target = d_T + (size_t)s*240;
