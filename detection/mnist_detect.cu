@@ -175,12 +175,18 @@ int main(){
 
     float *META = (float*)malloc((size_t)N*5 * sizeof(float));   
     load_bin("det_meta.bin", META, (size_t)N*5);
-    for(int s = 0; s<N; ++s){
-        const float *d_img    = d_X + (size_t)s*4096;
-        const float *d_target = d_T + (size_t)s*240;
-        forward(d_img, &net, &a);
-        backward(d_img, d_target, &net, &a, &g, &bp, d_loss);   // target ptr, not int
-        update(&net, &g, lr);
+    for (int epoch = 0; epoch < EPOCHS; ++epoch){
+        CUDA_CHECK(cudaMemset(d_loss, 0, sizeof(float)));    
+        for (int s = 0; s < N; ++s){
+            const float *d_img    = d_X + (size_t)s*4096;
+            const float *d_target = d_T + (size_t)s*240;
+            forward(d_img, &net, &a);
+            backward(d_img, d_target, &net, &a, &g, &bp, d_loss);
+            update(&net, &g, lr);
+        }
+        float h_loss = 0.0f;
+        CUDA_CHECK(cudaMemcpy(&h_loss, d_loss, sizeof(float), cudaMemcpyDeviceToHost));
+        printf("epoch %d  loss = %.4f\n", epoch, h_loss / N);
     }
      cudaFree(d_X); cudaFree(d_T); cudaFree(d_loss);
 
