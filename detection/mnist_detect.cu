@@ -114,8 +114,59 @@ float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float
     return intersection / union_area;
 }
 
-int eval_one(const float *h_preds, const float *meta, float *iout_out, int *pred_class_out){
+int eval_one(const float *h_preds, const float *meta, float *iou_out, int *pred_class_out) {
+    int best_cell = 0;
+    float max_conf = h_preds[0 * 15 + 0];
 
+    for (int cell = 1; cell < 16; ++cell) {
+        float conf = h_preds[cell * 15 + 0];
+        if (conf > max_conf) {
+            max_conf = conf;
+            best_cell = cell;
+        }
+    }
+
+    int gx = best_cell % 4;
+    int gy = best_cell / 4;
+
+    int base = best_cell * 15;
+    float x = h_preds[base + 1];
+    float y = h_preds[base + 2];
+    float w = h_preds[base + 3];
+    float h = h_preds[base + 4];
+
+    float cx = (gx + x) * 16.0f;
+    float cy = (gy + y) * 16.0f;
+    float pw = w * 64.0f;
+    float ph = h * 64.0f;
+
+    int pred_class = 0;
+    float max_class_val = h_preds[base + 5];
+
+    for (int c = 1; c < 10; c++) {
+        float class_val = h_preds[base + 5 + c];
+        if (class_val > max_class_val) {
+            max_class_val = class_val;
+            pred_class = c;
+        }
+    }
+
+    float gcx = meta[0];
+    float gcy = meta[1];
+    float gw  = meta[2];
+    float gh  = meta[3];
+    int glabel = (int)meta[4];
+
+    float iou = iou_xywh(cx, cy, pw, ph, gcx, gcy, gw, gh);
+
+    if (iou_out != NULL) {
+        *iou_out = iou;
+    }
+    if (pred_class_out != NULL) {
+        *pred_class_out = pred_class;
+    }
+
+    return (pred_class == glabel && iou > 0.5f) ? 1 : 0;
 }
 
 void forward(const float* d_image, const Net * net, const Acts * a){
