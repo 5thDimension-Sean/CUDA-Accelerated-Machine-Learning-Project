@@ -1243,4 +1243,23 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     The mnist detect will be the backbone + head + YOLO loss forward/backward.
     This detector will use around 282,608 parameters. 
 
-    
+    epoch 0  loss = 1.5689
+    epoch 1  loss = 1.2409
+    epoch 2  loss = 1.1951
+    epoch 3  loss = 1.1615
+    epoch 4  loss = 1.1318
+    epoch 5  loss = 1.1036
+    epoch 6  loss = 1.0758
+    epoch 7  loss = 1.0480
+    epoch 8  loss = 1.0206
+    epoch 9  loss = 0.9939
+    epoch 10  loss = 0.9683
+    epoch 11  loss = 0.9439
+    epoch 12  loss = 0.9207
+    epoch 13  loss = 0.8985
+    epoch 14  loss = 0.8773
+    epoch 15  loss = 0.8570
+    epoch 16  loss = 0.8374
+    epoch 17  loss = 0.8186
+    epoch 18  loss = 0.8005
+    epoch 19  loss = 0.7831
