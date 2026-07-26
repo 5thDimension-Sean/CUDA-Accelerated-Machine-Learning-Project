@@ -263,7 +263,8 @@ int main(){
 
     CUDA_CHECK(cudaMemcpy(d_X, X, (size_t)N*4096 * sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_T, T, (size_t)N*240  * sizeof(float), cudaMemcpyHostToDevice));
-
+    float h_preds[240];
+    int cor = 0, class_ok = 0; float iou_sum = 0.0f;
     float *META = (float*)malloc((size_t)N*5 * sizeof(float));   
     load_bin("det_meta.bin", META, (size_t)N*5);
     for (int epoch = 0; epoch < EPOCHS; ++epoch){
@@ -279,6 +280,17 @@ int main(){
         CUDA_CHECK(cudaMemcpy(&h_loss, d_loss, sizeof(float), cudaMemcpyDeviceToHost));
         printf("epoch %d  loss = %.4f\n", epoch, h_loss / N);
     }
+    float h_preds[240];
+    int correct = 0, class_ok = 0; float iou_sum = 0.0f;
+    for (int s = 0; s < N; ++s){
+        forward(d_X + (size_t)s*4096, &net, &a);
+        cudaMemcpy(h_preds, a.preds, 240*sizeof(float), cudaMemcpyDeviceToHost);
+        float iou; int pc;
+        correct  += eval_one(h_preds, &META[s*5], &iou, &pc);
+        iou_sum  += iou;
+        class_ok += (pc == (int)META[s*5+4]);
+    }
+    printf("detection acc = %.2f%%   mean IoU = %.3f   class acc = %.2f%%\n", 100.0f*correct/N, iou_sum/N, 100.0f*class_ok/N);
      cudaFree(d_X); cudaFree(d_T); cudaFree(d_loss);
 
     cudaFree(net.conv1_f); cudaFree(net.conv1_b); cudaFree(net.conv2_f); cudaFree(net.conv2_b);
