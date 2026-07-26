@@ -49,3 +49,6 @@ mnist_test_y.bin
 det_meta.bin
 det_X.bin
 det_Y.bin
+det_test_meta.bin
+det_test_Y.bin
+det_test_X.bin
