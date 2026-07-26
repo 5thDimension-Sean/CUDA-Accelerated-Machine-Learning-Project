@@ -69,15 +69,15 @@ struct Back {
     float *d_relu3, *d_conv3_out;          
 };
 
-void forward(float* d_image, Net net, Acts a){
+void forward(const float* d_image, const Net * net, const Acts * a){
 
 }
 
-void backward(float* d_image, const float* d_target, const Net& net, const Acts& a, const Grads& g, const Back& bp, float* d_loss){
+void backward(const float* d_image, const float* d_target, const Net * net, const Acts * a, const Grads * g, const Back * bp, float* d_loss){
 
 }
 
-void update(Net net, Grads g, int lr){
+void update(Net *net, const Grads *g, float lr){
 
 }
 
@@ -132,7 +132,6 @@ int main(){
     float *d_loss; CUDA_CHECK(cudaMalloc(&d_loss, sizeof(float)));
     float *d_X;    CUDA_CHECK(cudaMalloc(&d_X, (size_t)N*4096 * sizeof(float)));
     float *d_T;    CUDA_CHECK(cudaMalloc(&d_T, (size_t)N*240  * sizeof(float)));
-    float *d_loss;
     CUDA_CHECK(cudaMalloc(&d_loss, sizeof(float)));
     float *h_c1f=(float*)malloc(72*sizeof(float)),     *h_c1b=(float*)malloc(8*sizeof(float));
     float *h_c2f=(float*)malloc(1152*sizeof(float)),   *h_c2b=(float*)malloc(16*sizeof(float));
@@ -170,8 +169,37 @@ int main(){
 
     load_bin("det_X.bin", X, (size_t)N*4096);
     load_bin("det_Y.bin", T, (size_t)N*240);
-    
+
     CUDA_CHECK(cudaMemcpy(d_X, X, (size_t)N*4096 * sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_T, T, (size_t)N*240  * sizeof(float), cudaMemcpyHostToDevice));
+    for(int s = 0; s<N; ++s){
+        const float *d_img    = d_X + (size_t)s*4096;
+        const float *d_target = d_T + (size_t)s*240;
+        forward(d_img, &net, &a);
+        backward(d_img, d_target, &net, &a, &g, &bp, d_loss);   // target ptr, not int
+        update(&net, &g, lr);
+    }
+     cudaFree(d_X); cudaFree(d_T); cudaFree(d_loss);
+
+    cudaFree(net.conv1_f); cudaFree(net.conv1_b); cudaFree(net.conv2_f); cudaFree(net.conv2_b);
+    cudaFree(net.conv3_f); cudaFree(net.conv3_b); cudaFree(net.fc_W);    cudaFree(net.fc_b);
+
+    cudaFree(g.conv1_f);   cudaFree(g.conv1_b);   cudaFree(g.conv2_f);   cudaFree(g.conv2_b);
+    cudaFree(g.conv3_f);   cudaFree(g.conv3_b);   cudaFree(g.fc_W);      cudaFree(g.fc_b);
+
+    cudaFree(a.conv1_out); cudaFree(a.relu1_out); cudaFree(a.pool1_out); cudaFree(a.argmax1);
+    cudaFree(a.conv2_out); cudaFree(a.relu2_out); cudaFree(a.pool2_out); cudaFree(a.argmax2);
+    cudaFree(a.conv3_out); cudaFree(a.relu3_out); cudaFree(a.pool3_out); cudaFree(a.argmax3);
+    cudaFree(a.preds);
+
+    cudaFree(bp.dY);
+    cudaFree(bp.d_pool3); cudaFree(bp.d_relu3); cudaFree(bp.d_conv3_out);
+    cudaFree(bp.d_pool2); cudaFree(bp.d_relu2); cudaFree(bp.d_conv2_out);
+    cudaFree(bp.d_pool1); cudaFree(bp.d_relu1); cudaFree(bp.d_conv1_out);
+    cudaFree(bp.d_image_grad);
+
+    free(X); free(T); free(META);
+    free(h_c1f); free(h_c1b); free(h_c2f); free(h_c2b);
+    free(h_c3f); free(h_c3b); free(h_fW);  free(h_fb);
     return 0;
 }
