@@ -37,7 +37,7 @@ __global__ void detection_loss_grad(const float* pred, const float* target, floa
     int vals = 5+ C; //should be 15
     int cells = S*S; //16
     float total = 0.0f;
-    for(int cell = 0; cell <cells; ++cells){
+    for(int cell = 0; cell <cells; ++cell){
         int base = cell * vals;
         bool has = target[base+0] > 0.5f;
         for(int k = 0; k < vals; ++k){
@@ -93,7 +93,7 @@ void forward(const float* d_image, const Net * net, const Acts * a){
     dim3 relu1Grid(121);
     dim3 relu1Block(256);
     relu_forward<<<relu1Grid, relu1Block>>>(a->conv1_out, a->relu1_out, 30752);
-    dim3 pool1Grid(2, 2, 16);
+    dim3 pool1Grid(2, 2, 8);
     dim3 pool1Block(16, 16);
     maxPool2D<<<pool1Grid, pool1Block>>>(a->relu1_out, a->pool1_out, a->argmax1, 62,62, 31,31, 2,2, 8);
     //2
@@ -215,7 +215,7 @@ int main(){
 
     int N = 10000;
     int EPOCHS = 20;
-    float lr = 0.001f;
+    float lr = 0.0005f;
     float *d_loss; CUDA_CHECK(cudaMalloc(&d_loss, sizeof(float)));
     float *d_X;    CUDA_CHECK(cudaMalloc(&d_X, (size_t)N*4096 * sizeof(float)));
     float *d_T;    CUDA_CHECK(cudaMalloc(&d_T, (size_t)N*240  * sizeof(float)));
@@ -247,9 +247,6 @@ int main(){
     CUDA_CHECK(cudaMemcpy(net.fc_W,    h_fW,  276480*sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(net.fc_b,    h_fb,  240*sizeof(float),    cudaMemcpyHostToDevice));
 
-    const int N = 10000;
-    const int EPOCHS = 10;
-    float lr = 0.001f;
     float *X = (float*)malloc((size_t)N*4096 * sizeof(float)); 
     float *T = (float*)malloc((size_t)N*240  * sizeof(float));  
 
