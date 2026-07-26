@@ -94,7 +94,14 @@ void backward(const float* d_image, const float* d_target, const Net * net, cons
 }
 
 void update(Net *net, const Grads *g, float lr){
-
+    sgd_kernel<<<(72+255)/256,    256>>>(net->conv1_f, g->conv1_f, lr, 72);
+    sgd_kernel<<<(8+255)/256,     256>>>(net->conv1_b, g->conv1_b, lr, 8);
+    sgd_kernel<<<(1152+255)/256,  256>>>(net->conv2_f, g->conv2_f, lr, 1152);
+    sgd_kernel<<<(16+255)/256,    256>>>(net->conv2_b, g->conv2_b, lr, 16);
+    sgd_kernel<<<(4608+255)/256,  256>>>(net->conv3_f, g->conv3_f, lr, 4608);
+    sgd_kernel<<<(32+255)/256,    256>>>(net->conv3_b, g->conv3_b, lr, 32);
+    sgd_kernel<<<(276480+255)/256,256>>>(net->fc_W,    g->fc_W,    lr, 276480);
+    sgd_kernel<<<(240+255)/256,   256>>>(net->fc_b,    g->fc_b,    lr, 240);
 }
 
 int main(){
