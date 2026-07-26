@@ -1242,3 +1242,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
 
     The mnist detect will be the backbone + head + YOLO loss forward/backward.
     This detector will use around 282,608 parameters. 
+
+    
