@@ -170,7 +170,7 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 | `python benchmarks\xor_loss_plot.py` | Plots the XOR training-loss curve. |
 | `python data\prepare_mnist.py` | Preprocesses the MNIST CSV files into normalized `float32` binaries (train + test sets). |
 | `python data\prepare_mnist_test.py` | second MNIST testing dataset |
-| `python data\prepare_mnist_test.py` | MNIST for image detection dataset |
+| `python data\prepare_mnist_detection.py` | MNIST for image detection dataset |
 | `& ".\build\bin\mnist_train.exe"` | Trains an MLP (784 → 128 → 10, ReLU + softmax, cross-entropy) on MNIST digits, then reports **train vs. test accuracy** on held-out data. |
 | `& ".\build\bin\conv2d_mc.exe"` | Multi-channel 2D convolution, forward **and** backward — the CNN building block. Gradients verified against finite differences. |
 | `& ".\build\bin\mnist_cnn.exe"` | End-to-end CNN on MNIST (conv → pool → conv → pool → FC), fully hand-written forward + backprop. Reports train vs. test accuracy: **97.44% test**, beating the MLP baseline. |
