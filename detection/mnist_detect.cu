@@ -214,8 +214,8 @@ int main(){
     CUDA_CHECK(cudaMalloc(&a.preds,     240   * sizeof(float)));
 
     int N = 10000;
-    int EPOCHS = 20;
-    float lr = 0.0005f;
+    int EPOCHS = 50;
+    float lr = 0.003f;
     float *d_loss; CUDA_CHECK(cudaMalloc(&d_loss, sizeof(float)));
     float *d_X;    CUDA_CHECK(cudaMalloc(&d_X, (size_t)N*4096 * sizeof(float)));
     float *d_T;    CUDA_CHECK(cudaMalloc(&d_T, (size_t)N*240  * sizeof(float)));
