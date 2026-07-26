@@ -85,8 +85,31 @@ struct Back {
     float *d_relu3, *d_conv3_out;          
 };
 
-static float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh){
+float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) {
+    float leftA = ax - aw / 2.0f;
+    float rightA = ax + aw / 2.0f;
+    float topA = ay - ah / 2.0f;
+    float botA = ay + ah / 2.0f;
 
+    float leftB = bx - bw / 2.0f;
+    float rightB = bx + bw / 2.0f;
+    float topB = by - bh / 2.0f;
+    float botB = by + bh / 2.0f;
+
+    // Overlap width and height (fixed the typo max(leftA, leftA) to max(leftA, leftB))
+    float w_overlap = std::max(0.0f, std::min(rightA, rightB) - std::max(leftA, leftB));
+    float h_overlap = std::max(0.0f, std::min(botA, botB) - std::max(topA, topB));
+
+    float intersection = w_overlap * h_overlap;
+    float areaA = aw * ah;
+    float areaB = bw * bh;
+    float union_area = areaA + areaB - intersection;
+
+    if (union_area <= 0.0f) {
+        return 0.0f;
+    }
+
+    return intersection / union_area;
 }
 
 int eval_one(const float *h_preds, const float *meta, float *iout_out, int *pred_class_out){
