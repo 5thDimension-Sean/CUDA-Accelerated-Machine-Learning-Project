@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <chrono>
+#include <algorithm>
+
 void load_bin(const char *path, float *dst, size_t count){
     FILE *f = fopen(path, "rb");
     if (!f) { printf("could not open %s\n", path); exit(1); }
