@@ -101,8 +101,6 @@ int main(){
     CUDA_CHECK(cudaMalloc(&net.conv3_f, 4608   * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&net.conv3_b, 32     * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&net.fc_W,    276480 * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&net.conv3_b, 32     * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&net.fc_W,    276480 * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&net.fc_b,    240    * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&g.conv1_f, 72     * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&g.conv1_b, 8      * sizeof(float)));
@@ -132,7 +130,6 @@ int main(){
     float *d_loss; CUDA_CHECK(cudaMalloc(&d_loss, sizeof(float)));
     float *d_X;    CUDA_CHECK(cudaMalloc(&d_X, (size_t)N*4096 * sizeof(float)));
     float *d_T;    CUDA_CHECK(cudaMalloc(&d_T, (size_t)N*240  * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_loss, sizeof(float)));
     float *h_c1f=(float*)malloc(72*sizeof(float)),     *h_c1b=(float*)malloc(8*sizeof(float));
     float *h_c2f=(float*)malloc(1152*sizeof(float)),   *h_c2b=(float*)malloc(16*sizeof(float));
     float *h_c3f=(float*)malloc(4608*sizeof(float)),   *h_c3b=(float*)malloc(32*sizeof(float));
