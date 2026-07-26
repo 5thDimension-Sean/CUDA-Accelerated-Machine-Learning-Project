@@ -87,28 +87,76 @@ struct Back {
 
 void forward(const float* d_image, const Net * net, const Acts * a){
     //conv, relu, max...3 iterations forward fc
-
-    conv2d_mc_forward<<<>>>();
-    relu_forward<<<>>>();
-    maxPool2D<<<>>>();
+    dim3 conv1grid(4, 4, 8);
+    dim3 conv1block(16, 16, 1);
+    conv2d_mc_forward<<<conv1grid, conv1block>>>(d_image, net->conv1_f, net->conv1_b, a->conv1_out, 1,8,64,64,3,3);
+    dim3 relu1Grid(121);
+    dim3 relu1Block(256);
+    relu_forward<<<relu1Grid, relu1Block>>>(a->conv1_out, a->relu1_out, 30752);
+    dim3 pool1Grid(2, 2, 16);
+    dim3 pool1Block(16, 16);
+    maxPool2D<<<pool1Grid, pool1Block>>>(a->relu1_out, a->pool1_out, a->argmax1, 62,62, 31,31, 2,2, 8);
     //2
-    conv2d_mc_forward<<<>>>();
-    relu_forward<<<>>>();
-    maxPool2D<<<>>>();
+    dim3 conv2grid(2, 2, 16);
+    dim3 conv2block(16, 16, 1);
+    conv2d_mc_forward<<<conv2grid, conv2block>>>(a->pool1_out, net->conv2_f, net->conv2_b, a->conv2_out, 8,16,31,31,3,3);
+    dim3 relu2Grid(53);
+    dim3 relu2Block(256);
+    relu_forward<<<relu2Grid, relu2Block>>>(a->conv2_out, a->relu2_out, 13456);
+    dim3 pool2Grid(1, 1, 16);
+    dim3 pool2Block(16, 16);
+    maxPool2D<<<pool2Grid, pool2Block>>>(a->relu2_out, a->pool2_out, a->argmax2, 29,29, 14,14, 2,2, 16);
     //3
-    conv2d_mc_forward<<<>>>();
-    relu_forward<<<>>>();
-    maxPool2D<<<>>>();
+    dim3 conv3Grid(1, 1, 32);
+    dim3 conv3Block(16, 16, 1);
+    conv2d_mc_forward<<<conv3Grid, conv3Block>>>(a->pool2_out, net->conv3_f, net->conv3_b, a->conv3_out, 16,32,14,14,3,3);
+    dim3 relu3Grid(18);
+    dim3 relu3Block(256);
+    relu_forward<<<relu3Grid, relu3Block>>>(a->conv3_out, a->relu3_out, 4608);
+    dim3 pool3Grid(1, 1, 32);
+    dim3 pool3Block(16, 16);
+    maxPool2D<<<pool3Grid, pool3Block>>>(a->relu3_out, a->pool3_out, a->argmax3, 12,12, 6,6, 2,2, 32);
+    dim3 fcForwardGrid(1, 15);
+    dim3 fcForwardBlock(16, 16);
+    fc_forward_kernel<<<fcForwardGrid, fcForwardBlock>>>(a->pool3_out, net->fc_W, net->fc_b, a->preds, 1,1152,240);
 }
 
 void backward(const float* d_image, const float* d_target, const Net * net, const Acts * a, const Grads * g, const Back * bp, float* d_loss){
-     detection_loss_grad<<<1,1>>>(a->preds, d_target, bp->dY, d_loss, 4, 10, 5.0f, 0.5f);
-     //weight bias input... backamx relu 4x 3, 2, 1
+ dim3 b2(16,16), b3(16,16,1);
+    detection_loss_grad<<<1,1>>>(a->preds, d_target, bp->dY, d_loss, 4, 10, 5.0f, 0.5f);
+
     dim3 g_fcw((1152+15)/16,(240+15)/16);   // grid.x=in(1152), grid.y=out(240)
     dim3 g_fcx((1+15)/16,   (1152+15)/16);  // grid.x=batch(1), grid.y=in(1152)
     fc_backward_weights_kernel<<<g_fcw,b2>>>(bp->dY, a->pool3_out, g->fc_W, 1,1152,240);
     fc_backward_bias_kernel   <<<(240+15)/16,16>>>(bp->dY, g->fc_b, 1,240);
     fc_backward_input_kernel  <<<g_fcx,b2>>>(bp->dY, net->fc_W, bp->d_pool3, 1,1152,240);
+
+    cudaMemset(bp->d_relu3, 0, 4608*sizeof(float));
+    dim3 g_bp3((6+15)/16,(6+15)/16,32);
+    backMaxPool2D<<<g_bp3,b2>>>(bp->d_pool3, a->argmax3, bp->d_relu3, 6,6, 32);
+    relu_backward<<<(4608+255)/256,256>>>(bp->d_relu3, a->conv3_out, bp->d_conv3_out, 4608);
+    dim3 g_cbi3((14+15)/16,(14+15)/16,16);   // dInput dims: C_in=16, 14x14
+    conv2d_mc_backward_bias   <<<(32+255)/256,256>>>(bp->d_conv3_out, g->conv3_b, 32,12,12);
+    conv2d_mc_backward_weights<<<(4608+255)/256,256>>>(bp->d_conv3_out, a->pool2_out, g->conv3_f, 16,32,14,14,3,3);
+    conv2d_mc_backward_input  <<<g_cbi3,b3>>>(bp->d_conv3_out, net->conv3_f, bp->d_pool2, 16,32,14,14,3,3);
+
+    cudaMemset(bp->d_relu2, 0, 13456*sizeof(float));
+    dim3 g_bp2((14+15)/16,(14+15)/16,16);
+    backMaxPool2D<<<g_bp2,b2>>>(bp->d_pool2, a->argmax2, bp->d_relu2, 14,14, 16);
+    relu_backward<<<(13456+255)/256,256>>>(bp->d_relu2, a->conv2_out, bp->d_conv2_out, 13456);
+    dim3 g_cbi2((31+15)/16,(31+15)/16,8);    // dInput dims: C_in=8, 31x31
+    conv2d_mc_backward_bias   <<<(16+255)/256,256>>>(bp->d_conv2_out, g->conv2_b, 16,29,29);
+    conv2d_mc_backward_weights<<<(1152+255)/256,256>>>(bp->d_conv2_out, a->pool1_out, g->conv2_f, 8,16,31,31,3,3);
+    conv2d_mc_backward_input  <<<g_cbi2,b3>>>(bp->d_conv2_out, net->conv2_f, bp->d_pool1, 8,16,31,31,3,3);
+
+    cudaMemset(bp->d_relu1, 0, 30752*sizeof(float));
+    dim3 g_bp1((31+15)/16,(31+15)/16,8);
+    backMaxPool2D<<<g_bp1,b2>>>(bp->d_pool1, a->argmax1, bp->d_relu1, 31,31, 8);
+    relu_backward<<<(30752+255)/256,256>>>(bp->d_relu1, a->conv1_out, bp->d_conv1_out, 30752);
+    dim3 g_cbi1((64+15)/16,(64+15)/16,1);    // dInput dims: C_in=1, 64x64
+    conv2d_mc_backward_bias   <<<(8+255)/256,256>>>(bp->d_conv1_out, g->conv1_b, 8,62,62);
+    conv2d_mc_backward_weights<<<(72+255)/256,256>>>(bp->d_conv1_out, d_image, g->conv1_f, 1,8,64,64,3,3);
+    conv2d_mc_backward_input  <<<g_cbi1,b3>>>(bp->d_conv1_out, net->conv1_f, bp->d_image_grad, 1,8,64,64,3,3);
 }
 
 void update(Net *net, const Grads *g, float lr){
