@@ -174,6 +174,7 @@ Everything below builds from hand-written CUDA — no ML frameworks for the core
 | `& ".\build\bin\conv2d_mc.exe"` | Multi-channel 2D convolution, forward **and** backward — the CNN building block. Gradients verified against finite differences. |
 | `& ".\build\bin\mnist_cnn.exe"` | End-to-end CNN on MNIST (conv → pool → conv → pool → FC), fully hand-written forward + backprop. Reports train vs. test accuracy: **97.44% test**, beating the MLP baseline. |
 | `& ".\build\bin\cnn_optimization.exe"` | Better CNN on Mnist with faster training times |
+| `& ".\build\bin\mnist_detect.exe"` | object detection|
 
 ---
 
