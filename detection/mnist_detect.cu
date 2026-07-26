@@ -85,6 +85,14 @@ struct Back {
     float *d_relu3, *d_conv3_out;          
 };
 
+static float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh){
+
+}
+
+int eval_one(const float *h_preds, const float *meta, float *iout_out, int *pred_class_out){
+
+}
+
 void forward(const float* d_image, const Net * net, const Acts * a){
     //conv, relu, max...3 iterations forward fc
     dim3 conv1grid(4, 4, 8);
