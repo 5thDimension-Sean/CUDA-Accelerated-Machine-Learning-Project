@@ -1263,3 +1263,7 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     epoch 17  loss = 0.8186
     epoch 18  loss = 0.8005
     epoch 19  loss = 0.7831
+
+    detection acc = 98.93%   mean IoU = 0.931   class acc = 98.93%
+
+    The detection accuracy was really high. The localization is solved and every failure is a classification miss. 

@@ -354,7 +354,21 @@ int main(){
         CUDA_CHECK(cudaMemcpy(&h_loss, d_loss, sizeof(float), cudaMemcpyDeviceToHost));
         printf("epoch %d  loss = %.4f\n", epoch, h_loss / N);
     }
+        load_bin("det_test_X.bin",    X,    (size_t)N*4096);
+    load_bin("det_test_meta.bin", META, (size_t)N*5);
+    CUDA_CHECK(cudaMemcpy(d_X, X, (size_t)N*4096*sizeof(float), cudaMemcpyHostToDevice));
     float h_preds[240];
+    int tcorrect = 0, tclass = 0; float tiou = 0.0f;
+    for (int s = 0; s < N; ++s){
+        forward(d_X + (size_t)s*4096, &net, &a);
+        cudaMemcpy(h_preds, a.preds, 240*sizeof(float), cudaMemcpyDeviceToHost);
+        float iou; int pc;
+        tcorrect += eval_one(h_preds, &META[s*5], &iou, &pc);
+        tiou     += iou;
+        tclass   += (pc == (int)META[s*5+4]);
+    }
+    printf("TEST detection acc = %.2f%%   mean IoU = %.3f   class acc = %.2f%%\n",
+           100.0f*tcorrect/N, tiou/N, 100.0f*tclass/N);
     int correct = 0, class_ok = 0; float iou_sum = 0.0f;
     for (int s = 0; s < N; ++s){
         forward(d_X + (size_t)s*4096, &net, &a);
