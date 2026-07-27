@@ -20,7 +20,23 @@ __device__ float iou_dev(float ax, float ay, float aw, float ah,
 }
 
 __global__ void nms_kernel(const float* boxes, const float* scores, int n, float iou_thresh, int* keep){
-    
+    //parallel suppression decision
+    //one thread per box. thread i loop over all other boxes j
+    //if some j has > score and iou dev(i, j) > iou_thresh, box i is duplicate of better box -> sets keep[i] to 0. Then the keep[] mask that nms() reads back and uses to compact survivorsi nto out[]
+    int s = blockIdx.x * blockDim.x + threadIdx.x;
+    if (s >= n) return;
+    for(int i = 0; i< n; i++){
+        for(int j = 0; j < n; j++){
+              if (j == i) continue;                     // skip self
+                bool j_better = scores[j] > scores[i] ||
+                                (scores[j] == scores[i] && j < i);   
+                if (!j_better) continue;                
+                float iou = iou_dev(boxes[i*4+0], boxes[i*4+1], boxes[i*4+2], boxes[i*4+3],
+                                    boxes[j*4+0], boxes[j*4+1], boxes[j*4+2], boxes[j*4+3]);
+                if (iou > iou_thresh){ keep[i] = 0; return; }  
+                    }
+
+    }
 }
 
 int nms(const Det* cand, int n, float iou_thresh, Det* out){
