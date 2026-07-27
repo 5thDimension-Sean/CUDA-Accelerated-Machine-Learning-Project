@@ -2,10 +2,10 @@
 import numpy as np
 
 CANVAS = 64          # output image side (px)
-DIGIT  = 28          # MNIST digit side (px)
+DIGIT  = 14          # MNIST digit side (px)
 S      = 4           # grid cells per side (CANVAS must be divisible by S)
 C      = 10          # number of classes
-K      = 1           # digits per image (v1 = 1; raise to 2-3 for multi-object + NMS)
+K      = 3           # digits per image (v1 = 1; raise to 2-3 for multi-object + NMS)
 
 
 assert CANVAS % S == 0, "CANVAS must be divisible by S"
@@ -14,7 +14,6 @@ VALS = 5 + C
 
 
 def generate(src_x, src_y, out_prefix, num, seed):
-    """Composite `num` detection images from the digits in src_x/src_y."""
     rng = np.random.default_rng(seed)
     digits = np.fromfile(src_x, dtype=np.float32).reshape(-1, DIGIT, DIGIT)
     labels = np.fromfile(src_y, dtype=np.float32).reshape(-1, C).argmax(1)
