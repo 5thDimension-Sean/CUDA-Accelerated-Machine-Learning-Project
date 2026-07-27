@@ -158,60 +158,32 @@ float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float
 
     return intersection / union_area;
 }
+struct Det { float cx, cy, w, h, score; int cls; };
 
-int eval_one(const float *h_preds, const float *meta, float *iou_out, int *pred_class_out) {
-    float cells[16];
-    float CONF_THRESH = 0.5;
-
-    for (int cell = 1; cell < 16; ++cell) {
-        float conf = h_preds[cell * 15 + 0];
-        if (conf > CONF_THRESH) {
-            cells[cell] = conf;
+int decode(const float *h_preds, float conf_thresh, Det *out){
+    int n = 0;
+    for (int cell = 0; cell < 16; ++cell){          // start at 0
+        float conf = h_preds[cell*15 + 0];
+        if (conf <= conf_thresh) continue;
+        int gx = cell % 4, gy = cell / 4, base = cell * 15;
+        float x = h_preds[base+1], y = h_preds[base+2];
+        float w = h_preds[base+3], h = h_preds[base+4];
+        int cls = 0; float mv = h_preds[base+5];
+        for (int c = 1; c < 10; ++c){
+            float v = h_preds[base+5+c];
+            if (v > mv){ mv = v; cls = c; }
         }
+        out[n].cx = (gx + x)*16.0f;
+        out[n].cy = (gy + y)*16.0f;
+        out[n].w  = w*64.0f;
+        out[n].h  = h*64.0f;
+        out[n].score = conf;
+        out[n].cls   = cls;
+        ++n;
     }
-
-    int gx = best_cell % 4;
-    int gy = best_cell / 4;
-
-    int base = best_cell * 15;
-    float x = h_preds[base + 1];
-    float y = h_preds[base + 2];
-    float w = h_preds[base + 3];
-    float h = h_preds[base + 4];
-
-    float cx = (gx + x) * 16.0f;
-    float cy = (gy + y) * 16.0f;
-    float pw = w * 64.0f;
-    float ph = h * 64.0f;
-
-    int pred_class = 0;
-    float max_class_val = h_preds[base + 5];
-
-    for (int c = 1; c < 10; c++) {
-        float class_val = h_preds[base + 5 + c];
-        if (class_val > max_class_val) {
-            max_class_val = class_val;
-            pred_class = c;
-        }
-    }
-
-    float gcx = meta[0];
-    float gcy = meta[1];
-    float gw  = meta[2];
-    float gh  = meta[3];
-    int glabel = (int)meta[4];
-
-    float iou = iou_xywh(cx, cy, pw, ph, gcx, gcy, gw, gh);
-
-    if (iou_out != NULL) {
-        *iou_out = iou;
-    }
-    if (pred_class_out != NULL) {
-        *pred_class_out = pred_class;
-    }
-
-    return (pred_class == glabel && iou > 0.5f) ? 1 : 0;
+    return n;
 }
+
 
 void forward(const float* d_image, const Net * net, const Acts * a){
     //conv, relu, max...3 iterations forward fc
@@ -299,7 +271,7 @@ void update(Net *net, const Grads *g, float lr){
 }
 
 int main(){
-    Net net; Grads g; Acts a; Back bp;
+    Net net; Grads g; Acts a; Back bp; Det det;
     CUDA_CHECK(cudaMalloc(&bp.dY,          240   * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&bp.d_pool3,     1152  * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&bp.d_relu3,     4608  * sizeof(float)));
@@ -407,7 +379,7 @@ int main(){
         forward(d_X + (size_t)s*4096, &net, &a);
         cudaMemcpy(h_preds, a.preds, 240*sizeof(float), cudaMemcpyDeviceToHost);
         float iou; int pc;
-        correct  += eval_one(h_preds, &META[s*5], &iou, &pc);
+        correct  += decode(h_preds, 0.5, &det);
         iou_sum  += iou;
         class_ok += (pc == (int)META[s*5+4]);
     }
