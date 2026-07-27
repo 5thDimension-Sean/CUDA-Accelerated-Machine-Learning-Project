@@ -57,7 +57,7 @@ int nms(const Det* cand, int n, float iou_thresh, Det* out){
     CUDA_CHECK(cudaMemcpy(d_scores,  h_scores, (size_t)n*sizeof(float), cudaMemcpyHostToDevice));
     nms_kernel<<<(n+255)/256, 256>>>(d_boxes, d_scores, n, iou_thresh, d_keep);
 
-    CUDA_CHECK(cudaMemcpy(h_keep, d_keep, (size_t)n*sizeof(int), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(h_keep, d_keep, (size_t)n*sizeof(int), cudaMemcpyDeviceToHost));
     
     int m = 0;                                    // compact survivors into out[]
     for (int i = 0; i < n; ++i)
