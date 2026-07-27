@@ -106,6 +106,31 @@ static void draw_rect(unsigned char* img, int W, int H,
     for (int y = t; y <= bo; ++y){ put_px(img,W,H,l,y,r,gg,b); put_px(img,W,H,rt,y,r,gg,b); }
 }
 
+void draw_prediction(const float* canvas, const float* h_preds,
+                     const float* meta, const char* path){
+    const int W = 64, H = 64;
+    unsigned char* img = (unsigned char*)malloc(W*H*3);
+
+    // grayscale canvas [0,1] -> RGB [0,255]
+    for (int i = 0; i < W*H; ++i){
+        int v = (int)(canvas[i]*255.0f); v = v<0?0:(v>255?255:v);
+        img[i*3] = img[i*3+1] = img[i*3+2] = (unsigned char)v;
+    }
+
+    // decode predicted box = max-confidence cell (same math as eval_one)
+    int best = 0; float mc = h_preds[0];
+    for (int cell = 1; cell < 16; ++cell)
+        if (h_preds[cell*15] > mc){ mc = h_preds[cell*15]; best = cell; }
+    int gx = best%4, gy = best/4, base = best*15;
+    float cx = (gx + h_preds[base+1])*16.0f, cy = (gy + h_preds[base+2])*16.0f;
+    float pw = h_preds[base+3]*64.0f,        ph = h_preds[base+4]*64.0f;
+
+    draw_rect(img, W, H, meta[0], meta[1], meta[2], meta[3], 0,255,0);   // GT   = green
+    draw_rect(img, W, H, cx, cy, pw, ph,                    255,0,0);   // pred = red
+
+    stbi_write_png(path, W, H, 3, img, W*3);
+    free(img);
+}
 
 float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) {
     float leftA = ax - aw / 2.0f;
