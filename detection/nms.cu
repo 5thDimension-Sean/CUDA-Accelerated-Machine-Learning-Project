@@ -27,7 +27,7 @@ __global__ void nms_kernel(const float* boxes, const float* scores, int n, float
     if (s >= n) return;
     keep[s] = 1;
         for(int j = 0; j < n; j++){
-              if (j == i) continue;                     // skip self
+              if (j == s) continue;                     // skip self
                 bool j_better = scores[j] > scores[i] ||
                                 (scores[j] == scores[i] && j < i);   
                 if (!j_better) continue;                
