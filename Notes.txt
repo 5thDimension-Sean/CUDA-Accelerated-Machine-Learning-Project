@@ -1282,3 +1282,11 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     I encountered some issues with a redef of the struct Det so i created nms.cuh and put the definition there so that i could #include it wherever i needed resolving the issue.
 
     After that, I removed every declaration from mnist_detect.cu and removed the struct from nms.cu
+
+    epoch 49  loss = 0.7055
+    TEST  TP=23617  FP=4111  FN=4394  (GT=28011)  precision=0.852  recall=0.843
+
+    The images are now multi meaning there are multiple numbers. Out of the multi-objcet detector, it found 84.3 percent of the digits and had a precision on 85.2 percent.
+
+
+    This marks the end of this project
