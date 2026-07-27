@@ -9,8 +9,8 @@ __device__ float iou_dev(float ax, float ay, float aw, float ah,
     float leftB = bx - bw / 2.0f, rightB = bx + bw / 2.0f;
     float topB  = by - bh / 2.0f, botB   = by + bh / 2.0f;
 
-    float w_overlap = std::max(0.0f, std::min(rightA, rightB) - std::max(leftA, leftB));
-    float h_overlap = std::max(0.0f, std::min(botA, botB) - std::max(topA, topB));
+    float w_overlap = fmaxf(0.0f, fminf(rightA, rightB) - fmaxf(leftA, leftB));
+    float h_overlap = fmaxf(0.0f, fminf(botA, botB)   - fmaxf(topA, topB));
 
     float intersection = w_overlap * h_overlap;
     float union_area   = aw*ah + bw*bh - intersection;
