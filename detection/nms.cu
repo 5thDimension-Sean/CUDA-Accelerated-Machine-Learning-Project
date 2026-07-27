@@ -21,12 +21,3 @@ int nms(const Det* cand, int n, float iou_thresh, Det* out){
     CUDA_CHECK(cudaMalloc(&d_keep, (size_t)n*sizeof(int)));
 }
 
-#ifndef BUILD_AS_LIBRARY
-int main(){
-    Det dets;
-    nms(dets, dets)
-
-
-    return 0;
-}
-#endif
