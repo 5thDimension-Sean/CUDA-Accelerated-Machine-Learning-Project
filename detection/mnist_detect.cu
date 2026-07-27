@@ -384,8 +384,8 @@ int main(){
 
     CUDA_CHECK(cudaMemcpy(d_X, X, (size_t)N*4096 * sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_T, T, (size_t)N*240  * sizeof(float), cudaMemcpyHostToDevice));
-    float *META = (float*)malloc((size_t)N*5 * sizeof(float));   
-    load_bin("det_meta.bin", META, (size_t)N*5);
+    float *META = (float*)malloc((size_t)N*15 * sizeof(float));   
+    load_bin("det_meta.bin", META, (size_t)N*15);
     for (int epoch = 0; epoch < EPOCHS; ++epoch){
         CUDA_CHECK(cudaMemset(d_loss, 0, sizeof(float)));    
         for (int s = 0; s < N; ++s){
