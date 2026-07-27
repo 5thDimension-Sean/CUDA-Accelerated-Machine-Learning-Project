@@ -4,12 +4,23 @@ struct Det { float cx, cy, w, h, score; int cls; };
 
 __device__ float iou_dev(float ax, float ay, float aw, float ah,
                          float bx, float by, float bw, float bh){
+    float leftA = ax - aw / 2.0f, rightA = ax + aw / 2.0f;
+    float topA  = ay - ah / 2.0f, botA   = ay + ah / 2.0f;
+    float leftB = bx - bw / 2.0f, rightB = bx + bw / 2.0f;
+    float topB  = by - bh / 2.0f, botB   = by + bh / 2.0f;
 
+    float w_overlap = std::max(0.0f, std::min(rightA, rightB) - std::max(leftA, leftB));
+    float h_overlap = std::max(0.0f, std::min(botA, botB) - std::max(topA, topB));
+
+    float intersection = w_overlap * h_overlap;
+    float union_area   = aw*ah + bw*bh - intersection;
+    if (union_area <= 0.0f) return 0.0f;
+    return intersection / union_area;
 
 }
 
 __global__ void nms_kernel(const float* boxes, const float* scores, int n, float iou_thresh, int* keep){
-
+    
 }
 
 int nms(const Det* cand, int n, float iou_thresh, Det* out){
