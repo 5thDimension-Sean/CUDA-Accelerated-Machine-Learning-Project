@@ -91,7 +91,7 @@ struct Back {
     float *d_relu3, *d_conv3_out;
 };
 
-struct Det { float cx, cy, w, h, score; int cls; };
+
 
 int nms(const Det* cand, int n, float iou_thresh, Det* out);   // declaration
 
