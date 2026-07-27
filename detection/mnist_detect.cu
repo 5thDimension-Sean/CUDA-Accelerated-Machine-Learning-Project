@@ -160,14 +160,13 @@ float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float
 }
 
 int eval_one(const float *h_preds, const float *meta, float *iou_out, int *pred_class_out) {
-    int best_cell = 0;
-    float max_conf = h_preds[0 * 15 + 0];
+    float cells[16];
+    float CONF_THRESH = h_preds[0 * 15 + 0];
 
     for (int cell = 1; cell < 16; ++cell) {
         float conf = h_preds[cell * 15 + 0];
-        if (conf > max_conf) {
-            max_conf = conf;
-            best_cell = cell;
+        if (conf > CONF_THRESH) {
+            cells[cell] = conf;
         }
     }
 

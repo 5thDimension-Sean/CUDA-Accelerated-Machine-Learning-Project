@@ -2,6 +2,7 @@
 import numpy as np
 
 CANVAS = 64          # output image side (px)
+DIGIT_SRC = 28
 DIGIT  = 14          # MNIST digit side (px)
 S      = 4           # grid cells per side (CANVAS must be divisible by S)
 C      = 10          # number of classes
@@ -15,9 +16,10 @@ VALS = 5 + C
 
 def generate(src_x, src_y, out_prefix, num, seed):
     rng = np.random.default_rng(seed)
-    digits = np.fromfile(src_x, dtype=np.float32).reshape(-1, DIGIT, DIGIT)
+    raw    = np.fromfile(src_x, dtype=np.float32).reshape(-1, DIGIT_SRC, DIGIT_SRC)
+    Nsrc   = raw.shape[0]
+    digits = raw.reshape(Nsrc, DIGIT, 2, DIGIT, 2).mean(axis=(2, 4)).astype(np.float32)
     labels = np.fromfile(src_y, dtype=np.float32).reshape(-1, C).argmax(1)
-    Nsrc = digits.shape[0]
 
     X    = np.zeros((num, CANVAS, CANVAS), dtype=np.float32)
     Y    = np.zeros((num, S, S, VALS),     dtype=np.float32)
