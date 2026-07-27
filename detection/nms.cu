@@ -25,7 +25,7 @@ __global__ void nms_kernel(const float* boxes, const float* scores, int n, float
     //if some j has > score and iou dev(i, j) > iou_thresh, box i is duplicate of better box -> sets keep[i] to 0. Then the keep[] mask that nms() reads back and uses to compact survivorsi nto out[]
     int s = blockIdx.x * blockDim.x + threadIdx.x;
     if (s >= n) return;
-    for(int i = 0; i< n; i++){
+    keep[s] = 1;
         for(int j = 0; j < n; j++){
               if (j == i) continue;                     // skip self
                 bool j_better = scores[j] > scores[i] ||
@@ -34,8 +34,6 @@ __global__ void nms_kernel(const float* boxes, const float* scores, int n, float
                 float iou = iou_dev(boxes[i*4+0], boxes[i*4+1], boxes[i*4+2], boxes[i*4+3],
                                     boxes[j*4+0], boxes[j*4+1], boxes[j*4+2], boxes[j*4+3]);
                 if (iou > iou_thresh){ keep[i] = 0; return; }  
-                    }
-
     }
 }
 
