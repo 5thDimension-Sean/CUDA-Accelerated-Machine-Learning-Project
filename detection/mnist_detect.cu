@@ -161,7 +161,7 @@ float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float
 
 int eval_one(const float *h_preds, const float *meta, float *iou_out, int *pred_class_out) {
     float cells[16];
-    float CONF_THRESH = h_preds[0 * 15 + 0];
+    float CONF_THRESH = 0.5;
 
     for (int cell = 1; cell < 16; ++cell) {
         float conf = h_preds[cell * 15 + 0];
