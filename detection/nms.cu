@@ -1,6 +1,5 @@
 #include "common.cuh"
-
-struct Det { float cx, cy, w, h, score; int cls; };
+#include "nms.cuh"
 
 __device__ float iou_dev(float ax, float ay, float aw, float ah,
                          float bx, float by, float bw, float bh){
