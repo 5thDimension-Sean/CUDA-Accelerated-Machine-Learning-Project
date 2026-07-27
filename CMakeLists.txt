@@ -105,6 +105,7 @@ target_include_directories(cnn_optimization PRIVATE network kernels)
 add_executable(mnist_detect
     detection/mnist_detect.cu
     kernels/conv2d_mc.cu
+    detection/nms.cu
     kernels/pooling.cu
     kernels/fc.cu
     network/optimizer.cu)
