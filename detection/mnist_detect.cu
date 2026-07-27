@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <chrono>
-#include "nms.cu"
 #include "nms.cuh"
 #include <algorithm>
 
