@@ -1280,3 +1280,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     After that, it would be creating nms.cu. 
 
     I encountered some issues with a redef of the struct Det so i created nms.cuh and put the definition there so that i could #include it wherever i needed resolving the issue.
+
+    After that, I removed every declaration from mnist_detect.cu and removed the struct from nms.cu
