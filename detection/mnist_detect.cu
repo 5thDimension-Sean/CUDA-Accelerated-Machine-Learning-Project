@@ -89,6 +89,24 @@ struct Back {
     float *d_relu3, *d_conv3_out;          
 };
 
+static void put_px(unsigned char* img, int W, int H, int x, int y,
+                   unsigned char r, unsigned char gg, unsigned char b){
+    if (x < 0 || x >= W || y < 0 || y >= H) return;
+    int o = (y*W + x)*3;
+    img[o] = r; img[o+1] = gg; img[o+2] = b;
+}
+
+// draw a hollow rectangle from a center+size box
+static void draw_rect(unsigned char* img, int W, int H,
+                      float cx, float cy, float w, float h,
+                      unsigned char r, unsigned char gg, unsigned char b){
+    int l = (int)(cx - w/2), rt = (int)(cx + w/2);
+    int t = (int)(cy - h/2), bo = (int)(cy + h/2);
+    for (int x = l; x <= rt; ++x){ put_px(img,W,H,x,t,r,gg,b); put_px(img,W,H,x,bo,r,gg,b); }
+    for (int y = t; y <= bo; ++y){ put_px(img,W,H,l,y,r,gg,b); put_px(img,W,H,rt,y,r,gg,b); }
+}
+
+
 float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) {
     float leftA = ax - aw / 2.0f;
     float rightA = ax + aw / 2.0f;
