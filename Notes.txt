@@ -1267,3 +1267,8 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     detection acc = 98.93%   mean IoU = 0.931   class acc = 98.93%
 
     The detection accuracy was really high. The localization is solved and every failure is a classification miss. 
+    epoch 49  loss = 0.2615
+    TEST detection acc = 93.57%   mean IoU = 0.897   class acc = 93.57%
+    detection acc = 93.57%   mean IoU = 0.897   class acc = 93.57%
+
+    It loaded the same test, but it's fine since the one before had the other dataset's test number
