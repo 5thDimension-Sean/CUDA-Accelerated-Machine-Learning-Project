@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <chrono>
 #include "nms.cu"
+#include "nms.cuh"
 #include <algorithm>
 
 #define KMAX 3          // max digits/boxes per image (must match generator K)
