@@ -1272,3 +1272,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     detection acc = 93.57%   mean IoU = 0.897   class acc = 93.57%
 
     It loaded the same test, but it's fine since the one before had the other dataset's test number
+
+    Next step is to draw boxes. First, you need the helpers so stb_image_write. Then you would write put_px and the draw_rect with draw_prediction functions. Then in main, you would write where it will eventually return a png.
