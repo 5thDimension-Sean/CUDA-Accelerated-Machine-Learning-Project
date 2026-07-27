@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <chrono>
+#include "nms.cu"
 #include <algorithm>
 
 #define KMAX 3          // max digits/boxes per image (must match generator K)
@@ -89,18 +90,9 @@ struct Back {
     float *d_relu3, *d_conv3_out;
 };
 
-// one decoded / surviving detection box (pixel coords)
 struct Det { float cx, cy, w, h, score; int cls; };
 
-// ---------------------------------------------------------------------------
-// YOU IMPLEMENT THIS. Non-max suppression over `n` candidate boxes in `cand`.
-// Keep the highest-score box in each overlapping cluster, drop boxes whose IoU
-// with a kept higher-score box exceeds `iou_thresh`. Write survivors to `out`
-// and return how many survived. `out` must hold at least `n` entries.
-// (Implement as a host function here, or as a launcher around your nms.cu
-//  kernel — either way keep this exact signature so the calls below resolve.)
-int nms(const Det *cand, int n, float iou_thresh, Det *out);
-// ---------------------------------------------------------------------------
+int nms(const Det* cand, int n, float iou_thresh, Det* out);   // declaration
 
 float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) {
     float leftA = ax - aw / 2.0f, rightA = ax + aw / 2.0f;
@@ -117,8 +109,7 @@ float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float
     return intersection / union_area;
 }
 
-// scan the 4x4 grid, emit every cell above conf_thresh as a candidate box.
-// returns the number of candidates (0..16); out[] must hold 16.
+
 int decode(const float *h_preds, float conf_thresh, Det *out){
     int n = 0;
     for (int cell = 0; cell < 16; ++cell){

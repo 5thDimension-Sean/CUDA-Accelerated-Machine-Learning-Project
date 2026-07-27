@@ -13,11 +13,19 @@ __global__ void nms_kernel(const float* boxes, const float* scores, int n, float
 }
 
 int nms(const Det* cand, int n, float iou_thresh, Det* out){
-
+    float *d_boxes;
+    float *d_scores;
+    int *d_keep;
+    CUDA_CHECK(cudaMalloc(&d_boxes, (size_t)n*4*sizeof(float)));
+    CUDA_CHECK(cudaMalloc(&d_scores, (size_t)n*sizeof(float)));
+    CUDA_CHECK(cudaMalloc(&d_keep, (size_t)n*sizeof(int)));
 }
 
 #ifndef BUILD_AS_LIBRARY
 int main(){
+    Det dets;
+    nms(dets, dets)
+
 
     return 0;
 }
