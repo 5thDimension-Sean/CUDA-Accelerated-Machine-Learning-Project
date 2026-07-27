@@ -28,12 +28,14 @@ __global__ void nms_kernel(const float* boxes, const float* scores, int n, float
     keep[s] = 1;
         for(int j = 0; j < n; j++){
               if (j == s) continue;                     // skip self
-                bool j_better = scores[j] > scores[i] ||
-                                (scores[j] == scores[i] && j < i);   
+                bool j_better = scores[j] > scores[s] ||
+                                (scores[j] == scores[s] && j < s);   
                 if (!j_better) continue;                
-                float iou = iou_dev(boxes[i*4+0], boxes[i*4+1], boxes[i*4+2], boxes[i*4+3],
+                float iou = iou_dev(boxes[s*4+0], boxes[s*4+1], boxes[s*4+2], boxes[s*4+3],
                                     boxes[j*4+0], boxes[j*4+1], boxes[j*4+2], boxes[j*4+3]);
-                if (iou > iou_thresh){ keep[i] = 0; return; }  
+                if (iou > iou_thresh){ 
+                    keep[s] = 0; return; 
+                }  
     }
 }
 
