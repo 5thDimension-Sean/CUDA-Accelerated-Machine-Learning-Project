@@ -1274,3 +1274,5 @@ Most importantly, shared speed up is almost 25x as efficent as the Naive. WOW!
     It loaded the same test, but it's fine since the one before had the other dataset's test number
 
     Next step is to draw boxes. First, you need the helpers so stb_image_write. Then you would write put_px and the draw_rect with draw_prediction functions. Then in main, you would write where it will eventually return a png.
+
+    The next part of the project is to first convert to multi-digit, which turns the task from localize to find all, which is the only regime where NMS has a job to do.
