@@ -413,6 +413,16 @@ int main(){
         class_ok += (pc == (int)META[s*5+4]);
     }
     printf("detection acc = %.2f%%   mean IoU = %.3f   class acc = %.2f%%\n", 100.0f*correct/N, iou_sum/N, 100.0f*class_ok/N);
+
+    for (int s = 0; s < 12; ++s){
+        forward(d_X + (size_t)s*4096, &net, &a);
+        cudaMemcpy(h_preds, a.preds, 240*sizeof(float), cudaMemcpyDeviceToHost);
+        char path[64];
+        sprintf(path, "det_pred_%02d.png", s);
+        draw_prediction(X + (size_t)s*4096, h_preds, &META[s*5], path);
+    }
+    printf("wrote det_pred_00..11.png\n");
+
      cudaFree(d_X); cudaFree(d_T); cudaFree(d_loss);
 
     cudaFree(net.conv1_f); cudaFree(net.conv1_b); cudaFree(net.conv2_f); cudaFree(net.conv2_b);
