@@ -92,9 +92,6 @@ struct Back {
 };
 
 
-
-int nms(const Det* cand, int n, float iou_thresh, Det* out);   // declaration
-
 float iou_xywh(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) {
     float leftA = ax - aw / 2.0f, rightA = ax + aw / 2.0f;
     float topA  = ay - ah / 2.0f, botA   = ay + ah / 2.0f;
